@@ -1,4 +1,4 @@
-package org.saartako.roles;
+package org.saartako.role;
 
 public class RoleUtils {
 

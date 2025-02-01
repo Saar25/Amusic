@@ -2,7 +2,7 @@ package org.saartako.genre;
 
 import jakarta.persistence.*;
 
-@Entity(name = "genre")
+@Entity(name = "genres")
 public class GenreEntity implements Genre {
 
     @Id

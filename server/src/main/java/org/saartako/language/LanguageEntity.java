@@ -2,7 +2,7 @@ package org.saartako.language;
 
 import jakarta.persistence.*;
 
-@Entity(name = "language")
+@Entity(name = "languages")
 public class LanguageEntity implements Language {
 
     @Id

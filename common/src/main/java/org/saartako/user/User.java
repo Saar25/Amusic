@@ -1,6 +1,6 @@
 package org.saartako.user;
 
-import org.saartako.roles.Role;
+import org.saartako.role.Role;
 
 import java.util.Collection;
 
