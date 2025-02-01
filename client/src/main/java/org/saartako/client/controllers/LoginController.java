@@ -6,8 +6,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.saartako.client.services.HttpService;
+import org.saartako.user.User;
+
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public class LoginController {
+
+    private final HttpService httpService = HttpService.getInstance();
 
     @FXML
     private TextField usernameField;
@@ -46,16 +53,38 @@ public class LoginController {
             displayNameField.setManaged(!isSignIn);
         });
 
+        displayNameField.promptTextProperty().bind(usernameField.textProperty());
+
         loginButton.setOnAction(event -> {
             if (loginMethodSwitch.isSelected()) {
-                System.out.println("Trying to sign in\n" +
-                                   usernameField.getText() + "\n" +
-                                   passwordField.getPassword());
+                final String username = usernameField.getText();
+                final String password = passwordField.getPassword();
+                System.out.println("Trying to sign in...");
+
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        final User user = httpService.login(username, password);
+
+                        System.out.println("Signed in successfully, redirecting to songs page\n" + user);
+                    } catch (IOException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             } else {
-                System.out.println("Trying to register\n" +
-                                   usernameField.getText() + "\n" +
-                                   passwordField.getPassword() + "\n" +
-                                   displayNameField.getText());
+                final String username = usernameField.getText();
+                final String password = passwordField.getPassword();
+                final String displayName = displayNameField.getText().isEmpty() ? username : displayNameField.getText();
+                System.out.println("Trying to registry...");
+
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        final User user = httpService.register(username, password, displayName);
+
+                        System.out.println("Registered successfully, redirecting to songs page\n" + user);
+                    } catch (IOException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         });
     }

@@ -45,7 +45,7 @@ public class App extends Application {
     }
 
     private User login() throws ExecutionException, InterruptedException {
-        final HttpService httpService = new HttpService();
+        final HttpService httpService = HttpService.getInstance();
 
         final Optional<Pair<String, String>> result = this.showDialog();
 

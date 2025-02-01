@@ -96,7 +96,8 @@
                         GridPane.columnIndex="0"
                         GridPane.columnSpan="2"/>
 
-                <VBox spacing="10" GridPane.rowIndex="0" GridPane.rowSpan="3" GridPane.columnIndex="2">
+                <VBox spacing="10" maxHeight="1.7976931348623157E308" GridPane.rowIndex="0" GridPane.rowSpan="3"
+                      GridPane.columnIndex="2" alignment="CENTER">
                     <Label fx:id="loginMethodLabel"/>
                     <ToggleSwitch fx:id="loginMethodSwitch" selected="true"/>
                 </VBox>

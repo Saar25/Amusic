@@ -12,8 +12,20 @@ import java.net.http.HttpResponse;
 
 public class HttpService {
 
+    private static HttpService INSTANCE;
+
     private final Gson gson = new Gson();
     private final HttpClient httpClient = HttpClient.newHttpClient();
+
+    private HttpService() {
+    }
+
+    public static synchronized HttpService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new HttpService();
+        }
+        return INSTANCE;
+    }
 
     public User register(String username, String password, String displayName) throws IOException, InterruptedException {
         final HttpRequest request = HttpRequest.newBuilder()
