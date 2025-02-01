@@ -12,8 +12,11 @@ public class UserEntity implements User {
     @Column(length = 16, unique = true, nullable = false)
     private String username;
 
-    @Column(length = 86, nullable = false)
+    @Column(length = 43, nullable = false)
     private String password;
+
+    @Column(length = 16, nullable = false)
+    private String salt;
 
     @Column(length = 16, nullable = true)
     private String displayName;
@@ -43,6 +46,15 @@ public class UserEntity implements User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String getSalt() {
+        return this.salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     @Override

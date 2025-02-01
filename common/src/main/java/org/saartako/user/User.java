@@ -7,5 +7,7 @@ public interface User {
 
     String getPassword();
 
+    String getSalt();
+
     String getDisplayName();
 }

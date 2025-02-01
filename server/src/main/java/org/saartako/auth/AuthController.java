@@ -22,7 +22,7 @@ public class AuthController {
         @RequestParam("username") String username,
         @RequestParam("password") String password
     ) {
-        return userService.findByUsernameAndPassword(username, password);
+        return userService.login(username, password);
     }
 
     @GetMapping("/register")

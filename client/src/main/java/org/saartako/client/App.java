@@ -48,7 +48,6 @@ public class App extends Application {
             }
         }).start();
 
-
         Dialog<Pair<String, Boolean>> dialog = new Dialog<>();
         dialog.setTitle("Input Dialog");
         dialog.setHeaderText("Enter your input and check the box if needed:");
