@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.saartako.client.services.HttpService;
-import org.saartako.common.Person;
+import org.saartako.user.User;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +37,7 @@ public class App extends Application {
         Executors.defaultThreadFactory().newThread(() -> {
             final HttpService httpService = new HttpService();
             try {
-                final Person[] allPeople = httpService.getAllPeople();
+                final User[] allPeople = httpService.getAllUsers();
 
                 final List<Label> labels = Arrays.stream(allPeople)
                     .map(p -> new Label(p.toString())).toList();
