@@ -1,6 +1,6 @@
-package org.saartako.genre;
+package org.saartako.language;
 
-public class GenreDTO implements Genre {
+public class LanguageDTO implements Language {
 
     private long id;
     private String name;
