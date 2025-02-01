@@ -1,6 +1,9 @@
 package org.saartako.user;
 
 import jakarta.persistence.*;
+import org.saartako.role.RoleEntity;
+
+import java.util.Set;
 
 @Entity(name = "users")
 public class UserEntity implements User {
@@ -20,6 +23,14 @@ public class UserEntity implements User {
 
     @Column(length = 16)
     private String displayName;
+
+    @ManyToMany
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<RoleEntity> roles;
 
     @Override
     public long getId() {
@@ -64,6 +75,15 @@ public class UserEntity implements User {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    @Override
+    public Set<RoleEntity> getRoles() {
+        return this.roles;
+    }
+
+    public void setRoles(Set<RoleEntity> roles) {
+        this.roles = roles;
     }
 
     @Override

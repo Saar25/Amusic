@@ -1,5 +1,9 @@
 package org.saartako.user;
 
+import org.saartako.roles.RoleDTO;
+
+import java.util.Set;
+
 public class UserDTO implements User {
 
     private long id;
@@ -7,6 +11,7 @@ public class UserDTO implements User {
     private String password;
     private String salt;
     private String displayName;
+    private Set<RoleDTO> roles;
 
     @Override
     public long getId() {
@@ -34,12 +39,19 @@ public class UserDTO implements User {
     }
 
     @Override
+    public Set<RoleDTO> getRoles() {
+        return this.roles;
+    }
+
+    @Override
     public String toString() {
         return "UserDTO{" +
                "id=" + id +
                ", username='" + username + '\'' +
                ", password='" + password + '\'' +
+               ", salt='" + salt + '\'' +
                ", displayName='" + displayName + '\'' +
+               ", roles=" + roles.toString() +
                '}';
     }
 }

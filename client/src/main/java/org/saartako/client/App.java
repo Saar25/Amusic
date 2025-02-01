@@ -53,8 +53,10 @@ public class App extends Application {
 
                         Executors.defaultThreadFactory().newThread(() -> {
                             try {
-                                final User login = httpService.login(username, password);
+//                                final User register = httpService.register(username, password, username);
+//                                System.out.println(register);
 
+                                final User login = httpService.login(username, password);
                                 System.out.println(login);
                             } catch (IOException | InterruptedException e) {
                                 throw new RuntimeException(e);
