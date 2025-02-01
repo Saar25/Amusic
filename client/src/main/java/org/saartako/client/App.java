@@ -14,14 +14,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import org.saartako.client.services.HttpService;
-import org.saartako.user.User;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class App extends Application {
 
@@ -42,30 +38,6 @@ public class App extends Application {
 
         stage.setScene(scene);
         stage.show();
-    }
-
-    private User login() throws ExecutionException, InterruptedException {
-        final HttpService httpService = HttpService.getInstance();
-
-        final Optional<Pair<String, String>> result = this.showDialog();
-
-        if (result.isEmpty()) {
-            return null;
-        }
-
-        final String username = result.get().getKey();
-        final String password = result.get().getValue();
-
-        final CompletableFuture<User> userFuture = CompletableFuture.supplyAsync(() -> {
-            try {
-                return httpService.login(username, password);
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        return userFuture.get();
-
     }
 
     private Optional<Pair<String, String>> showDialog() {

@@ -2,19 +2,17 @@ package org.saartako.client.controllers;
 
 import atlantafx.base.controls.PasswordTextField;
 import atlantafx.base.controls.ToggleSwitch;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import org.saartako.client.services.HttpService;
-import org.saartako.user.User;
-
-import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
+import org.saartako.client.services.LoginService;
 
 public class LoginController {
 
-    private final HttpService httpService = HttpService.getInstance();
+    private final LoginService loginService = LoginService.getInstance();
 
     @FXML
     private TextField usernameField;
@@ -59,32 +57,24 @@ public class LoginController {
             if (loginMethodSwitch.isSelected()) {
                 final String username = usernameField.getText();
                 final String password = passwordField.getPassword();
-                System.out.println("Trying to sign in...");
 
-                CompletableFuture.runAsync(() -> {
-                    try {
-                        final User user = httpService.login(username, password);
-
-                        System.out.println("Signed in successfully, redirecting to songs page\n" + user);
-                    } catch (IOException | InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                loginService.login(username, password).whenComplete((user, error) -> Platform.runLater(() -> {
+                    final Alert alert = user != null
+                        ? new Alert(Alert.AlertType.INFORMATION, "Signed in successfully\n" + user)
+                        : new Alert(Alert.AlertType.INFORMATION, "Failed to sign in");
+                    alert.showAndWait();
+                }));
             } else {
                 final String username = usernameField.getText();
                 final String password = passwordField.getPassword();
                 final String displayName = displayNameField.getText().isEmpty() ? username : displayNameField.getText();
-                System.out.println("Trying to registry...");
 
-                CompletableFuture.runAsync(() -> {
-                    try {
-                        final User user = httpService.register(username, password, displayName);
-
-                        System.out.println("Registered successfully, redirecting to songs page\n" + user);
-                    } catch (IOException | InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                loginService.register(username, password, displayName).whenComplete((user, error) -> Platform.runLater(() -> {
+                    final Alert alert = user != null
+                        ? new Alert(Alert.AlertType.INFORMATION, "Registered successfully\n" + user)
+                        : new Alert(Alert.AlertType.INFORMATION, "Failed to register");
+                    alert.showAndWait();
+                }));
             }
         });
     }
