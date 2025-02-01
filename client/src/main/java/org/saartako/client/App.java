@@ -1,23 +1,27 @@
 package org.saartako.client;
 
+import atlantafx.base.theme.CupertinoLight;
 import javafx.application.Application;
-import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.saartako.client.services.HttpService;
 import org.saartako.user.User;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class App extends Application {
 
@@ -26,54 +30,42 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
-        final String javaVersion = System.getProperty("java.version");
-        final String javafxVersion = System.getProperty("javafx.version");
+    public void start(Stage stage) throws IOException {
+        final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/login.xml"));
+        final Parent root = loader.load();
 
-        final Label l1 = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        final Label l2 = new Label("Loading...");
-
-        final VBox vBox = new VBox(l1, l2);
-
-        Executors.defaultThreadFactory().newThread(() -> {
-            final HttpService httpService = new HttpService();
-            try {
-                final User[] allPeople = httpService.getAllUsers();
-
-                final List<Label> labels = Arrays.stream(allPeople)
-                    .map(p -> new Label(p.toString())).toList();
-
-                Platform.runLater(() -> vBox.getChildren().addAll(labels));
-                Platform.runLater(() -> {
-                    final Optional<Pair<String, String>> result = this.showDialog();
-
-                    if (result.isPresent()) {
-                        final String username = result.get().getKey();
-                        final String password = result.get().getValue();
-
-                        Executors.defaultThreadFactory().newThread(() -> {
-                            try {
-//                                final User register = httpService.register(username, password, username);
-//                                System.out.println(register);
-
-                                final User login = httpService.login(username, password);
-                                System.out.println(login);
-                            } catch (IOException | InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }).start();
-
-                    }
-                });
-            } catch (Exception e) {
-                Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Error fetching the people: " + e, ButtonType.OK).showAndWait());
-            }
-        }).start();
-
-        final StackPane pane = new StackPane(vBox);
+        final StackPane pane = new StackPane(root);
         Scene scene = new Scene(pane, 640, 480);
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles/styles.css")).toExternalForm());
+
+        Application.setUserAgentStylesheet(new CupertinoLight().getUserAgentStylesheet());
+
         stage.setScene(scene);
         stage.show();
+    }
+
+    private User login() throws ExecutionException, InterruptedException {
+        final HttpService httpService = new HttpService();
+
+        final Optional<Pair<String, String>> result = this.showDialog();
+
+        if (result.isEmpty()) {
+            return null;
+        }
+
+        final String username = result.get().getKey();
+        final String password = result.get().getValue();
+
+        final CompletableFuture<User> userFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                return httpService.login(username, password);
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return userFuture.get();
+
     }
 
     private Optional<Pair<String, String>> showDialog() {
