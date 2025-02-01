@@ -15,14 +15,16 @@ public class LoginService {
     private static LoginService INSTANCE;
 
     private final HttpService httpService;
+    private final UserService userService;
 
-    private LoginService(HttpService httpService) {
+    public LoginService(HttpService httpService, UserService userService) {
         this.httpService = httpService;
+        this.userService = userService;
     }
 
     public static synchronized LoginService getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new LoginService(HttpService.getInstance());
+            INSTANCE = new LoginService(HttpService.getInstance(), UserService.getInstance());
         }
         return INSTANCE;
     }
@@ -33,6 +35,8 @@ public class LoginService {
                 LOGGER.info("Trying to sign in {}", username);
                 final User user = this.httpService.login(username, password);
                 LOGGER.info("Signed in successfully - {}", user);
+
+                this.userService.setLoggedUser(user);
 
                 return user;
             } catch (IOException | InterruptedException e) {
@@ -49,6 +53,8 @@ public class LoginService {
                 LOGGER.info("Trying to registry {}", username);
                 final User user = this.httpService.register(username, password, displayName);
                 LOGGER.info("Registered successfully - {}", user);
+
+                this.userService.setLoggedUser(user);
 
                 return user;
             } catch (IOException | InterruptedException e) {
