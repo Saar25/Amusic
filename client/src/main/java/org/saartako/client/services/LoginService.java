@@ -1,11 +1,16 @@
 package org.saartako.client.services;
 
 import org.saartako.user.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 
 public class LoginService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static LoginService INSTANCE;
 
@@ -25,14 +30,14 @@ public class LoginService {
     public CompletableFuture<User> login(String username, String password) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                System.out.println("Trying to sign in...");
-
+                LOGGER.info("Trying to sign in {}", username);
                 final User user = this.httpService.login(username, password);
-
-                System.out.println("Signed in successfully, redirecting to songs page\n" + user);
+                LOGGER.info("Signed in successfully - {}", user);
 
                 return user;
             } catch (IOException | InterruptedException e) {
+                LOGGER.error("Failed to sign in", e);
+
                 throw new RuntimeException(e);
             }
         });
@@ -41,14 +46,14 @@ public class LoginService {
     public CompletableFuture<User> register(String username, String password, String displayName) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                System.out.println("Trying to registry...");
-
+                LOGGER.info("Trying to registry {}", username);
                 final User user = this.httpService.register(username, password, displayName);
-
-                System.out.println("Registered successfully, redirecting to songs page\n" + user);
+                LOGGER.info("Registered successfully - {}", user);
 
                 return user;
             } catch (IOException | InterruptedException e) {
+                LOGGER.error("Failed to register", e);
+
                 throw new RuntimeException(e);
             }
         });
