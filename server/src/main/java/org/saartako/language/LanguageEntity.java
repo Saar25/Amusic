@@ -32,9 +32,6 @@ public class LanguageEntity implements Language {
 
     @Override
     public String toString() {
-        return "LanguageEntity{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               '}';
+        return LanguageUtils.toString(this);
     }
 }

@@ -32,9 +32,6 @@ public class GenreEntity implements Genre {
 
     @Override
     public String toString() {
-        return "GenreEntity{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               '}';
+        return GenreUtils.toString(this);
     }
 }

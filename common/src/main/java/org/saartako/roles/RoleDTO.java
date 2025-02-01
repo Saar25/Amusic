@@ -17,9 +17,6 @@ public class RoleDTO implements Role {
 
     @Override
     public String toString() {
-        return "RoleDTO{" +
-               "id=" + id +
-               ", type='" + type + '\'' +
-               '}';
+        return RoleUtils.toString(this);
     }
 }

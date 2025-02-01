@@ -17,9 +17,6 @@ public class LanguageDTO implements Language {
 
     @Override
     public String toString() {
-        return "LanguageDTO{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               '}';
+        return LanguageUtils.toString(this);
     }
 }

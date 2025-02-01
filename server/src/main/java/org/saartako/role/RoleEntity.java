@@ -2,6 +2,7 @@ package org.saartako.role;
 
 import jakarta.persistence.*;
 import org.saartako.roles.Role;
+import org.saartako.roles.RoleUtils;
 
 @Entity(name = "roles")
 public class RoleEntity implements Role {
@@ -33,9 +34,6 @@ public class RoleEntity implements Role {
 
     @Override
     public String toString() {
-        return "RoleEntity{" +
-               "id=" + id +
-               ", type='" + type + '\'' +
-               '}';
+        return RoleUtils.toString(this);
     }
 }

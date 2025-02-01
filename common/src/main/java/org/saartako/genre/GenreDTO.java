@@ -17,9 +17,6 @@ public class GenreDTO implements Genre {
 
     @Override
     public String toString() {
-        return "LanguageDTO{" +
-               "id=" + id +
-               ", name='" + name + '\'' +
-               '}';
+        return GenreUtils.toString(this);
     }
 }

@@ -45,13 +45,6 @@ public class UserDTO implements User {
 
     @Override
     public String toString() {
-        return "UserDTO{" +
-               "id=" + id +
-               ", username='" + username + '\'' +
-               ", password='" + password + '\'' +
-               ", salt='" + salt + '\'' +
-               ", displayName='" + displayName + '\'' +
-               ", roles=" + roles.toString() +
-               '}';
+        return UserUtils.toString(this);
     }
 }
