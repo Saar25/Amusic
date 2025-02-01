@@ -1,0 +1,9 @@
+# IDE files
+.idea
+
+# Docker files
+Dockerfile
+docker-compose.yaml
+
+# database
+data/
