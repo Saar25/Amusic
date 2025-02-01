@@ -61,7 +61,7 @@ public class LoginController {
                 loginService.login(username, password).whenComplete((user, error) -> Platform.runLater(() -> {
                     final Alert alert = user != null
                         ? new Alert(Alert.AlertType.INFORMATION, "Signed in successfully\n" + user)
-                        : new Alert(Alert.AlertType.INFORMATION, "Failed to sign in");
+                        : new Alert(Alert.AlertType.INFORMATION, "Failed to sign in\n" + error);
                     alert.showAndWait();
                 }));
             } else {
@@ -72,7 +72,7 @@ public class LoginController {
                 loginService.register(username, password, displayName).whenComplete((user, error) -> Platform.runLater(() -> {
                     final Alert alert = user != null
                         ? new Alert(Alert.AlertType.INFORMATION, "Registered successfully\n" + user)
-                        : new Alert(Alert.AlertType.INFORMATION, "Failed to register");
+                        : new Alert(Alert.AlertType.INFORMATION, "Failed to register\n" + error);
                     alert.showAndWait();
                 }));
             }

@@ -35,6 +35,10 @@ public class HttpService {
 
         final HttpResponse<String> send = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+        if (send.statusCode() != 200) {
+            throw new IOException(send.body());
+        }
+
         return this.gson.fromJson(send.body(), UserDTO.class);
     }
 
@@ -46,6 +50,10 @@ public class HttpService {
 
         final HttpResponse<String> send = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
+        if (send.statusCode() != 200) {
+            throw new IOException(send.body());
+        }
+
         return this.gson.fromJson(send.body(), UserDTO.class);
     }
 
@@ -56,6 +64,10 @@ public class HttpService {
             .build();
 
         final HttpResponse<String> send = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (send.statusCode() != 200) {
+            throw new IOException(send.body());
+        }
 
         return this.gson.fromJson(send.body(), UserDTO[].class);
     }
