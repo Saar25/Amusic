@@ -1,9 +1,9 @@
 package org.saartako.song;
 
 import jakarta.persistence.*;
-import org.saartako.genre.Genre;
-import org.saartako.language.Language;
-import org.saartako.user.User;
+import org.saartako.genre.GenreEntity;
+import org.saartako.language.LanguageEntity;
+import org.saartako.user.UserEntity;
 
 @Entity(name = "songs")
 public class SongEntity implements Song {
@@ -20,15 +20,15 @@ public class SongEntity implements Song {
 
     @ManyToOne
     @JoinColumn(name = "uploader_id", nullable = false)
-    private User uploader;
+    private UserEntity uploader;
 
     @ManyToOne
     @JoinColumn(name = "genre_id")
-    private Genre genre;
+    private GenreEntity genre;
 
     @ManyToOne
     @JoinColumn(name = "language_id")
-    private Language language;
+    private LanguageEntity language;
 
     @Override
     public long getId() {
@@ -58,29 +58,29 @@ public class SongEntity implements Song {
     }
 
     @Override
-    public User getUploader() {
+    public UserEntity getUploader() {
         return this.uploader;
     }
 
-    public void setUploader(User uploader) {
+    public void setUploader(UserEntity uploader) {
         this.uploader = uploader;
     }
 
     @Override
-    public Genre getGenre() {
+    public GenreEntity getGenre() {
         return this.genre;
     }
 
-    public void setGenre(Genre genre) {
+    public void setGenre(GenreEntity genre) {
         this.genre = genre;
     }
 
     @Override
-    public Language getLanguage() {
+    public LanguageEntity getLanguage() {
         return this.language;
     }
 
-    public void setLanguage(Language language) {
+    public void setLanguage(LanguageEntity language) {
         this.language = language;
     }
 

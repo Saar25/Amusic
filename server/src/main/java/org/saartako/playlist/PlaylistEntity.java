@@ -2,7 +2,7 @@ package org.saartako.playlist;
 
 import jakarta.persistence.*;
 import org.saartako.song.SongEntity;
-import org.saartako.user.User;
+import org.saartako.user.UserEntity;
 
 import java.util.Set;
 
@@ -15,7 +15,7 @@ public class PlaylistEntity implements Playlist {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    private UserEntity owner;
 
     @Column(length = 16, nullable = false)
     private String name;
@@ -40,7 +40,7 @@ public class PlaylistEntity implements Playlist {
     }
 
     @Override
-    public User getOwner() {
+    public UserEntity getOwner() {
         return this.owner;
     }
 
