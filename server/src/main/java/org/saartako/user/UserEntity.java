@@ -12,13 +12,13 @@ public class UserEntity implements User {
     @Column(length = 16, unique = true, nullable = false)
     private String username;
 
-    @Column(length = 43, nullable = false)
+    @Column(length = 44, nullable = false)
     private String password;
 
-    @Column(length = 16, nullable = false)
+    @Column(length = 24, nullable = false)
     private String salt;
 
-    @Column(length = 16, nullable = true)
+    @Column(length = 16)
     private String displayName;
 
     @Override
@@ -64,5 +64,16 @@ public class UserEntity implements User {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+               "id=" + id +
+               ", username='" + username + '\'' +
+               ", password='" + password + '\'' +
+               ", salt='" + salt + '\'' +
+               ", displayName='" + displayName + '\'' +
+               '}';
     }
 }

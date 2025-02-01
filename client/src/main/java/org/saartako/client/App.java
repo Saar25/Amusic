@@ -13,6 +13,7 @@ import javafx.util.Pair;
 import org.saartako.client.services.HttpService;
 import org.saartako.user.User;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -43,54 +44,65 @@ public class App extends Application {
                     .map(p -> new Label(p.toString())).toList();
 
                 Platform.runLater(() -> vBox.getChildren().addAll(labels));
+                Platform.runLater(() -> {
+                    final Optional<Pair<String, String>> result = this.showDialog();
+
+                    if (result.isPresent()) {
+                        final String username = result.get().getKey();
+                        final String password = result.get().getValue();
+
+                        Executors.defaultThreadFactory().newThread(() -> {
+                            try {
+                                final User login = httpService.login(username, password);
+
+                                System.out.println(login);
+                            } catch (IOException | InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }).start();
+
+                    }
+                });
             } catch (Exception e) {
                 Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, "Error fetching the people: " + e, ButtonType.OK).showAndWait());
             }
         }).start();
 
-        Dialog<Pair<String, Boolean>> dialog = new Dialog<>();
-        dialog.setTitle("Input Dialog");
-        dialog.setHeaderText("Enter your input and check the box if needed:");
-
-        // Set the button types
-        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
-
-        // Create input fields
-        TextField textField = new TextField();
-        textField.setPromptText("Enter text");
-
-        CheckBox checkBox = new CheckBox("Check me");
-
-        // Layout
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10));
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.add(new Label("Text:"), 0, 0);
-        grid.add(textField, 1, 0);
-        grid.add(checkBox, 1, 1);
-
-        dialog.getDialogPane().setContent(grid);
-
-        // Convert result to a Pair<String, Boolean>
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == okButtonType) {
-                return new Pair<>(textField.getText(), checkBox.isSelected());
-            }
-            return null;
-        });
-
-        // Show dialog and get result
-        Optional<Pair<String, Boolean>> result = dialog.showAndWait();
-        result.ifPresent(input -> {
-            System.out.println("Text: " + input.getKey());
-            System.out.println("Checkbox selected: " + input.getValue());
-        });
-
         final StackPane pane = new StackPane(vBox);
         Scene scene = new Scene(pane, 640, 480);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private Optional<Pair<String, String>> showDialog() {
+        final Dialog<Pair<String, String>> dialog = new Dialog<>();
+
+        dialog.setTitle("Login form");
+        dialog.setHeaderText("Enter username and password");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        final TextField usernameField = new TextField();
+        usernameField.setPromptText("Enter username");
+
+        final TextField passwordField = new TextField();
+        passwordField.setPromptText("Enter password");
+
+        final GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10));
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.add(new Label("Text:"), 0, 0);
+        grid.add(usernameField, 1, 0);
+        grid.add(passwordField, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            final String username = usernameField.getText();
+            final String password = passwordField.getText();
+            return dialogButton == ButtonType.OK ? new Pair<>(username, password) : null;
+        });
+
+        return dialog.showAndWait();
     }
 }
