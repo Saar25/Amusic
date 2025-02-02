@@ -8,10 +8,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.saartako.client.constants.Route;
 import org.saartako.client.services.LoginService;
+import org.saartako.client.services.RouterService;
 
 public class LoginController {
 
+    private final RouterService routerService = RouterService.getInstance();
     private final LoginService loginService = LoginService.getInstance();
 
     @FXML
@@ -63,6 +66,10 @@ public class LoginController {
                         ? new Alert(Alert.AlertType.INFORMATION, "Signed in successfully\n" + user)
                         : new Alert(Alert.AlertType.INFORMATION, "Failed to sign in\n" + error);
                     alert.showAndWait();
+
+                    if (user != null) {
+                        this.routerService.setCurrentRoute(Route.TEST);
+                    }
                 }));
             } else {
                 final String username = usernameField.getText();
@@ -74,10 +81,12 @@ public class LoginController {
                         ? new Alert(Alert.AlertType.INFORMATION, "Registered successfully\n" + user)
                         : new Alert(Alert.AlertType.INFORMATION, "Failed to register\n" + error);
                     alert.showAndWait();
+
+                    if (user != null) {
+                        this.routerService.setCurrentRoute(Route.TEST);
+                    }
                 }));
             }
         });
     }
 }
-
-

@@ -4,18 +4,20 @@ import atlantafx.base.theme.CupertinoLight;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import org.saartako.client.components.Router;
+import org.saartako.client.constants.Route;
+import org.saartako.client.services.RouterService;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -27,11 +29,16 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/login.xml"));
-        final Parent root = loader.load();
+        final Router router = new Router(Map.ofEntries(
+            Map.entry(Route.LOGIN, new FXMLLoader(getClass().getResource("/views/login.xml")).load()),
+            Map.entry(Route.TEST, new FXMLLoader(getClass().getResource("/views/test.xml")).load())
+        ));
 
-        final StackPane pane = new StackPane(root);
-        Scene scene = new Scene(pane, 640, 480);
+        final RouterService routerService = RouterService.getInstance();
+        routerService.setCurrentRoute(Route.LOGIN);
+
+        final Scene scene = new Scene(router, 1024, 720);
+
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles/styles.css")).toExternalForm());
 
         Application.setUserAgentStylesheet(new CupertinoLight().getUserAgentStylesheet());
