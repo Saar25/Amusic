@@ -68,7 +68,7 @@ public class LoginController {
                     alert.showAndWait();
 
                     if (user != null) {
-                        this.routerService.setCurrentRoute(Route.TMP);
+                        this.routerService.setCurrentRoute(Route.SONGS);
                     }
                 }));
             } else {
@@ -83,7 +83,7 @@ public class LoginController {
                     alert.showAndWait();
 
                     if (user != null) {
-                        this.routerService.setCurrentRoute(Route.TMP);
+                        this.routerService.setCurrentRoute(Route.SONGS);
                     }
                 }));
             }

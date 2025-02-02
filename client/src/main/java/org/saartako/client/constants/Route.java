@@ -2,7 +2,7 @@ package org.saartako.client.constants;
 
 public enum Route {
     LOGIN("login"),
-    TMP("tmp"),
+    SONGS("tmp"),
     TEST("test"),
     ;
 

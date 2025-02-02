@@ -9,7 +9,7 @@
       fx:controller="org.saartako.client.controllers.LoginController"
       stylesheets="@../styles/login.css"
       alignment="CENTER" spacing="20">
-    <Label text="Amusic" styleClass="title"/>
+    <Label text="Amusic" styleClass="title-1, text-bold"/>
 
     <HBox alignment="CENTER" spacing="20">
         <GridPane hgap="10" vgap="15" alignment="CENTER">

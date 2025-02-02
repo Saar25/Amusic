@@ -13,12 +13,12 @@ public class RouterProvider {
     public Router createRouter() throws IOException {
         final Router router = new Router(Map.ofEntries(
             Map.entry(Route.LOGIN, new FXMLLoader(getClass().getResource("/views/login.fxml")).load()),
-            Map.entry(Route.TMP, new FXMLLoader(getClass().getResource("/views/tmp.fxml")).load()),
+            Map.entry(Route.SONGS, new FXMLLoader(getClass().getResource("/views/songs.fxml")).load()),
             Map.entry(Route.TEST, new FXMLLoader(getClass().getResource("/views/test.fxml")).load())
         ));
 
         final RouterService routerService = RouterService.getInstance();
-        routerService.setCurrentRoute(Route.LOGIN);
+        routerService.setCurrentRoute(Route.SONGS);
 
         return router;
     }

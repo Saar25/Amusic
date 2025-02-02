@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import atlantafx.base.layout.InputGroup?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.saartako.client.controllers.HeaderController"
+      stylesheets="@../styles/header.css"
+      styleClass="header"
+      alignment="CENTER" spacing="8.0">
+    <padding>
+        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0"/>
+    </padding>
+    <Label text="Amusic" styleClass="title-2"/>
+    <Label fx:id="welcomeText"/>
+    <Button text="Sign out" styleClass="accent, flat" onAction="#onSignOutAction"/>
+    <Region HBox.hgrow="ALWAYS"/>
+    <InputGroup>
+        <fx:define>
+            <ToggleGroup fx:id="currentTab"/>
+        </fx:define>
+        <ToggleButton toggleGroup="$currentTab" fx:id="songsToggleButton" selected="true"
+                      mnemonicParsing="false" text="Songs"/>
+        <ToggleButton toggleGroup="$currentTab" fx:id="myPlaylistsToggleButton"
+                      mnemonicParsing="false" text="My Playlists"/>
+        <ToggleButton toggleGroup="$currentTab" fx:id="uploadToggleButton"
+                      mnemonicParsing="false" text="Upload"/>
+    </InputGroup>
+</HBox>
