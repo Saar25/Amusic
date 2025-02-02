@@ -30,8 +30,9 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         final Router router = new Router(Map.ofEntries(
-            Map.entry(Route.LOGIN, new FXMLLoader(getClass().getResource("/views/login.xml")).load()),
-            Map.entry(Route.TEST, new FXMLLoader(getClass().getResource("/views/test.xml")).load())
+            Map.entry(Route.LOGIN, new FXMLLoader(getClass().getResource("/views/login.fxml")).load()),
+            Map.entry(Route.TMP, new FXMLLoader(getClass().getResource("/views/tmp.fxml")).load()),
+            Map.entry(Route.TEST, new FXMLLoader(getClass().getResource("/views/test.fxml")).load())
         ));
 
         final RouterService routerService = RouterService.getInstance();

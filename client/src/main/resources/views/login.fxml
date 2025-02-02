@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import atlantafx.base.controls.PasswordTextField?>
+<?import atlantafx.base.controls.ToggleSwitch?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.saartako.client.controllers.LoginController"
+      stylesheets="@../styles/login.css"
+      alignment="CENTER" spacing="20">
+    <Label text="Amusic" styleClass="title"/>
+
+    <HBox alignment="CENTER" spacing="20">
+        <GridPane hgap="10" vgap="15" alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER"/>
+                <ColumnConstraints hgrow="NEVER"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints vgrow="NEVER"/>
+                <RowConstraints vgrow="NEVER"/>
+                <RowConstraints vgrow="ALWAYS"/>
+            </rowConstraints>
+
+            <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="usernameField" promptText="Value" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <PasswordTextField fx:id="passwordField" promptText="Value" GridPane.rowIndex="1"
+                               GridPane.columnIndex="1"/>
+
+            <Label fx:id="displayNameLabel" text="Display Name:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                   visible="false" managed="false"/>
+            <TextField fx:id="displayNameField" promptText="Value" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                       visible="false" managed="false"/>
+
+            <Button fx:id="loginButton"
+                    styleClass="accent"
+                    maxWidth="Infinity"
+                    GridPane.rowIndex="3"
+                    GridPane.columnIndex="0"
+                    GridPane.columnSpan="2"/>
+
+            <VBox spacing="10" maxHeight="Infinity" GridPane.rowIndex="0" GridPane.rowSpan="3"
+                  GridPane.columnIndex="2" alignment="CENTER">
+                <Label fx:id="loginMethodLabel"/>
+                <ToggleSwitch fx:id="loginMethodSwitch" selected="true"/>
+            </VBox>
+        </GridPane>
+    </HBox>
+</VBox>
