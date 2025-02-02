@@ -72,11 +72,12 @@ public class SongService {
     }
 
     public List<Song> filterSongs(List<Song> songs, String filter) {
-        return filter.isEmpty() ? songs : songs.stream().filter(song ->
-            song.getName().contains(filter) ||
-            (song.getUploader() != null && song.getUploader().getDisplayName().contains(filter)) ||
-            (song.getGenre() != null && song.getGenre().getName().contains(filter))
-        ).toList();
+        final String lowercaseFilter = filter.toLowerCase();
 
+        return filter.isEmpty() ? songs : songs.stream().filter(song ->
+            song.getName().toLowerCase().contains(lowercaseFilter) ||
+            (song.getUploader() != null && song.getUploader().getDisplayName().toLowerCase().contains(lowercaseFilter)) ||
+            (song.getGenre() != null && song.getGenre().getName().toLowerCase().contains(lowercaseFilter))
+        ).toList();
     }
 }

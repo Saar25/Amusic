@@ -20,7 +20,7 @@ public class RouterProvider {
         final Router router = new Router(routes, defaultRoute);
 
         final RouterService routerService = RouterService.getInstance();
-        routerService.setCurrentRoute(Route.LOGIN);
+        routerService.setCurrentRoute(Route.SONGS);
 
         return router;
     }

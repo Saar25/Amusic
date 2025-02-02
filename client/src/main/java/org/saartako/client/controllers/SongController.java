@@ -4,12 +4,17 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import org.saartako.client.utils.SongUtils;
 import org.saartako.song.Song;
 
 public class SongController {
 
     private final ObjectProperty<Song> songProperty = new SimpleObjectProperty<>(null, "song", null);
+
+    @FXML
+    private Pane cardBodyPane;
 
     @FXML
     private Label songNameLabel;
@@ -20,6 +25,9 @@ public class SongController {
     @FXML
     private void initialize() {
         this.songProperty.addListener((o, prev, song) -> {
+            this.cardBodyPane.setStyle("-fx-background-color: " + SongUtils.getSongColor(song)
+                                       + "; -fx-background-radius: 4 4 0 0;");
+
             if (song != null) {
                 this.songNameLabel.setText(song.getName());
             }
