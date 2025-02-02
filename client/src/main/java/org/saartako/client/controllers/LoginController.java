@@ -40,52 +40,66 @@ public class LoginController {
 
     @FXML
     private void initialize() {
-        loginButton.setText("Sign in");
-        loginMethodLabel.setText("Sign in");
+        this.loginButton.setText("Sign in");
+        this.loginMethodLabel.setText("Sign in");
 
-        loginMethodSwitch.selectedProperty().addListener((o, prev, isSignIn) -> {
+        this.loginMethodSwitch.selectedProperty().addListener((o, prev, isSignIn) -> {
             final String method = isSignIn ? "Sign in" : "Register";
-            loginMethodLabel.setText(method);
-            loginButton.setText(method);
+            this.loginMethodLabel.setText(method);
+            this.loginButton.setText(method);
 
-            displayNameLabel.setVisible(!isSignIn);
-            displayNameLabel.setManaged(!isSignIn);
-            displayNameField.setVisible(!isSignIn);
-            displayNameField.setManaged(!isSignIn);
+            this.displayNameLabel.setVisible(!isSignIn);
+            this.displayNameLabel.setManaged(!isSignIn);
+            this.displayNameField.setVisible(!isSignIn);
+            this.displayNameField.setManaged(!isSignIn);
         });
 
-        displayNameField.promptTextProperty().bind(usernameField.textProperty());
+        this.displayNameField.promptTextProperty().bind(this.usernameField.textProperty());
 
-        loginButton.setOnAction(event -> {
-            if (loginMethodSwitch.isSelected()) {
-                final String username = usernameField.getText();
-                final String password = passwordField.getPassword();
-
-                authService.login(username, password).whenComplete((user, error) -> Platform.runLater(() -> {
-                    final Alert alert = user != null
-                        ? new Alert(Alert.AlertType.INFORMATION, "Signed in successfully\n" + user)
-                        : new Alert(Alert.AlertType.INFORMATION, "Failed to sign in\n" + error);
-                    alert.showAndWait();
-
-                    if (user != null) {
-                        this.routerService.setCurrentRoute(Route.SONGS);
-                    }
-                }));
+        this.loginButton.setOnAction(event -> {
+            if (this.loginMethodSwitch.isSelected()) {
+                login();
             } else {
-                final String username = usernameField.getText();
-                final String password = passwordField.getPassword();
-                final String displayName = displayNameField.getText().isEmpty() ? username : displayNameField.getText();
+                register();
+            }
+        });
+    }
 
-                authService.register(username, password, displayName).whenComplete((user, error) -> Platform.runLater(() -> {
-                    final Alert alert = user != null
-                        ? new Alert(Alert.AlertType.INFORMATION, "Registered successfully\n" + user)
-                        : new Alert(Alert.AlertType.INFORMATION, "Failed to register\n" + error);
+    private void login() {
+        final String username = usernameField.getText();
+        final String password = passwordField.getPassword();
+
+        this.authService.login(username, password).whenComplete((user, error) -> {
+            if (user != null) {
+                Platform.runLater(() -> this.routerService.setCurrentRoute(Route.SONGS));
+            }
+            if (error != null) {
+                Platform.runLater(() -> {
+                    final Alert alert = new Alert(
+                        Alert.AlertType.INFORMATION,
+                        "Failed to sign in\n" + error);
                     alert.showAndWait();
+                });
+            }
+        });
+    }
 
-                    if (user != null) {
-                        this.routerService.setCurrentRoute(Route.SONGS);
-                    }
-                }));
+    private void register() {
+        final String username = this.usernameField.getText();
+        final String password = this.passwordField.getPassword();
+        final String displayName = this.displayNameField.getText().isEmpty() ? username : this.displayNameField.getText();
+
+        this.authService.register(username, password, displayName).whenComplete((user, error) -> {
+            if (user != null) {
+                this.routerService.setCurrentRoute(Route.SONGS);
+            }
+            if (error != null) {
+                Platform.runLater(() -> {
+                    final Alert alert = new Alert(
+                        Alert.AlertType.INFORMATION,
+                        "Failed to register\n" + error);
+                    alert.showAndWait();
+                });
             }
         });
     }

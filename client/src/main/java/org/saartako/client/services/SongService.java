@@ -42,7 +42,6 @@ public class SongService {
     public void fetchData() {
         fetchSongs().whenComplete((songs, error) -> {
             if (songs != null) {
-                System.out.println("niggaaa " + songs.length);
                 this.songsProperty.setValue(List.of(songs));
             }
             if (error != null) {
@@ -70,5 +69,14 @@ public class SongService {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    public List<Song> filterSongs(List<Song> songs, String filter) {
+        return filter.isEmpty() ? songs : songs.stream().filter(song ->
+            song.getName().contains(filter) ||
+            (song.getUploader() != null && song.getUploader().getDisplayName().contains(filter)) ||
+            (song.getGenre() != null && song.getGenre().getName().contains(filter))
+        ).toList();
+
     }
 }
