@@ -6,7 +6,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import org.saartako.client.constants.Route;
+import org.saartako.client.enums.AppTheme;
 import org.saartako.client.services.RouterService;
+import org.saartako.client.services.ThemeService;
 import org.saartako.client.services.UserService;
 
 public class HeaderController {
@@ -14,6 +16,8 @@ public class HeaderController {
     private final UserService userService = UserService.getInstance();
 
     private final RouterService routerService = RouterService.getInstance();
+
+    private final ThemeService themeService = ThemeService.getInstance();
 
     @FXML
     private Label welcomeText;
@@ -58,5 +62,10 @@ public class HeaderController {
     public void onSignOutAction() {
         this.userService.setLoggedUser(null);
         this.routerService.setCurrentRoute(Route.LOGIN);
+    }
+
+    public void onThemeChangeAction() {
+        final AppTheme appTheme = this.themeService.getAppTheme() == AppTheme.LIGHT ? AppTheme.DARK : AppTheme.LIGHT;
+        this.themeService.setAppTheme(appTheme);
     }
 }
