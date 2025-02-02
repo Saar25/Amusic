@@ -9,13 +9,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.saartako.client.constants.Route;
-import org.saartako.client.services.LoginService;
+import org.saartako.client.services.AuthService;
 import org.saartako.client.services.RouterService;
 
 public class LoginController {
 
     private final RouterService routerService = RouterService.getInstance();
-    private final LoginService loginService = LoginService.getInstance();
+    private final AuthService authService = AuthService.getInstance();
 
     @FXML
     private TextField usernameField;
@@ -61,7 +61,7 @@ public class LoginController {
                 final String username = usernameField.getText();
                 final String password = passwordField.getPassword();
 
-                loginService.login(username, password).whenComplete((user, error) -> Platform.runLater(() -> {
+                authService.login(username, password).whenComplete((user, error) -> Platform.runLater(() -> {
                     final Alert alert = user != null
                         ? new Alert(Alert.AlertType.INFORMATION, "Signed in successfully\n" + user)
                         : new Alert(Alert.AlertType.INFORMATION, "Failed to sign in\n" + error);
@@ -76,7 +76,7 @@ public class LoginController {
                 final String password = passwordField.getPassword();
                 final String displayName = displayNameField.getText().isEmpty() ? username : displayNameField.getText();
 
-                loginService.register(username, password, displayName).whenComplete((user, error) -> Platform.runLater(() -> {
+                authService.register(username, password, displayName).whenComplete((user, error) -> Platform.runLater(() -> {
                     final Alert alert = user != null
                         ? new Alert(Alert.AlertType.INFORMATION, "Registered successfully\n" + user)
                         : new Alert(Alert.AlertType.INFORMATION, "Failed to register\n" + error);

@@ -8,23 +8,23 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 
-public class LoginService {
+public class AuthService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static LoginService INSTANCE;
+    private static AuthService INSTANCE;
 
     private final HttpService httpService;
     private final UserService userService;
 
-    public LoginService(HttpService httpService, UserService userService) {
+    public AuthService(HttpService httpService, UserService userService) {
         this.httpService = httpService;
         this.userService = userService;
     }
 
-    public static synchronized LoginService getInstance() {
+    public static synchronized AuthService getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new LoginService(HttpService.getInstance(), UserService.getInstance());
+            INSTANCE = new AuthService(HttpService.getInstance(), UserService.getInstance());
         }
         return INSTANCE;
     }
