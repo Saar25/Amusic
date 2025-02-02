@@ -7,12 +7,12 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.GridPane;
 import org.saartako.client.services.SongService;
 import org.saartako.song.Song;
 
 import java.io.IOException;
+import java.util.List;
 
 public class SongsPageController {
 
@@ -30,31 +30,20 @@ public class SongsPageController {
     private void initialize() {
         this.searchTextField.textProperty().bindBidirectional(this.searchProperty);
 
-        this.songService.fetchSongs().whenComplete((songs, error) -> {
-            if (songs != null) {
-                Platform.runLater(() -> addSongsToGrid(songs));
-            }
-            if (error != null) {
-                Platform.runLater(() -> {
-                    final Alert alert = new Alert(
-                        Alert.AlertType.INFORMATION,
-                        "Failed to fetch songs\n" + error.getMessage());
-                    alert.show();
-                });
-            }
-        });
+        this.songService.songsProperty().addListener((observable, oldValue, songs) ->
+            Platform.runLater(() -> addSongsToGrid(songs)));
     }
 
-    private void addSongsToGrid(Song[] songs) {
+    private void addSongsToGrid(List<Song> songs) {
         try {
             this.songsGridPane.getChildren().clear();
 
-            for (int i = 0; i < songs.length; i++) {
+            for (int i = 0; i < songs.size(); i++) {
                 final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/components/song.fxml"));
                 final Node songNode = fxmlLoader.load();
 
                 final SongController controller = fxmlLoader.getController();
-                controller.setSong(songs[i]);
+                controller.setSong(songs.get(i));
 
                 this.songsGridPane.add(songNode, i % 3, i / 3);
             }
