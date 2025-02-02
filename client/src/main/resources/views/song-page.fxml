@@ -24,15 +24,12 @@
                         <FontIcon iconLiteral="mdal-clear"/>
                     </right>
                 </CustomTextField>
-                <GridPane vgap="16" hgap="16" alignment="CENTER">
+                <GridPane fx:id="songsGridPane" alignment="CENTER" vgap="16" hgap="16">
                     <columnConstraints>
                         <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
                         <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
                         <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
                     </columnConstraints>
-                    <rowConstraints>
-
-                    </rowConstraints>
                     <fx:include source="../components/song.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                     <fx:include source="../components/song.fxml" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                     <fx:include source="../components/song.fxml" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
