@@ -77,7 +77,7 @@ public class LoginController {
                 Platform.runLater(() -> {
                     final Alert alert = new Alert(
                         Alert.AlertType.INFORMATION,
-                        "Failed to sign in\n" + error);
+                        "Failed to sign in\n" + error.getMessage());
                     alert.showAndWait();
                 });
             }
@@ -91,13 +91,13 @@ public class LoginController {
 
         this.authService.register(username, password, displayName).whenComplete((user, error) -> {
             if (user != null) {
-                this.routerService.setCurrentRoute(Route.SONGS);
+                Platform.runLater(() -> this.routerService.setCurrentRoute(Route.SONGS));
             }
             if (error != null) {
                 Platform.runLater(() -> {
                     final Alert alert = new Alert(
                         Alert.AlertType.INFORMATION,
-                        "Failed to register\n" + error);
+                        "Failed to register\n" + error.getMessage());
                     alert.showAndWait();
                 });
             }
