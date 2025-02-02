@@ -1,8 +1,6 @@
 package org.saartako.client.controllers;
 
 import atlantafx.base.controls.CustomTextField;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.ObjectExpression;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -25,22 +23,26 @@ public class SongsPageController {
 
     @FXML
     private void initialize() {
-        final ObjectExpression<List<Song>> filteredSongs = Bindings.createObjectBinding(() -> {
-            final List<Song> songs = this.songService.songsProperty().getValue();
-            final String search = this.searchTextField.textProperty().getValue();
+        this.searchTextField.textProperty().addListener((observable, oldValue, filter) ->
+            updateSongsInGrid(this.songService.songsProperty().getValue(), filter));
 
-            return songs == null ? List.of() : this.songService.filterSongs(songs, search);
-        }, this.searchTextField.textProperty(), this.songService.songsProperty());
+        this.songService.songsProperty().addListener((observable, oldValue, songs) ->
+            updateSongsInGrid(songs, this.searchTextField.textProperty().getValue()));
 
-        filteredSongs.addListener((observable, oldValue, songs) -> {
-            addSongsToGrid(songs);
-        });
-        if (filteredSongs.getValue() != null) {
-            addSongsToGrid(filteredSongs.getValue());
-        }
+        updateSongsInGrid(
+            this.songService.songsProperty().getValue(),
+            this.searchTextField.textProperty().getValue());
     }
 
-    private void addSongsToGrid(List<Song> songs) {
+    private void updateSongsInGrid(List<Song> songs, String filter) {
+        final List<Song> filtered = songs == null
+            ? List.of()
+            : this.songService.filterSongs(songs, filter);
+
+        updateSongsInGrid(filtered);
+    }
+
+    private void updateSongsInGrid(List<Song> songs) {
         try {
             this.songsGridPane.getChildren().clear();
 
