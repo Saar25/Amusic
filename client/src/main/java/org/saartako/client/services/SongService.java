@@ -42,7 +42,8 @@ public class SongService {
     public void fetchData() {
         fetchSongs().whenComplete((songs, error) -> {
             if (songs != null) {
-                Platform.runLater(() -> this.songsProperty.setValue(List.of(songs)));
+                System.out.println("niggaaa " + songs.length);
+                this.songsProperty.setValue(List.of(songs));
             }
             if (error != null) {
                 Platform.runLater(() -> {

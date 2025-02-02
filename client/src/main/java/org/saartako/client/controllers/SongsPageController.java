@@ -1,9 +1,8 @@
 package org.saartako.client.controllers;
 
 import atlantafx.base.controls.CustomTextField;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectExpression;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -18,7 +17,7 @@ public class SongsPageController {
 
     private final SongService songService = SongService.getInstance();
 
-    private final StringProperty searchProperty = new SimpleStringProperty(this, "searchProperty", "");
+    private ObjectExpression<List<Song>> filteredSongs;
 
     @FXML
     private CustomTextField searchTextField;
@@ -28,10 +27,26 @@ public class SongsPageController {
 
     @FXML
     private void initialize() {
-        this.searchTextField.textProperty().bindBidirectional(this.searchProperty);
+        this.filteredSongs = Bindings.createObjectBinding(() -> {
+            final List<Song> songs = this.songService.songsProperty().getValue();
+            if (songs == null) {
+                return List.of();
+            }
 
-        this.songService.songsProperty().addListener((observable, oldValue, songs) ->
-            Platform.runLater(() -> addSongsToGrid(songs)));
+            final String search = this.searchTextField.textProperty().getValue();
+            return songs.stream().filter(song ->
+                song.getName().contains(search) ||
+                (song.getUploader() != null && song.getUploader().getDisplayName().contains(search)) ||
+                (song.getGenre() != null && song.getGenre().getName().contains(search))
+            ).toList();
+        }, this.searchTextField.textProperty(), this.songService.songsProperty());
+
+        this.filteredSongs.addListener((observable, oldValue, songs) -> {
+            addSongsToGrid(songs);
+        });
+        if (this.filteredSongs.getValue() != null) {
+            addSongsToGrid(this.filteredSongs.getValue());
+        }
     }
 
     private void addSongsToGrid(List<Song> songs) {
