@@ -2,9 +2,12 @@
 
 <?import atlantafx.base.layout.InputGroup?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import org.saartako.client.components.RequiredToggleButton?>
 <HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.saartako.client.controllers.HeaderController"
       stylesheets="@../styles/header.css"
@@ -19,13 +22,13 @@
     <Region HBox.hgrow="ALWAYS"/>
     <InputGroup>
         <fx:define>
-            <ToggleGroup fx:id="currentTab"/>
+            <ToggleGroup fx:id="currentTabToggleGroup"/>
         </fx:define>
-        <ToggleButton toggleGroup="$currentTab" fx:id="songsToggleButton" selected="true"
-                      mnemonicParsing="false" text="Songs"/>
-        <ToggleButton toggleGroup="$currentTab" fx:id="myPlaylistsToggleButton"
-                      mnemonicParsing="false" text="My Playlists"/>
-        <ToggleButton toggleGroup="$currentTab" fx:id="uploadToggleButton"
-                      mnemonicParsing="false" text="Upload"/>
+        <RequiredToggleButton toggleGroup="$currentTabToggleGroup" fx:id="songsToggle" selected="true"
+                              mnemonicParsing="false" text="Songs"/>
+        <RequiredToggleButton toggleGroup="$currentTabToggleGroup" fx:id="myPlaylistsToggle"
+                              mnemonicParsing="false" text="My Playlists"/>
+        <RequiredToggleButton toggleGroup="$currentTabToggleGroup" fx:id="uploadToggle"
+                              mnemonicParsing="false" text="Upload"/>
     </InputGroup>
 </HBox>
