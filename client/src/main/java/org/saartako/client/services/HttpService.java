@@ -1,6 +1,8 @@
 package org.saartako.client.services;
 
 import com.google.gson.Gson;
+import org.saartako.song.Song;
+import org.saartako.song.SongDTO;
 import org.saartako.user.User;
 import org.saartako.user.UserDTO;
 
@@ -57,9 +59,9 @@ public class HttpService {
         return this.gson.fromJson(send.body(), UserDTO.class);
     }
 
-    public User[] getAllUsers() throws IOException, InterruptedException {
+    public Song[] fetchSongs() throws IOException, InterruptedException {
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/user"))
+            .uri(URI.create("http://localhost:8080/song"))
             .GET()
             .build();
 
@@ -69,6 +71,6 @@ public class HttpService {
             throw new IOException(send.body());
         }
 
-        return this.gson.fromJson(send.body(), UserDTO[].class);
+        return this.gson.fromJson(send.body(), SongDTO[].class);
     }
 }

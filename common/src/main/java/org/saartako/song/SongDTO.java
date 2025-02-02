@@ -1,16 +1,19 @@
 package org.saartako.song;
 
 import org.saartako.genre.Genre;
+import org.saartako.genre.GenreDTO;
 import org.saartako.language.Language;
+import org.saartako.language.LanguageDTO;
 import org.saartako.user.User;
+import org.saartako.user.UserDTO;
 
 public class SongDTO implements Song {
     private long id;
     private String fileName;
     private String name;
-    private User uploader;
-    private Genre genre;
-    private Language language;
+    private UserDTO uploader;
+    private GenreDTO genre;
+    private LanguageDTO language;
 
     @Override
     public long getId() {
