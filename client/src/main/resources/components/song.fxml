@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import atlantafx.base.controls.Card?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.shape.Rectangle?>
+<Card xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.saartako.client.controllers.SongController"
+      maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      styleClass="elevated-1, interactive">
+    <header>
+        <Label text="temp1"/>
+    </header>
+    <subHeader>
+        <Rectangle fill="#d95656" height="200" width="200"/>
+    </subHeader>
+    <body>
+        <Label text="temp3"/>
+    </body>
+    <footer>
+        <Label text="temp4"/>
+    </footer>
+</Card>

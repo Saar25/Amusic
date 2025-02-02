@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import atlantafx.base.controls.CustomTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.saartako.client.controllers.SongsPageController">
+    <top>
+        <fx:include source="../components/header.fxml"/>
+    </top>
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+            <padding>
+                <Insets bottom="8" left="40" right="40" top="8"/>
+            </padding>
+            <VBox spacing="20" alignment="CENTER">
+                <CustomTextField fx:id="searchTextField" promptText="Search" maxWidth="300">
+                    <left>
+                        <FontIcon iconLiteral="mdmz-search"/>
+                    </left>
+                    <right>
+                        <FontIcon iconLiteral="mdal-clear"/>
+                    </right>
+                </CustomTextField>
+                <GridPane vgap="16" hgap="16" alignment="CENTER">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
+                        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
+                        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
+                    </columnConstraints>
+                    <rowConstraints>
+
+                    </rowConstraints>
+                    <fx:include source="../components/song.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <fx:include source="../components/song.fxml" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    <fx:include source="../components/song.fxml" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                    <fx:include source="../components/song.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <fx:include source="../components/song.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <fx:include source="../components/song.fxml" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                    <fx:include source="../components/song.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <fx:include source="../components/song.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    <fx:include source="../components/song.fxml" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                </GridPane>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
