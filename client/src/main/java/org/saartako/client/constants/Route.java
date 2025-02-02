@@ -3,7 +3,8 @@ package org.saartako.client.constants;
 public enum Route {
     LOGIN("login"),
     SONGS("tmp"),
-    TEST("test"),
+    MY_PLAYLISTS("myPlaylists"),
+    UPLOAD("upload"),
     ;
 
     private final String name;

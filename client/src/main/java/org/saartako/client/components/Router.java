@@ -11,11 +11,16 @@ public class Router extends StackPane {
 
     private final RouterService routerService = RouterService.getInstance();
 
-    public Router(Map<Route, Node> routes) {
-        this.routerService.currentRouteProperty().addListener((o, prev, page) -> {
-            final Node route = routes.getOrDefault(page, null);
+    public Router(Map<Route, Node> routes, Node defaultRoute) {
+        this.routerService.currentRouteProperty().addListener((o, prev, route) -> {
 
-            getChildren().setAll(route);
+            final Node routeNode = routes.getOrDefault(route, defaultRoute);
+
+            if (routeNode != null) {
+                getChildren().setAll(routeNode);
+            } else {
+                getChildren().clear();
+            }
         });
     }
 

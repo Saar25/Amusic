@@ -1,6 +1,5 @@
 package org.saartako.client.controllers;
 
-import atlantafx.base.theme.Styles;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -33,7 +32,14 @@ public class HeaderController {
 
     @FXML
     private void initialize() {
-        this.currentTab.selectedToggleProperty().addListener((o, prev, selected) -> System.out.println(selected));
+        this.songsToggleButton.setUserData(Route.SONGS);
+        this.myPlaylistsToggleButton.setUserData(Route.MY_PLAYLISTS);
+        this.uploadToggleButton.setUserData(Route.UPLOAD);
+
+        this.currentTab.selectedToggleProperty().addListener((o, prev, selected) -> {
+            final Route route = (Route) selected.getUserData();
+            this.routerService.setCurrentRoute(route);
+        });
 
         this.welcomeText.textProperty().bind(Bindings.createObjectBinding(
             () -> this.userService.getLoggedUser() == null
