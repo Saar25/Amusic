@@ -2,21 +2,23 @@
 
 <?import atlantafx.base.controls.Card?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 <Card xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.saartako.client.controllers.SongController"
       maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       styleClass="elevated-1, interactive">
     <header>
-        <Label text="temp1"/>
+        <TilePane>
+            <Label fx:id="songNameLabel" styleClass="title-2"/>
+        </TilePane>
     </header>
-    <subHeader>
-        <Rectangle fill="#d95656" height="200" width="200"/>
-    </subHeader>
     <body>
-        <Label text="temp3"/>
+        <Rectangle fill="#d95656" height="200" width="200"/>
     </body>
     <footer>
-        <Label text="temp4"/>
+        <VBox fx:id="footerVBox">
+        </VBox>
     </footer>
 </Card>
