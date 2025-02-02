@@ -7,7 +7,6 @@
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.saartako.client.controllers.LoginController"
-      stylesheets="@../styles/login.css"
       alignment="CENTER" spacing="20">
     <Label text="Amusic" styleClass="title-big-1, text-bold"/>
 
