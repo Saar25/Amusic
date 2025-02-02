@@ -25,7 +25,7 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public UserEntity registry(
+    public UserEntity register(
         @RequestParam("username") String username,
         @RequestParam("password") String password,
         @RequestParam("displayName") String displayName

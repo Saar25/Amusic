@@ -1,4 +1,4 @@
-package org.saartako.user;
+package org.saartako.song;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/song")
+public class SongController {
 
     @Autowired
-    private UserService userService;
+    private SongService songService;
 
     @GetMapping("")
-    public List<UserEntity> findALl() {
-        return userService.findAll();
+    public List<SongEntity> findALl() {
+        return songService.findAll();
     }
 }
