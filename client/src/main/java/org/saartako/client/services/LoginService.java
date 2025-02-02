@@ -40,7 +40,7 @@ public class LoginService {
 
                 return user;
             } catch (IOException | InterruptedException e) {
-                LOGGER.error("Failed to sign in", e);
+                LOGGER.info("Failed to sign - {}", e.getMessage());
 
                 throw new RuntimeException(e);
             }
@@ -58,7 +58,7 @@ public class LoginService {
 
                 return user;
             } catch (IOException | InterruptedException e) {
-                LOGGER.error("Failed to register", e);
+                LOGGER.info("Failed to register - {}", e.getMessage());
 
                 throw new RuntimeException(e);
             }

@@ -23,14 +23,14 @@ public class AuthService {
     public Optional<UserEntity> login(String username, String password) {
         final Optional<UserEntity> optionalUserEntity = this.userRepository.findByUsername(username);
         if (optionalUserEntity.isEmpty()) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("Username not found");
         }
         final UserEntity userEntity = optionalUserEntity.get();
 
         final Encryption encryption = Encryptions.getDefaultEncryption();
         final String encrypt = encryption.encrypt(password, userEntity.getSalt());
         if (!encrypt.equals(userEntity.getPassword())) {
-            throw new BadCredentialsException();
+            throw new BadCredentialsException("Password incorrect");
         }
 
         return optionalUserEntity;
@@ -39,7 +39,7 @@ public class AuthService {
     public UserEntity save(String username, String password, String displayName) {
         final Optional<UserEntity> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
-            throw new UserAlreadyExistsException();
+            throw new UserAlreadyExistsException("Username already exists");
         }
 
         final byte[] saltBytes = new byte[16];
