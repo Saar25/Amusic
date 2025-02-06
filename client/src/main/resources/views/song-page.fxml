@@ -9,7 +9,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.saartako.client.controllers.SongsPageController">
     <top>
-        <fx:include source="../components/header.fxml"/>
+        <Header/>
     </top>
     <center>
         <ScrollPane fitToWidth="true" fitToHeight="true">
