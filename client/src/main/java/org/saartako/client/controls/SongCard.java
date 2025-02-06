@@ -1,4 +1,4 @@
-package org.saartako.client.components;
+package org.saartako.client.controls;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

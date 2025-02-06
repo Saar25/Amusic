@@ -1,4 +1,4 @@
-package org.saartako.client.components;
+package org.saartako.client.controls;
 
 import atlantafx.base.controls.Card;
 import atlantafx.base.controls.Tile;

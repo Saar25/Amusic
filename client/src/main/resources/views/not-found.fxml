@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
-<?import org.saartako.client.components.Temp?>
+<?import org.saartako.client.controls.Temp?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <fx:include source="../components/header.fxml"/>

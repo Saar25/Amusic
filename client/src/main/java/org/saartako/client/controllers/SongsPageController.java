@@ -3,7 +3,7 @@ package org.saartako.client.controllers;
 import atlantafx.base.controls.CustomTextField;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
-import org.saartako.client.components.SongCard;
+import org.saartako.client.controls.SongCard;
 import org.saartako.client.services.SongService;
 import org.saartako.song.Song;
 
