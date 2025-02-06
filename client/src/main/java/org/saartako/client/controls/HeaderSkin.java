@@ -67,19 +67,30 @@ public class HeaderSkin implements Skin<Header> {
 
         final RequiredToggleButton songsTabToggleButton = new RequiredToggleButton();
         songsTabToggleButton.setToggleGroup(toggleGroup);
+        songsTabToggleButton.setUserData(Route.SONGS);
         songsTabToggleButton.setText("Songs");
 
         final RequiredToggleButton myPlaylistsTabToggleButton = new RequiredToggleButton();
         myPlaylistsTabToggleButton.setToggleGroup(toggleGroup);
+        myPlaylistsTabToggleButton.setUserData(Route.MY_PLAYLISTS);
         myPlaylistsTabToggleButton.setText("My Playlists");
 
         final RequiredToggleButton uploadTabToggleButton = new RequiredToggleButton();
         uploadTabToggleButton.setToggleGroup(toggleGroup);
+        uploadTabToggleButton.setUserData(Route.UPLOAD);
         uploadTabToggleButton.setText("Upload");
 
         final InputGroup tabsInputGroup = new InputGroup(
             songsTabToggleButton, myPlaylistsTabToggleButton, uploadTabToggleButton);
-        toggleGroup.selectToggle(songsTabToggleButton);
+        toggleGroup.setUserData(this.routerService.getCurrentRoute());
+
+        toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            final Route newRoute = (Route) newValue.getUserData();
+            this.routerService.setCurrentRoute(newRoute);
+        });
+        this.routerService.currentRouteProperty().addListener((observable, oldValue, newValue) -> {
+            toggleGroup.setUserData(newValue);
+        });
 
         this.node = new ToolBar(titleLabel, separator, welcomeLabel,
             themeChangeButton, signOutButton, spacing, tabsInputGroup);
