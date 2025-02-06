@@ -6,7 +6,7 @@ import atlantafx.base.theme.Theme;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.saartako.client.components.Router;
+import org.saartako.client.controls.Router;
 import org.saartako.client.enums.AppTheme;
 import org.saartako.client.services.ThemeService;
 
