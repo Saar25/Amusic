@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import org.saartako.client.components.*?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.saartako.client.controllers.SongsPageController">
     <top>
@@ -30,15 +31,15 @@
                         <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
                         <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
                     </columnConstraints>
-                    <fx:include source="../components/song.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                    <fx:include source="../components/song.fxml" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                    <fx:include source="../components/song.fxml" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-                    <fx:include source="../components/song.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                    <fx:include source="../components/song.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    <fx:include source="../components/song.fxml" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                    <fx:include source="../components/song.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                    <fx:include source="../components/song.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                    <fx:include source="../components/song.fxml" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                    <SongCard GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <SongCard GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    <SongCard GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                    <SongCard GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <SongCard GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <SongCard GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                    <SongCard GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <SongCard GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    <SongCard GridPane.columnIndex="2" GridPane.rowIndex="2"/>
                 </GridPane>
             </VBox>
         </ScrollPane>

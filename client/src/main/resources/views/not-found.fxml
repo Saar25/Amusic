@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
+<?import org.saartako.client.components.Temp?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <fx:include source="../components/header.fxml"/>
@@ -9,4 +10,7 @@
     <center>
         <Label text="Page not found" styleClass="title-big-1, danger"/>
     </center>
+    <right>
+        <Temp/>
+    </right>
 </BorderPane>

@@ -2,13 +2,11 @@ package org.saartako.client.controllers;
 
 import atlantafx.base.controls.CustomTextField;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
+import org.saartako.client.components.SongCard;
 import org.saartako.client.services.SongService;
 import org.saartako.song.Song;
 
-import java.io.IOException;
 import java.util.List;
 
 public class SongsPageController {
@@ -43,20 +41,13 @@ public class SongsPageController {
     }
 
     private void updateSongsInGrid(List<Song> songs) {
-        try {
-            this.songsGridPane.getChildren().clear();
+        this.songsGridPane.getChildren().clear();
 
-            for (int i = 0; i < songs.size(); i++) {
-                final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/components/song.fxml"));
-                final Node songNode = fxmlLoader.load();
+        for (int i = 0; i < songs.size(); i++) {
+            final SongCard songCard = new SongCard();
+            songCard.setSong(songs.get(i));
 
-                final SongController controller = fxmlLoader.getController();
-                controller.setSong(songs.get(i));
-
-                this.songsGridPane.add(songNode, i % 3, i / 3);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            this.songsGridPane.add(songCard, i % 3, i / 3);
         }
     }
 }
