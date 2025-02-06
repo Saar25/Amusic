@@ -1,12 +1,13 @@
 package org.saartako.client.controls;
 
 import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableMap;
 import javafx.scene.Node;
 import javafx.scene.control.Skin;
 import javafx.scene.layout.StackPane;
 import org.saartako.client.constants.Route;
 import org.saartako.client.services.RouterService;
+
+import java.util.Map;
 
 public class RouterSkin implements Skin<Router> {
 
@@ -29,7 +30,7 @@ public class RouterSkin implements Skin<Router> {
 
     private void onRouteChange(Route route) {
         final Node defaultRoute = this.control.getDefaultRoute();
-        final ObservableMap<Route, Node> routes = this.control.getRoutes();
+        final Map<Route, Node> routes = this.control.getRoutes();
 
         final Node routeNode = routes.getOrDefault(route, defaultRoute);
 

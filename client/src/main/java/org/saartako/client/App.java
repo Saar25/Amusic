@@ -4,9 +4,10 @@ import atlantafx.base.theme.PrimerDark;
 import atlantafx.base.theme.PrimerLight;
 import atlantafx.base.theme.Theme;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.saartako.client.controls.Router;
 import org.saartako.client.enums.AppTheme;
 import org.saartako.client.services.ThemeService;
 
@@ -22,9 +23,8 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        final RouterProvider routerProvider = new RouterProvider();
-        final Router router = routerProvider.createRouter();
-        final Scene scene = new Scene(router, Config.APP_WIDTH, Config.APP_HEIGHT);
+        final Parent root = FXMLLoader.load(getClass().getResource("/views/amusic.fxml"));
+        final Scene scene = new Scene(root, Config.APP_WIDTH, Config.APP_HEIGHT);
 
         final URL resource = getClass().getResource("/styles/styles.css");
         scene.getStylesheets().add(Objects.requireNonNull(resource).toExternalForm());
