@@ -80,4 +80,8 @@ public class SongService {
             (song.getGenre() != null && song.getGenre().getName().toLowerCase().contains(lowercaseFilter))
         ).toList();
     }
+
+    public CompletableFuture<List<? extends Song>> filterSongsAsync(List<? extends Song> songs, String filter) {
+        return CompletableFuture.supplyAsync(() -> filterSongs(songs, filter));
+    }
 }

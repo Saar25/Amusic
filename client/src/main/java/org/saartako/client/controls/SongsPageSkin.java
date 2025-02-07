@@ -84,9 +84,14 @@ public class SongsPageSkin implements Skin<SongsPage> {
             GridPane.setColumnSpan(label, 3);
             this.gridPane.getChildren().setAll(label);
         } else {
-            final List<? extends Song> filtered = this.songService.filterSongs(songs, filter);
-
-            Platform.runLater(() -> updateSongsInGrid(filtered));
+            this.songService.filterSongsAsync(songs, filter).whenComplete((filtered, error) -> {
+                if (filtered != null) {
+                    Platform.runLater(() -> updateSongsInGrid(filtered));
+                }
+                if (error != null) {
+                    System.err.println("Error: " + error.getMessage());
+                }
+            });
         }
     }
 
