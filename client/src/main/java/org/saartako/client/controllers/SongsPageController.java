@@ -1,7 +1,10 @@
 package org.saartako.client.controllers;
 
 import atlantafx.base.controls.CustomTextField;
+import atlantafx.base.theme.Styles;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import org.saartako.client.controls.SongCard;
 import org.saartako.client.services.SongService;
@@ -33,11 +36,16 @@ public class SongsPageController {
     }
 
     private void updateSongsInGrid(List<Song> songs, String filter) {
-        final List<Song> filtered = songs == null
-            ? List.of()
-            : this.songService.filterSongs(songs, filter);
+        if (songs == null) {
+            final Label label = new Label("Loading...");
+            label.getStyleClass().addAll("title-big-1", Styles.TEXT_BOLDER);
+            GridPane.setColumnSpan(label, 3);
+            this.songsGridPane.getChildren().setAll(label);
+        } else {
+            final List<Song> filtered = this.songService.filterSongs(songs, filter);
 
-        updateSongsInGrid(filtered);
+            Platform.runLater(() -> updateSongsInGrid(filtered));
+        }
     }
 
     private void updateSongsInGrid(List<Song> songs) {

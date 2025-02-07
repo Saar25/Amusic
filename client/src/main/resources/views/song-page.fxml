@@ -5,7 +5,6 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<?import org.saartako.client.controls.*?>
 <ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.saartako.client.controllers.SongsPageController"
             fitToWidth="true" fitToHeight="true">
@@ -23,19 +22,10 @@
         </CustomTextField>
         <GridPane fx:id="songsGridPane" alignment="CENTER" vgap="16" hgap="16">
             <columnConstraints>
-                <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
-                <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
-                <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
+                <ColumnConstraints percentWidth="33.333333333" halignment="CENTER"/>
+                <ColumnConstraints percentWidth="33.333333333" halignment="CENTER"/>
+                <ColumnConstraints percentWidth="33.333333333" halignment="CENTER"/>
             </columnConstraints>
-            <SongCard GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <SongCard GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-            <SongCard GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-            <SongCard GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <SongCard GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-            <SongCard GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-            <SongCard GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <SongCard GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-            <SongCard GridPane.columnIndex="2" GridPane.rowIndex="2"/>
         </GridPane>
     </VBox>
 </ScrollPane>
