@@ -33,6 +33,7 @@ public class App extends Application {
             (o, prev, appTheme) -> setAppTheme(appTheme));
         setAppTheme(themeService.getAppTheme());
 
+        stage.setTitle("Amusic");
         stage.setScene(scene);
         stage.show();
     }
