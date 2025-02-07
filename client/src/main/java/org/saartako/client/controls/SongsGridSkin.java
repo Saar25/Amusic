@@ -17,6 +17,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.services.SongService;
+import org.saartako.client.utils.FutureReplacer;
 import org.saartako.song.Song;
 
 import java.util.List;
@@ -32,6 +33,8 @@ public class SongsGridSkin implements Skin<SongsGrid> {
     private final ScrollPane node = new ScrollPane();
 
     private final GridPane gridPane = new GridPane();
+
+    private final FutureReplacer filterListFutureReplacer = new FutureReplacer(true);
 
     public SongsGridSkin(SongsGrid control) {
         this.control = control;
@@ -74,20 +77,30 @@ public class SongsGridSkin implements Skin<SongsGrid> {
 
     private void onSongsChange(List<? extends Song> songs, String filter) {
         if (songs == null) {
-            final Label label = new Label("Loading...");
-            label.getStyleClass().addAll("title-big-1", Styles.TEXT_BOLDER);
-            GridPane.setColumnSpan(label, 3);
-            this.gridPane.getChildren().setAll(label);
+            showLoading();
         } else {
-            this.songService.filterSongsAsync(songs, filter).whenComplete((filtered, error) -> {
-                if (filtered != null) {
-                    Platform.runLater(() -> updateSongsInGrid(filtered));
-                }
-                if (error != null) {
-                    System.err.println("Error: " + error.getMessage());
-                }
-            });
+            showSongs(songs, filter);
         }
+    }
+
+    private void showLoading() {
+        final Label label = new Label("Loading...");
+        label.getStyleClass().addAll("title-big-1", Styles.TEXT_BOLDER);
+        GridPane.setColumnSpan(label, 3);
+        this.gridPane.getChildren().setAll(label);
+    }
+
+    private void showSongs(List<? extends Song> songs, String filter) {
+        this.filterListFutureReplacer.replaceWith(
+            this.songService.filterSongsAsync(songs, filter)
+                .handle((filtered, error) -> {
+                    if (error != null) {
+                        System.err.println("Error: " + error.getMessage());
+                    } else {
+                        Platform.runLater(() -> updateSongsInGrid(filtered));
+                    }
+                    return null;
+                }));
     }
 
     private void updateSongsInGrid(List<? extends Song> songs) {
