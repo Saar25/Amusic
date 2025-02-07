@@ -8,7 +8,7 @@ public class RouterService {
 
     private static RouterService INSTANCE;
 
-    private final ObjectProperty<Route> currentRouteProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<Route> currentRouteProperty = new SimpleObjectProperty<>(Route.LOGIN);
 
     private RouterService() {
     }
