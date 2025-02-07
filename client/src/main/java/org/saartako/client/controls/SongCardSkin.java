@@ -2,7 +2,6 @@ package org.saartako.client.controls;
 
 import atlantafx.base.controls.Card;
 import atlantafx.base.controls.Tile;
-import atlantafx.base.theme.Styles;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
@@ -17,20 +16,17 @@ import org.saartako.song.Song;
 public class SongCardSkin implements Skin<SongCard> {
 
     private final SongCard control;
-
-    private final Card node = new Card();
-
     private final Circle headerTileGraphic = new Circle(8);
     private final Tile headerTile = new Tile();
-
     private final VBox footer = new VBox();
-
     private final ChangeListener<Song> footerLabelsListener;
+    private Card node = new Card();
 
     public SongCardSkin(SongCard control) {
         this.control = control;
 
-        this.node.getStyleClass().add(Styles.ELEVATED_4);
+//        TODO: Drastically decrease performance, try using virtualized view
+//        this.node.getStyleClass().add(Styles.ELEVATED_4);
 
         this.headerTile.setGraphic(headerTileGraphic);
         this.headerTile.titleProperty().bind(Bindings.createStringBinding(

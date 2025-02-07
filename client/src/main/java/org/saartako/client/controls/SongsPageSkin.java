@@ -40,7 +40,6 @@ public class SongsPageSkin implements Skin<SongsPage> {
         this.control = control;
 
         this.node.setFitToWidth(true);
-        this.node.setFitToHeight(true);
         this.node.setPadding(new Insets(8, 40, 8, 40));
 
         final VBox vBox = new VBox(20);
