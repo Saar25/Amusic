@@ -71,7 +71,7 @@ public class SongService {
         });
     }
 
-    public List<Song> filterSongs(List<Song> songs, String filter) {
+    public List<? extends Song> filterSongs(List<? extends Song> songs, String filter) {
         final String lowercaseFilter = filter.toLowerCase();
 
         return filter.isEmpty() ? songs : songs.stream().filter(song ->

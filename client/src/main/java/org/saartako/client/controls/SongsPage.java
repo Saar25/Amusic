@@ -7,15 +7,14 @@ import org.saartako.song.Song;
 
 public class SongsPage extends Control {
 
-
-    private final ObservableList<Song> songs = new SimpleListProperty<>(this, "songs");
+    private final ObservableList<? extends Song> songs = new SimpleListProperty<>(this, "songs");
 
     @Override
     protected SongsPageSkin createDefaultSkin() {
         return new SongsPageSkin(this);
     }
 
-    public ObservableList<Song> songsProperty() {
+    public ObservableList<? extends Song> songsProperty() {
         return this.songs;
     }
 }
