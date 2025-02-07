@@ -9,8 +9,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import org.saartako.client.utils.SongUtils;
 import org.saartako.song.Song;
 
 public class SongCardSkin implements Skin<SongCard> {
@@ -19,6 +20,7 @@ public class SongCardSkin implements Skin<SongCard> {
 
     private final Card node = new Card();
 
+    private final Circle headerTileGraphic = new Circle(8);
     private final Tile headerTile = new Tile();
 
     private final VBox footer = new VBox();
@@ -30,11 +32,7 @@ public class SongCardSkin implements Skin<SongCard> {
 
         this.node.getStyleClass().add(Styles.ELEVATED_4);
 
-        final Circle headerGraphic = new Circle(8, Color.rgb(
-            (int) (Math.random() * 256),
-            (int) (Math.random() * 256),
-            (int) (Math.random() * 256)));
-        this.headerTile.setGraphic(headerGraphic);
+        this.headerTile.setGraphic(headerTileGraphic);
         this.headerTile.titleProperty().bind(Bindings.createStringBinding(
             () -> this.control.songProperty().getValue().getName(),
             this.control.songProperty()));
@@ -63,6 +61,9 @@ public class SongCardSkin implements Skin<SongCard> {
             final String value = song.getLanguage().getName();
             this.footer.getChildren().add(new Label("Language: " + value));
         }
+
+        final Paint songColor = SongUtils.getSongColor(song);
+        this.headerTileGraphic.setFill(songColor);
     }
 
     @Override
