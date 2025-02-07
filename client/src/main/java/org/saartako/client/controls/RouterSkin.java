@@ -29,12 +29,16 @@ public class RouterSkin implements Skin<Router> {
     }
 
     private void onRouteChange(Route route) {
-        final Node defaultRoute = this.control.getDefaultRoute();
-        final Map<Route, Node> routes = this.control.getRoutes();
+        if (route == null) {
+            this.node.getChildren().clear();
+        } else {
+            final Node defaultRoute = this.control.getDefaultRoute();
+            final Map<Route, Node> routes = this.control.getRoutes();
 
-        final Node routeNode = routes.getOrDefault(route, defaultRoute);
+            final Node routeNode = routes.getOrDefault(route, defaultRoute);
 
-        this.node.getChildren().setAll(routeNode);
+            this.node.getChildren().setAll(routeNode);
+        }
     }
 
     @Override

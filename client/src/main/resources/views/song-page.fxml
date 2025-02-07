@@ -6,42 +6,36 @@
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import org.saartako.client.controls.*?>
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.saartako.client.controllers.SongsPageController">
-    <top>
-        <Header/>
-    </top>
-    <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true">
-            <padding>
-                <Insets bottom="8" left="40" right="40" top="8"/>
-            </padding>
-            <VBox spacing="20" alignment="TOP_CENTER">
-                <CustomTextField fx:id="searchTextField" promptText="Search" maxWidth="300">
-                    <left>
-                        <FontIcon iconLiteral="mdmz-search"/>
-                    </left>
-                    <right>
-                        <FontIcon iconLiteral="mdal-clear"/>
-                    </right>
-                </CustomTextField>
-                <GridPane fx:id="songsGridPane" alignment="CENTER" vgap="16" hgap="16">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
-                        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
-                        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
-                    </columnConstraints>
-                    <SongCard GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                    <SongCard GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                    <SongCard GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-                    <SongCard GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                    <SongCard GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    <SongCard GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                    <SongCard GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                    <SongCard GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                    <SongCard GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-                </GridPane>
-            </VBox>
-        </ScrollPane>
-    </center>
-</BorderPane>
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.saartako.client.controllers.SongsPageController"
+            fitToWidth="true" fitToHeight="true">
+    <padding>
+        <Insets bottom="8" left="40" right="40" top="8"/>
+    </padding>
+    <VBox spacing="20" alignment="TOP_CENTER">
+        <CustomTextField fx:id="searchTextField" promptText="Search" maxWidth="300">
+            <left>
+                <FontIcon iconLiteral="mdmz-search"/>
+            </left>
+            <right>
+                <FontIcon iconLiteral="mdal-clear"/>
+            </right>
+        </CustomTextField>
+        <GridPane fx:id="songsGridPane" alignment="CENTER" vgap="16" hgap="16">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
+                <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
+                <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
+            </columnConstraints>
+            <SongCard GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <SongCard GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <SongCard GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+            <SongCard GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <SongCard GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <SongCard GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+            <SongCard GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <SongCard GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <SongCard GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+        </GridPane>
+    </VBox>
+</ScrollPane>

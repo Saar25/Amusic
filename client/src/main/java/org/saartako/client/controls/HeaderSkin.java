@@ -1,7 +1,8 @@
 package org.saartako.client.controls;
 
 import atlantafx.base.layout.InputGroup;
-import javafx.beans.binding.Bindings;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -17,6 +18,7 @@ import org.saartako.client.enums.AppTheme;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.ThemeService;
 import org.saartako.client.services.UserService;
+import org.saartako.user.User;
 
 public class HeaderSkin implements Skin<Header> {
 
@@ -28,6 +30,8 @@ public class HeaderSkin implements Skin<Header> {
 
     private final ToolBar node;
 
+    private final ChangeListener<User> userChangeListener;
+
     public HeaderSkin(Header control) {
         this.control = control;
 
@@ -37,10 +41,13 @@ public class HeaderSkin implements Skin<Header> {
         final Separator separator = new Separator(Orientation.VERTICAL);
 
         final Label welcomeLabel = new Label();
-        welcomeLabel.textProperty().bind(Bindings.createStringBinding(
-            () -> this.userService.getLoggedUser() == null ? "Unidentified user"
-                : "Welcome " + this.userService.getLoggedUser().getDisplayName(),
-            this.userService.loggedUserProperty()));
+        userChangeListener = (observable, oldValue, newValue) -> {
+            final String welcomeMessage = this.userService.getLoggedUser() == null
+                ? "Unidentified user"
+                : "Welcome " + this.userService.getLoggedUser().getDisplayName();
+            Platform.runLater(() -> welcomeLabel.textProperty().set(welcomeMessage));
+        };
+        this.userService.loggedUserProperty().addListener(userChangeListener);
 
         final FontIcon themeChangeButtonGraphic = new FontIcon(Material2MZ.WB_SUNNY);
         themeChangeButtonGraphic.setIconSize(14);
@@ -110,5 +117,6 @@ public class HeaderSkin implements Skin<Header> {
 
     @Override
     public void dispose() {
+        this.userService.loggedUserProperty().removeListener(this.userChangeListener);
     }
 }

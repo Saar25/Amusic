@@ -4,14 +4,13 @@ import atlantafx.base.theme.PrimerDark;
 import atlantafx.base.theme.PrimerLight;
 import atlantafx.base.theme.Theme;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.saartako.client.controls.Amusic;
 import org.saartako.client.enums.AppTheme;
 import org.saartako.client.services.ThemeService;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 
@@ -22,8 +21,8 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
-        final Parent root = FXMLLoader.load(getClass().getResource("/views/amusic.fxml"));
+    public void start(Stage stage) {
+        final Parent root = new Amusic();
         final Scene scene = new Scene(root, Config.APP_WIDTH, Config.APP_HEIGHT);
 
         final URL resource = getClass().getResource("/styles/styles.css");
