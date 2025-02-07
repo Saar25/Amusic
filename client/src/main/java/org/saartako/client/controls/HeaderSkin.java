@@ -2,6 +2,7 @@ package org.saartako.client.controls;
 
 import atlantafx.base.layout.InputGroup;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -31,9 +32,12 @@ public class HeaderSkin implements Skin<Header> {
     private final ToolBar node;
 
     private final ChangeListener<User> userChangeListener;
+    private final ChangeListener<Route> routeChangeListener;
 
     public HeaderSkin(Header control) {
         this.control = control;
+
+        final BooleanBinding isLoggedIn = this.userService.loggedUserProperty().isNotNull();
 
         final Label titleLabel = new Label("Amusic");
         titleLabel.getStyleClass().add("title-2");
@@ -48,6 +52,8 @@ public class HeaderSkin implements Skin<Header> {
             Platform.runLater(() -> welcomeLabel.textProperty().set(welcomeMessage));
         };
         this.userService.loggedUserProperty().addListener(userChangeListener);
+        welcomeLabel.managedProperty().bind(isLoggedIn);
+        welcomeLabel.visibleProperty().bind(isLoggedIn);
 
         final FontIcon themeChangeButtonGraphic = new FontIcon(Material2MZ.WB_SUNNY);
         themeChangeButtonGraphic.setIconSize(14);
@@ -66,6 +72,8 @@ public class HeaderSkin implements Skin<Header> {
             this.userService.setLoggedUser(null);
             routerService.setCurrentRoute(Route.LOGIN);
         });
+        signOutButton.managedProperty().bind(isLoggedIn);
+        signOutButton.visibleProperty().bind(isLoggedIn);
 
         final Region spacing = new Region();
         HBox.setHgrow(spacing, Priority.ALWAYS);
@@ -77,15 +85,16 @@ public class HeaderSkin implements Skin<Header> {
             createToggleButton(Route.MY_PLAYLISTS, toggleGroup),
             createToggleButton(Route.UPLOAD, toggleGroup)
         );
+        tabsInputGroup.managedProperty().bind(isLoggedIn);
+        tabsInputGroup.visibleProperty().bind(isLoggedIn);
         toggleGroup.setUserData(this.routerService.getCurrentRoute());
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             final Route newRoute = (Route) newValue.getUserData();
             this.routerService.setCurrentRoute(newRoute);
         });
-        this.routerService.currentRouteProperty().addListener((observable, oldValue, newValue) -> {
-            toggleGroup.setUserData(newValue);
-        });
+        routeChangeListener = (observable, oldValue, newValue) -> toggleGroup.setUserData(newValue);
+        this.routerService.currentRouteProperty().addListener(routeChangeListener);
 
         this.node = new ToolBar(titleLabel, separator, welcomeLabel,
             themeChangeButton, signOutButton, spacing, tabsInputGroup);
@@ -114,5 +123,6 @@ public class HeaderSkin implements Skin<Header> {
     @Override
     public void dispose() {
         this.userService.loggedUserProperty().removeListener(this.userChangeListener);
+        this.routerService.currentRouteProperty().removeListener(this.routeChangeListener);
     }
 }
