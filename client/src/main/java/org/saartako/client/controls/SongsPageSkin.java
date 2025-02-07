@@ -49,7 +49,7 @@ public class SongsPageSkin implements Skin<SongsPage> {
 
         final CustomTextField searchTextField = new CustomTextField();
         searchTextField.setPromptText("Search");
-        searchTextField.maxWidth(300);
+        searchTextField.setMaxWidth(300);
         searchTextField.setLeft(new FontIcon(Material2MZ.SEARCH));
         searchTextField.setRight(new FontIcon(Material2AL.CLEAR));
         vBox.getChildren().add(searchTextField);

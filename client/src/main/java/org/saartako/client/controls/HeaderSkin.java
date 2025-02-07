@@ -72,23 +72,11 @@ public class HeaderSkin implements Skin<Header> {
 
         final ToggleGroup toggleGroup = new ToggleGroup();
 
-        final RequiredToggleButton songsTabToggleButton = new RequiredToggleButton();
-        songsTabToggleButton.setToggleGroup(toggleGroup);
-        songsTabToggleButton.setUserData(Route.SONGS);
-        songsTabToggleButton.setText("Songs");
-
-        final RequiredToggleButton myPlaylistsTabToggleButton = new RequiredToggleButton();
-        myPlaylistsTabToggleButton.setToggleGroup(toggleGroup);
-        myPlaylistsTabToggleButton.setUserData(Route.MY_PLAYLISTS);
-        myPlaylistsTabToggleButton.setText("My Playlists");
-
-        final RequiredToggleButton uploadTabToggleButton = new RequiredToggleButton();
-        uploadTabToggleButton.setToggleGroup(toggleGroup);
-        uploadTabToggleButton.setUserData(Route.UPLOAD);
-        uploadTabToggleButton.setText("Upload");
-
         final InputGroup tabsInputGroup = new InputGroup(
-            songsTabToggleButton, myPlaylistsTabToggleButton, uploadTabToggleButton);
+            createToggleButton(Route.SONGS, toggleGroup),
+            createToggleButton(Route.MY_PLAYLISTS, toggleGroup),
+            createToggleButton(Route.UPLOAD, toggleGroup)
+        );
         toggleGroup.setUserData(this.routerService.getCurrentRoute());
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -103,6 +91,14 @@ public class HeaderSkin implements Skin<Header> {
             themeChangeButton, signOutButton, spacing, tabsInputGroup);
         this.node.getStyleClass().add("elevated-2");
         this.node.setPadding(new Insets(16));
+    }
+
+    private RequiredToggleButton createToggleButton(Route route, ToggleGroup toggleGroup) {
+        final RequiredToggleButton toggleButton = new RequiredToggleButton();
+        toggleButton.setToggleGroup(toggleGroup);
+        toggleButton.setUserData(route);
+        toggleButton.setText(route.toString());
+        return toggleButton;
     }
 
     @Override

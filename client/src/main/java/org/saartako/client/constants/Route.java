@@ -1,11 +1,11 @@
 package org.saartako.client.constants;
 
 public enum Route {
-    LOGIN("login"),
-    SONGS("songs"),
-    SONG_VIEW("songView"),
-    MY_PLAYLISTS("myPlaylists"),
-    UPLOAD("upload"),
+    LOGIN("Login"),
+    SONGS("Songs"),
+    SONG_VIEW("Song View"),
+    MY_PLAYLISTS("My Playlists"),
+    UPLOAD("Upload"),
     ;
 
     private final String name;
@@ -14,7 +14,8 @@ public enum Route {
         this.name = name;
     }
 
-    public String getName() {
+    @Override
+    public String toString() {
         return this.name;
     }
 }

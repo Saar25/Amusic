@@ -1,16 +1,3 @@
 .title-big-1 {
     -fx-font-size: 96;
 }
-
-.card > .container {
-    -fx-padding: 0;
-    -fx-spacing: 0;
-}
-
-.card > .container > .body {
-    -fx-padding: 0;
-}
-
-.card > .container > .footer {
-    -fx-padding: 8;
-}
