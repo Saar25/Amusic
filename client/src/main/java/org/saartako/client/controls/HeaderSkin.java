@@ -3,7 +3,6 @@ package org.saartako.client.controls;
 import atlantafx.base.layout.InputGroup;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -20,7 +19,7 @@ import org.saartako.client.enums.AppTheme;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.ThemeService;
 import org.saartako.client.services.UserService;
-import org.saartako.user.User;
+import org.saartako.client.utils.InvalidationListenerDisposer;
 
 public class HeaderSkin implements Skin<Header> {
 
@@ -28,12 +27,11 @@ public class HeaderSkin implements Skin<Header> {
     private final ThemeService themeService = ThemeService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
 
+    private final InvalidationListenerDisposer disposer = new InvalidationListenerDisposer();
+
     private final Header control;
 
     private final ToolBar node;
-
-    private ChangeListener<User> userChangeListener;
-    private ChangeListener<Route> routeChangeListener;
 
     public HeaderSkin(Header control) {
         this.control = control;
@@ -64,13 +62,12 @@ public class HeaderSkin implements Skin<Header> {
 
     private Label createWelcomeLabel(ObservableValue<? extends Boolean> isLoggedIn) {
         final Label welcomeLabel = new Label();
-        this.userChangeListener = (observable, oldValue, newValue) -> {
+        this.disposer.listen(this.userService.loggedUserProperty(), observable -> {
             final String welcomeMessage = this.userService.getLoggedUser() == null
                 ? "Unidentified user"
                 : "Welcome " + this.userService.getLoggedUser().getDisplayName();
             Platform.runLater(() -> welcomeLabel.textProperty().set(welcomeMessage));
-        };
-        this.userService.loggedUserProperty().addListener(userChangeListener);
+        });
         welcomeLabel.managedProperty().bind(isLoggedIn);
         welcomeLabel.visibleProperty().bind(isLoggedIn);
         return welcomeLabel;
@@ -117,14 +114,14 @@ public class HeaderSkin implements Skin<Header> {
             final Route newRoute = (Route) newValue.getUserData();
             this.routerService.setCurrentRoute(newRoute);
         });
-        this.routeChangeListener = (observable, oldValue, newValue) -> {
-            switch (newValue) {
+
+        this.disposer.listen(this.routerService.currentRouteProperty(), observable -> {
+            switch (this.routerService.getCurrentRoute()) {
                 case SONGS -> toggleGroup.selectToggle(songsToggleButton);
                 case MY_PLAYLISTS -> toggleGroup.selectToggle(myPlaylistsToggleButton);
                 case UPLOAD -> toggleGroup.selectToggle(uploadToggleButton);
             }
-        };
-        this.routerService.currentRouteProperty().addListener(this.routeChangeListener);
+        });
 
         return tabsInputGroup;
     }
@@ -149,7 +146,6 @@ public class HeaderSkin implements Skin<Header> {
 
     @Override
     public void dispose() {
-        this.userService.loggedUserProperty().removeListener(this.userChangeListener);
-        this.routerService.currentRouteProperty().removeListener(this.routeChangeListener);
+        this.disposer.dispose();
     }
 }
