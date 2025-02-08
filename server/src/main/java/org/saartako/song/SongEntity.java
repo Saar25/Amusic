@@ -12,7 +12,7 @@ public class SongEntity implements Song {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 16, unique = true, nullable = false)
+    @Column(length = 64, unique = true, nullable = false)
     private String fileName;
 
     @Column(length = 64, nullable = false)
