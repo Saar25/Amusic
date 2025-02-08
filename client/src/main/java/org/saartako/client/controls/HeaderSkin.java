@@ -2,8 +2,6 @@ package org.saartako.client.controls;
 
 import atlantafx.base.layout.InputGroup;
 import javafx.application.Platform;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -36,23 +34,21 @@ public class HeaderSkin implements Skin<Header> {
     public HeaderSkin(Header control) {
         this.control = control;
 
-        final BooleanBinding isLoggedIn = this.userService.loggedUserProperty().isNotNull();
-
         final Label titleLabel = new Label("Amusic");
         titleLabel.getStyleClass().add("title-2");
 
         final Separator separator = new Separator(Orientation.VERTICAL);
 
-        final Label welcomeLabel = createWelcomeLabel(isLoggedIn);
+        final Label welcomeLabel = createWelcomeLabel();
 
         final Button themeChangeButton = createThemeChangeButton();
 
-        final Button signOutButton = createSignOutButton(isLoggedIn);
+        final Button signOutButton = createSignOutButton();
 
         final Region spacing = new Region();
         HBox.setHgrow(spacing, Priority.ALWAYS);
 
-        final InputGroup tabsInputGroup = createToggleGroup(isLoggedIn);
+        final InputGroup tabsInputGroup = createToggleGroup();
 
         this.node = new ToolBar(titleLabel, separator, welcomeLabel,
             themeChangeButton, signOutButton, spacing, tabsInputGroup);
@@ -60,7 +56,7 @@ public class HeaderSkin implements Skin<Header> {
         this.node.setPadding(new Insets(16));
     }
 
-    private Label createWelcomeLabel(ObservableValue<? extends Boolean> isLoggedIn) {
+    private Label createWelcomeLabel() {
         final Label welcomeLabel = new Label();
         this.disposer.listen(this.userService.loggedUserProperty(), observable -> {
             final String welcomeMessage = this.userService.getLoggedUser() == null
@@ -68,8 +64,8 @@ public class HeaderSkin implements Skin<Header> {
                 : "Welcome " + this.userService.getLoggedUser().getDisplayName();
             Platform.runLater(() -> welcomeLabel.textProperty().set(welcomeMessage));
         });
-        welcomeLabel.managedProperty().bind(isLoggedIn);
-        welcomeLabel.visibleProperty().bind(isLoggedIn);
+        welcomeLabel.managedProperty().bind(this.userService.isLoggedInProperty());
+        welcomeLabel.visibleProperty().bind(this.userService.isLoggedInProperty());
         return welcomeLabel;
     }
 
@@ -87,19 +83,19 @@ public class HeaderSkin implements Skin<Header> {
         return themeChangeButton;
     }
 
-    private Button createSignOutButton(BooleanBinding isLoggedIn) {
+    private Button createSignOutButton() {
         final Button signOutButton = new Button("Sign out");
         signOutButton.getStyleClass().addAll("accent", "flat");
         signOutButton.setOnAction(event -> {
             this.userService.setLoggedUser(null);
             this.routerService.setCurrentRoute(Route.LOGIN);
         });
-        signOutButton.managedProperty().bind(isLoggedIn);
-        signOutButton.visibleProperty().bind(isLoggedIn);
+        signOutButton.managedProperty().bind(this.userService.isLoggedInProperty());
+        signOutButton.visibleProperty().bind(this.userService.isLoggedInProperty());
         return signOutButton;
     }
 
-    private InputGroup createToggleGroup(ObservableValue<? extends Boolean> isLoggedIn) {
+    private InputGroup createToggleGroup() {
         final ToggleGroup toggleGroup = new ToggleGroup();
 
         final RequiredToggleButton songsToggleButton = createToggleButton(Route.SONGS, toggleGroup);
@@ -107,8 +103,8 @@ public class HeaderSkin implements Skin<Header> {
         final RequiredToggleButton uploadToggleButton = createToggleButton(Route.UPLOAD, toggleGroup);
         final InputGroup tabsInputGroup = new InputGroup(
             songsToggleButton, myPlaylistsToggleButton, uploadToggleButton);
-        tabsInputGroup.managedProperty().bind(isLoggedIn);
-        tabsInputGroup.visibleProperty().bind(isLoggedIn);
+        tabsInputGroup.managedProperty().bind(this.userService.isLoggedInProperty());
+        tabsInputGroup.visibleProperty().bind(this.userService.isLoggedInProperty());
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             final Route newRoute = (Route) newValue.getUserData();
