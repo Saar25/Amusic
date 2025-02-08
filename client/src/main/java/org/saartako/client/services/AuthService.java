@@ -17,7 +17,7 @@ public class AuthService {
     private final HttpService httpService;
     private final UserService userService;
 
-    public AuthService(HttpService httpService, UserService userService) {
+    private AuthService(HttpService httpService, UserService userService) {
         this.httpService = httpService;
         this.userService = userService;
     }

@@ -19,22 +19,17 @@ public class SongService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static SongService INSTANCE;
-
     private final HttpService httpService;
 
     private final ListProperty<Song> songsProperty = new SimpleListProperty<>(this, "songs");
 
-    public SongService(HttpService httpService) {
+    private SongService(HttpService httpService) {
         this.httpService = httpService;
+        fetchData();
     }
 
-    public static synchronized SongService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new SongService(HttpService.getInstance());
-            INSTANCE.fetchData();
-        }
-        return INSTANCE;
+    public static SongService getInstance() {
+        return InstanceHolder.INSTANCE;
     }
 
     public ListProperty<Song> songsProperty() {
@@ -87,5 +82,9 @@ public class SongService {
 
     public CompletableFuture<List<? extends Song>> filterSongsAsync(List<? extends Song> songs, String filter) {
         return CompletableFuture.supplyAsync(() -> filterSongs(songs, filter));
+    }
+
+    private static final class InstanceHolder {
+        private static final SongService INSTANCE = new SongService(HttpService.getInstance());
     }
 }

@@ -8,14 +8,11 @@ import org.saartako.user.UserDTO;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class HttpService {
-
-    private static HttpService INSTANCE;
 
     private final Gson gson = new Gson();
     private final HttpClient httpClient = HttpClient.newHttpClient();
@@ -23,11 +20,8 @@ public class HttpService {
     private HttpService() {
     }
 
-    public static synchronized HttpService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new HttpService();
-        }
-        return INSTANCE;
+    public static HttpService getInstance() {
+        return InstanceHolder.INSTANCE;
     }
 
     public User register(String username, String password, String displayName) throws IOException, InterruptedException {
@@ -73,5 +67,9 @@ public class HttpService {
         }
 
         return this.gson.fromJson(send.body(), SongDTO[].class);
+    }
+
+    private static final class InstanceHolder {
+        private static final HttpService INSTANCE = new HttpService();
     }
 }

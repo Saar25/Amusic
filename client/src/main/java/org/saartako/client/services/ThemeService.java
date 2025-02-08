@@ -6,19 +6,14 @@ import org.saartako.client.enums.AppTheme;
 
 public class ThemeService {
 
-    private static ThemeService INSTANCE;
-
     private final ObjectProperty<AppTheme> appThemeProperty =
         new SimpleObjectProperty<>(this, "appTheme", AppTheme.DARK);
 
     private ThemeService() {
     }
 
-    public static synchronized ThemeService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ThemeService();
-        }
-        return INSTANCE;
+    public static ThemeService getInstance() {
+        return InstanceHolder.INSTANCE;
     }
 
     public ObjectProperty<AppTheme> appThemeProperty() {
@@ -31,5 +26,9 @@ public class ThemeService {
 
     public void setAppTheme(AppTheme appTheme) {
         this.appThemeProperty.setValue(appTheme);
+    }
+
+    private static final class InstanceHolder {
+        private static final ThemeService INSTANCE = new ThemeService();
     }
 }

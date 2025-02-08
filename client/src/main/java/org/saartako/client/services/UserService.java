@@ -6,18 +6,13 @@ import org.saartako.user.User;
 
 public class UserService {
 
-    private static UserService INSTANCE;
-
     private final ObjectProperty<User> loggedUserProperty = new SimpleObjectProperty<>(this, "loggedUser", null);
 
     private UserService() {
     }
 
-    public static synchronized UserService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new UserService();
-        }
-        return INSTANCE;
+    public static UserService getInstance() {
+        return InstanceHolder.INSTANCE;
     }
 
     public ObjectProperty<User> loggedUserProperty() {
@@ -30,5 +25,9 @@ public class UserService {
 
     public void setLoggedUser(User loggedUser) {
         this.loggedUserProperty.setValue(loggedUser);
+    }
+
+    private static final class InstanceHolder {
+        private static final UserService INSTANCE = new UserService();
     }
 }

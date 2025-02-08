@@ -6,18 +6,13 @@ import org.saartako.client.constants.Route;
 
 public class RouterService {
 
-    private static RouterService INSTANCE;
-
     private final ObjectProperty<Route> currentRouteProperty = new SimpleObjectProperty<>(Route.LOGIN);
 
     private RouterService() {
     }
 
-    public static synchronized RouterService getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new RouterService();
-        }
-        return INSTANCE;
+    public static RouterService getInstance() {
+        return InstanceHolder.INSTANCE;
     }
 
     public ObjectProperty<Route> currentRouteProperty() {
@@ -30,5 +25,9 @@ public class RouterService {
 
     public void setCurrentRoute(Route route) {
         this.currentRouteProperty.setValue(route);
+    }
+
+    private static final class InstanceHolder {
+        private static final RouterService INSTANCE = new RouterService();
     }
 }
