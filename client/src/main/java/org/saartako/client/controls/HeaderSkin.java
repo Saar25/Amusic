@@ -4,6 +4,7 @@ import atlantafx.base.layout.InputGroup;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -31,8 +32,8 @@ public class HeaderSkin implements Skin<Header> {
 
     private final ToolBar node;
 
-    private final ChangeListener<User> userChangeListener;
-    private final ChangeListener<Route> routeChangeListener;
+    private ChangeListener<User> userChangeListener;
+    private ChangeListener<Route> routeChangeListener;
 
     public HeaderSkin(Header control) {
         this.control = control;
@@ -44,8 +45,26 @@ public class HeaderSkin implements Skin<Header> {
 
         final Separator separator = new Separator(Orientation.VERTICAL);
 
+        final Label welcomeLabel = createWelcomeLabel(isLoggedIn);
+
+        final Button themeChangeButton = createThemeChangeButton();
+
+        final Button signOutButton = createSignOutButton(isLoggedIn);
+
+        final Region spacing = new Region();
+        HBox.setHgrow(spacing, Priority.ALWAYS);
+
+        final InputGroup tabsInputGroup = createToggleGroup(isLoggedIn);
+
+        this.node = new ToolBar(titleLabel, separator, welcomeLabel,
+            themeChangeButton, signOutButton, spacing, tabsInputGroup);
+        this.node.getStyleClass().add("elevated-2");
+        this.node.setPadding(new Insets(16));
+    }
+
+    private Label createWelcomeLabel(ObservableValue<? extends Boolean> isLoggedIn) {
         final Label welcomeLabel = new Label();
-        userChangeListener = (observable, oldValue, newValue) -> {
+        this.userChangeListener = (observable, oldValue, newValue) -> {
             final String welcomeMessage = this.userService.getLoggedUser() == null
                 ? "Unidentified user"
                 : "Welcome " + this.userService.getLoggedUser().getDisplayName();
@@ -54,7 +73,10 @@ public class HeaderSkin implements Skin<Header> {
         this.userService.loggedUserProperty().addListener(userChangeListener);
         welcomeLabel.managedProperty().bind(isLoggedIn);
         welcomeLabel.visibleProperty().bind(isLoggedIn);
+        return welcomeLabel;
+    }
 
+    private Button createThemeChangeButton() {
         final FontIcon themeChangeButtonGraphic = new FontIcon(Material2MZ.WB_SUNNY);
         themeChangeButtonGraphic.setIconSize(14);
         final Button themeChangeButton = new Button(null, themeChangeButtonGraphic);
@@ -65,41 +87,46 @@ public class HeaderSkin implements Skin<Header> {
                 case DARK -> this.themeService.setAppTheme(AppTheme.LIGHT);
             }
         });
+        return themeChangeButton;
+    }
 
+    private Button createSignOutButton(BooleanBinding isLoggedIn) {
         final Button signOutButton = new Button("Sign out");
         signOutButton.getStyleClass().addAll("accent", "flat");
         signOutButton.setOnAction(event -> {
             this.userService.setLoggedUser(null);
-            routerService.setCurrentRoute(Route.LOGIN);
+            this.routerService.setCurrentRoute(Route.LOGIN);
         });
         signOutButton.managedProperty().bind(isLoggedIn);
         signOutButton.visibleProperty().bind(isLoggedIn);
+        return signOutButton;
+    }
 
-        final Region spacing = new Region();
-        HBox.setHgrow(spacing, Priority.ALWAYS);
-
+    private InputGroup createToggleGroup(ObservableValue<? extends Boolean> isLoggedIn) {
         final ToggleGroup toggleGroup = new ToggleGroup();
 
+        final RequiredToggleButton songsToggleButton = createToggleButton(Route.SONGS, toggleGroup);
+        final RequiredToggleButton myPlaylistsToggleButton = createToggleButton(Route.MY_PLAYLISTS, toggleGroup);
+        final RequiredToggleButton uploadToggleButton = createToggleButton(Route.UPLOAD, toggleGroup);
         final InputGroup tabsInputGroup = new InputGroup(
-            createToggleButton(Route.SONGS, toggleGroup),
-            createToggleButton(Route.MY_PLAYLISTS, toggleGroup),
-            createToggleButton(Route.UPLOAD, toggleGroup)
-        );
+            songsToggleButton, myPlaylistsToggleButton, uploadToggleButton);
         tabsInputGroup.managedProperty().bind(isLoggedIn);
         tabsInputGroup.visibleProperty().bind(isLoggedIn);
-        toggleGroup.setUserData(this.routerService.getCurrentRoute());
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             final Route newRoute = (Route) newValue.getUserData();
             this.routerService.setCurrentRoute(newRoute);
         });
-        routeChangeListener = (observable, oldValue, newValue) -> toggleGroup.setUserData(newValue);
-        this.routerService.currentRouteProperty().addListener(routeChangeListener);
+        this.routeChangeListener = (observable, oldValue, newValue) -> {
+            switch (newValue) {
+                case SONGS -> toggleGroup.selectToggle(songsToggleButton);
+                case MY_PLAYLISTS -> toggleGroup.selectToggle(myPlaylistsToggleButton);
+                case UPLOAD -> toggleGroup.selectToggle(uploadToggleButton);
+            }
+        };
+        this.routerService.currentRouteProperty().addListener(this.routeChangeListener);
 
-        this.node = new ToolBar(titleLabel, separator, welcomeLabel,
-            themeChangeButton, signOutButton, spacing, tabsInputGroup);
-        this.node.getStyleClass().add("elevated-2");
-        this.node.setPadding(new Insets(16));
+        return tabsInputGroup;
     }
 
     private RequiredToggleButton createToggleButton(Route route, ToggleGroup toggleGroup) {
