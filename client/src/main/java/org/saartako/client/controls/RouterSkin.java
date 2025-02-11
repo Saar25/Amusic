@@ -1,9 +1,11 @@
 package org.saartako.client.controls;
 
+import atlantafx.base.util.Animations;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Skin;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 import org.saartako.client.constants.Route;
 import org.saartako.client.services.RouterService;
 
@@ -36,6 +38,8 @@ public class RouterSkin implements Skin<Router> {
             final Map<Route, Node> routes = this.control.getRoutes();
 
             final Node routeNode = routes.getOrDefault(route, defaultRoute);
+
+            Animations.fadeIn(routeNode, Duration.seconds(1)).playFromStart();
 
             this.node.getChildren().setAll(routeNode);
         }
