@@ -3,6 +3,7 @@ package org.saartako.auth;
 import org.saartako.encrypt.Encryption;
 import org.saartako.encrypt.Encryptions;
 import org.saartako.exceptions.BadCredentialsException;
+import org.saartako.exceptions.BadStringLengthException;
 import org.saartako.exceptions.UserAlreadyExistsException;
 import org.saartako.exceptions.UserNotFoundException;
 import org.saartako.user.UserEntity;
@@ -23,14 +24,18 @@ public class AuthService {
     public Optional<UserEntity> login(String username, String password) {
         final Optional<UserEntity> optionalUserEntity = this.userRepository.findByUsername(username);
         if (optionalUserEntity.isEmpty()) {
-            throw new UserNotFoundException("Username not found");
+            throw new UserNotFoundException();
         }
+        if (username.length() > UserEntity.USERNAME_LENGTH) {
+            throw new BadStringLengthException();
+        }
+
         final UserEntity userEntity = optionalUserEntity.get();
 
         final Encryption encryption = Encryptions.getDefaultEncryption();
         final String encrypt = encryption.encrypt(password, userEntity.getSalt());
         if (!encrypt.equals(userEntity.getPassword())) {
-            throw new BadCredentialsException("Password incorrect");
+            throw new BadCredentialsException();
         }
 
         return optionalUserEntity;
@@ -39,7 +44,11 @@ public class AuthService {
     public UserEntity save(String username, String password, String displayName) {
         final Optional<UserEntity> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
-            throw new UserAlreadyExistsException("Username already exists");
+            throw new UserAlreadyExistsException();
+        }
+        if (username.length() > UserEntity.USERNAME_LENGTH ||
+            displayName.length() > UserEntity.DISPLAY_NAME_LENGTH) {
+            throw new BadStringLengthException();
         }
 
         final byte[] saltBytes = new byte[16];

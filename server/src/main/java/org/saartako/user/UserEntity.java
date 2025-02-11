@@ -8,11 +8,14 @@ import java.util.Set;
 @Entity(name = "users")
 public class UserEntity implements User {
 
+    public static final int USERNAME_LENGTH = 16;
+    public static final int DISPLAY_NAME_LENGTH = 16;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 16, unique = true, nullable = false)
+    @Column(length = UserEntity.USERNAME_LENGTH, unique = true, nullable = false)
     private String username;
 
     @Column(length = 44, nullable = false)
@@ -21,7 +24,7 @@ public class UserEntity implements User {
     @Column(length = 24, nullable = false)
     private String salt;
 
-    @Column(length = 16)
+    @Column(length = DISPLAY_NAME_LENGTH)
     private String displayName;
 
     @ManyToMany
