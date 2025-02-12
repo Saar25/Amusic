@@ -87,7 +87,7 @@ public class HeaderSkin implements Skin<Header> {
         final Button signOutButton = new Button("Sign out");
         signOutButton.getStyleClass().addAll("accent", "flat");
         signOutButton.setOnAction(event -> {
-            this.userService.setLoggedUser(null);
+            this.userService.setJwtToken(null);
             this.routerService.setCurrentRoute(Route.LOGIN);
         });
         signOutButton.managedProperty().bind(this.userService.isLoggedInProperty());

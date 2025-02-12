@@ -1,15 +1,26 @@
 package org.saartako.client.services;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import org.saartako.encrypt.JwtParser;
+import org.saartako.encrypt.UserJwtParser;
 import org.saartako.user.User;
 
 public class UserService {
 
-    private final ObjectProperty<User> loggedUser = new SimpleObjectProperty<>(this, "loggedUser", null);
+    private final JwtParser<User> userJwtParser = new UserJwtParser();
 
-    private final BooleanBinding isLoggedIn = this.loggedUser.isNotNull();
+    private final StringProperty jwtToken = new SimpleStringProperty(this, "jwtToken", null);
+
+    private final ObjectBinding<User> loggedUser = Bindings.createObjectBinding(
+        () -> this.jwtToken.getValue() == null ? null : this.userJwtParser.parse(this.jwtToken.getValue()),
+        this.jwtToken
+    );
+
+    private final BooleanBinding isLoggedIn = this.jwtToken.isNotNull();
 
     private UserService() {
     }
@@ -18,16 +29,24 @@ public class UserService {
         return InstanceHolder.INSTANCE;
     }
 
-    public ObjectProperty<User> loggedUserProperty() {
+    public StringProperty jwtTokenProperty() {
+        return this.jwtToken;
+    }
+
+    public String getJwtToken() {
+        return this.jwtToken.getValue();
+    }
+
+    public void setJwtToken(String jwtToken) {
+        this.jwtToken.setValue(jwtToken);
+    }
+
+    public ObjectBinding<User> loggedUserProperty() {
         return this.loggedUser;
     }
 
     public User getLoggedUser() {
         return this.loggedUser.getValue();
-    }
-
-    public void setLoggedUser(User loggedUser) {
-        this.loggedUser.setValue(loggedUser);
     }
 
     public BooleanBinding isLoggedInProperty() {

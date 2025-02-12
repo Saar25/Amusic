@@ -1,6 +1,5 @@
 package org.saartako.client.services;
 
-import org.saartako.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,16 +28,16 @@ public class AuthService {
         return INSTANCE;
     }
 
-    public CompletableFuture<User> login(String username, String password) {
+    public CompletableFuture<String> login(String username, String password) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 LOGGER.info("Trying to sign in {}", username);
-                final User user = this.httpService.login(username, password);
-                LOGGER.info("Signed in successfully - {}", user);
+                final String jwtToken = this.httpService.login(username, password);
+                LOGGER.info("Signed in successfully - {}", jwtToken);
 
-                this.userService.setLoggedUser(user);
+                this.userService.setJwtToken(jwtToken);
 
-                return user;
+                return jwtToken;
             } catch (IOException | InterruptedException e) {
                 LOGGER.info("Failed to sign - {}", e.getMessage());
 
@@ -47,16 +46,16 @@ public class AuthService {
         });
     }
 
-    public CompletableFuture<User> register(String username, String password, String displayName) {
+    public CompletableFuture<String> register(String username, String password, String displayName) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 LOGGER.info("Trying to registry {}", username);
-                final User user = this.httpService.register(username, password, displayName);
-                LOGGER.info("Registered successfully - {}", user);
+                final String jwtToken = this.httpService.register(username, password, displayName);
+                LOGGER.info("Registered successfully - {}", jwtToken);
 
-                this.userService.setLoggedUser(user);
+                this.userService.setJwtToken(jwtToken);
 
-                return user;
+                return jwtToken;
             } catch (IOException | InterruptedException e) {
                 LOGGER.info("Failed to register - {}", e.getMessage());
 

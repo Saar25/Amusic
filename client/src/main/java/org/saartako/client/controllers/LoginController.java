@@ -69,8 +69,8 @@ public class LoginController {
         final String username = usernameField.getText();
         final String password = passwordField.getPassword();
 
-        this.authService.login(username, password).whenComplete((user, error) -> {
-            if (user != null) {
+        this.authService.login(username, password).whenComplete((jwtToken, error) -> {
+            if (jwtToken != null) {
                 Platform.runLater(() -> this.routerService.setCurrentRoute(Route.SONGS));
             }
             if (error != null) {
@@ -89,8 +89,8 @@ public class LoginController {
         final String password = this.passwordField.getPassword();
         final String displayName = this.displayNameField.getText().isEmpty() ? username : this.displayNameField.getText();
 
-        this.authService.register(username, password, displayName).whenComplete((user, error) -> {
-            if (user != null) {
+        this.authService.register(username, password, displayName).whenComplete((jwtToken, error) -> {
+            if (jwtToken != null) {
                 Platform.runLater(() -> this.routerService.setCurrentRoute(Route.SONGS));
             }
             if (error != null) {
