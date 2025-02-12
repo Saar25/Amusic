@@ -20,11 +20,13 @@ public class SongService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final HttpService httpService;
+    private final UserService userService;
 
     private final ListProperty<Song> songsProperty = new SimpleListProperty<>(this, "songs");
 
-    private SongService(HttpService httpService) {
+    private SongService(HttpService httpService, UserService userService) {
         this.httpService = httpService;
+        this.userService = userService;
         fetchData();
     }
 
@@ -57,8 +59,10 @@ public class SongService {
     public CompletableFuture<Song[]> fetchSongs() {
         return CompletableFuture.supplyAsync(() -> {
             try {
+                final String jwtToken = this.userService.getJwtToken();
+
                 LOGGER.info("Trying to fetch songs");
-                final Song[] songs = this.httpService.fetchSongs();
+                final Song[] songs = this.httpService.fetchSongs(jwtToken);
                 LOGGER.info("Fetch songs successfully");
 
                 return songs;
@@ -85,6 +89,8 @@ public class SongService {
     }
 
     private static final class InstanceHolder {
-        private static final SongService INSTANCE = new SongService(HttpService.getInstance());
+        private static final SongService INSTANCE = new SongService(
+            HttpService.getInstance(),
+            UserService.getInstance());
     }
 }

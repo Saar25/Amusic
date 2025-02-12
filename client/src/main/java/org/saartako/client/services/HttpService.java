@@ -52,11 +52,11 @@ public class HttpService {
         return send.body();
     }
 
-    public Song[] fetchSongs() throws IOException, InterruptedException {
+    public Song[] fetchSongs(String authorization) throws IOException, InterruptedException {
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create("http://localhost:8080/song"))
             .GET()
-            .header("Authorization", "Bearer " + "authorization")
+            .header("Authorization", "Bearer " + authorization)
             .build();
 
         final HttpResponse<String> send = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
