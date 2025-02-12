@@ -15,13 +15,15 @@ public class UserJwtParser implements JwtParser<User> {
 
     @Override
     public String sign(Algorithm algorithm, User user) {
-        return JWT.create()
-            .withSubject(user.getUsername())
-            .withClaim("userId", user.getId())
-            .withClaim("username", user.getUsername())
-            .withClaim("displayName", user.getDisplayName())
-            .withClaim("roles", user.getRoles().stream().toList())
-            .sign(algorithm);
+        final UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setDisplayName(user.getDisplayName());
+        userDTO.setRoles(user.getRoles());
+
+        final String payload = GSON.toJson(userDTO, UserDTO.class);
+
+        return JWT.create().withPayload(payload).sign(algorithm);
     }
 
     @Override

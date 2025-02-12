@@ -2,7 +2,7 @@ package org.saartako.user;
 
 import org.saartako.role.Role;
 
-import java.util.Set;
+import java.util.Collection;
 
 public class UserDTO implements User {
 
@@ -11,7 +11,7 @@ public class UserDTO implements User {
     private String password;
     private String salt;
     private String displayName;
-    private Set<Role> roles;
+    private Collection<? extends Role> roles;
 
     @Override
     public long getId() {
@@ -59,11 +59,11 @@ public class UserDTO implements User {
     }
 
     @Override
-    public Set<Role> getRoles() {
+    public Collection<? extends Role> getRoles() {
         return this.roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Collection<? extends Role> roles) {
         this.roles = roles;
     }
 
