@@ -6,6 +6,7 @@ import org.saartako.exceptions.BadCredentialsException;
 import org.saartako.exceptions.BadStringLengthException;
 import org.saartako.exceptions.UserAlreadyExistsException;
 import org.saartako.exceptions.UserNotFoundException;
+import org.saartako.user.User;
 import org.saartako.user.UserEntity;
 import org.saartako.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtService jwtService;
 
     public Optional<UserEntity> login(String username, String password) {
         final Optional<UserEntity> optionalUserEntity = this.userRepository.findByUsername(username);
@@ -64,5 +68,9 @@ public class AuthService {
         userEntity.setSalt(salt);
         userEntity.setDisplayName(displayName);
         return this.userRepository.save(userEntity);
+    }
+
+    public String createJwt(User user) {
+        return this.jwtService.sign(user);
     }
 }

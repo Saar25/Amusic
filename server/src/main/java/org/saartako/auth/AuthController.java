@@ -17,19 +17,24 @@ public class AuthController {
     private AuthService authService;
 
     @GetMapping("/login")
-    public Optional<UserEntity> login(
+    public String login(
         @RequestParam("username") String username,
         @RequestParam("password") String password
     ) {
-        return authService.login(username, password);
+        final Optional<UserEntity> login = authService.login(username, password);
+
+        return login.map(userEntity -> this.authService.createJwt(userEntity)).orElse(null);
+
     }
 
     @GetMapping("/register")
-    public UserEntity register(
+    public String register(
         @RequestParam("username") String username,
         @RequestParam("password") String password,
         @RequestParam("displayName") String displayName
     ) {
-        return authService.save(username, password, displayName);
+        final UserEntity save = authService.save(username, password, displayName);
+
+        return this.authService.createJwt(save);
     }
 }
