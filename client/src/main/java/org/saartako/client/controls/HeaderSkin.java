@@ -14,14 +14,14 @@ import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.components.RequiredToggleButton;
 import org.saartako.client.constants.Route;
 import org.saartako.client.enums.AppTheme;
+import org.saartako.client.services.AuthService;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.ThemeService;
-import org.saartako.client.services.UserService;
 import org.saartako.client.utils.InvalidationListenerDisposer;
 
 public class HeaderSkin implements Skin<Header> {
 
-    private final UserService userService = UserService.getInstance();
+    private final AuthService authService = AuthService.getInstance();
     private final ThemeService themeService = ThemeService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
 
@@ -58,14 +58,14 @@ public class HeaderSkin implements Skin<Header> {
 
     private Label createWelcomeLabel() {
         final Label welcomeLabel = new Label();
-        this.disposer.listen(this.userService.loggedUserProperty(), observable -> {
-            final String welcomeMessage = this.userService.getLoggedUser() == null
+        this.disposer.listen(this.authService.loggedUserProperty(), observable -> {
+            final String welcomeMessage = this.authService.getLoggedUser() == null
                 ? "Unidentified user"
-                : "Welcome " + this.userService.getLoggedUser().getDisplayName();
+                : "Welcome " + this.authService.getLoggedUser().getDisplayName();
             Platform.runLater(() -> welcomeLabel.textProperty().set(welcomeMessage));
         });
-        welcomeLabel.managedProperty().bind(this.userService.isLoggedInProperty());
-        welcomeLabel.visibleProperty().bind(this.userService.isLoggedInProperty());
+        welcomeLabel.managedProperty().bind(this.authService.isLoggedInProperty());
+        welcomeLabel.visibleProperty().bind(this.authService.isLoggedInProperty());
         return welcomeLabel;
     }
 
@@ -87,11 +87,11 @@ public class HeaderSkin implements Skin<Header> {
         final Button signOutButton = new Button("Sign out");
         signOutButton.getStyleClass().addAll("accent", "flat");
         signOutButton.setOnAction(event -> {
-            this.userService.setJwtToken(null);
+            this.authService.setJwtToken(null);
             this.routerService.setCurrentRoute(Route.LOGIN);
         });
-        signOutButton.managedProperty().bind(this.userService.isLoggedInProperty());
-        signOutButton.visibleProperty().bind(this.userService.isLoggedInProperty());
+        signOutButton.managedProperty().bind(this.authService.isLoggedInProperty());
+        signOutButton.visibleProperty().bind(this.authService.isLoggedInProperty());
         return signOutButton;
     }
 
@@ -103,8 +103,8 @@ public class HeaderSkin implements Skin<Header> {
         final RequiredToggleButton uploadToggleButton = createToggleButton(Route.UPLOAD, toggleGroup);
         final InputGroup tabsInputGroup = new InputGroup(
             songsToggleButton, myPlaylistsToggleButton, uploadToggleButton);
-        tabsInputGroup.managedProperty().bind(this.userService.isLoggedInProperty());
-        tabsInputGroup.visibleProperty().bind(this.userService.isLoggedInProperty());
+        tabsInputGroup.managedProperty().bind(this.authService.isLoggedInProperty());
+        tabsInputGroup.visibleProperty().bind(this.authService.isLoggedInProperty());
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             final Route newRoute = (Route) newValue.getUserData();
