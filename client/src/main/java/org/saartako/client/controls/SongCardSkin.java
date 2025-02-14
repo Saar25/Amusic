@@ -4,7 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Skin;
 import javafx.scene.paint.Paint;
 import org.saartako.client.models.CardItem;
-import org.saartako.client.utils.SongUtils;
+import org.saartako.client.utils.ColorUtils;
 import org.saartako.song.Song;
 
 import java.util.Map;
@@ -36,7 +36,7 @@ public class SongCardSkin implements Skin<SongCard> {
             details.put("Language", song.getLanguage().getName());
         }
 
-        final Paint songColor = SongUtils.getSongColor(song);
+        final Paint songColor = ColorUtils.getSongColor(song);
 
         this.node.setCardItem(new CardItem(song.getName(), details, songColor));
     }

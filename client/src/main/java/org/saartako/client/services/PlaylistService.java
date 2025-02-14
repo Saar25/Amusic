@@ -16,6 +16,7 @@ import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class PlaylistService {
@@ -35,6 +36,7 @@ public class PlaylistService {
 
         // TODO: do it lazily
         this.authService.loggedUserProperty().addListener(observable -> fetchData());
+        fetchData();
     }
 
     public static PlaylistService getInstance() {
@@ -99,6 +101,19 @@ public class PlaylistService {
                 return GSON.fromJson(response.body(), PlaylistDTO[].class);
             }
         });
+    }
+
+    public List<? extends Playlist> filterPlaylists(List<? extends Playlist> playlists, String filter) {
+        final String lowercaseFilter = filter.toLowerCase();
+
+        return filter.isEmpty() ? playlists : playlists.stream().filter(playlist ->
+            playlist.getName().toLowerCase().contains(lowercaseFilter) ||
+            (playlist.getOwner() != null && playlist.getOwner().getDisplayName().toLowerCase().contains(lowercaseFilter))
+        ).toList();
+    }
+
+    public CompletableFuture<List<? extends Playlist>> filterPlaylistsAsync(List<? extends Playlist> playlists, String filter) {
+        return CompletableFuture.supplyAsync(() -> filterPlaylists(playlists, filter));
     }
 
     private static final class InstanceHolder {

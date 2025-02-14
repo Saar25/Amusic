@@ -17,7 +17,7 @@ public class PlaylistEntity implements Playlist {
     @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
 
-    @Column(length = 16, nullable = false)
+    @Column(length = 64, nullable = false)
     private String name;
 
     @Column

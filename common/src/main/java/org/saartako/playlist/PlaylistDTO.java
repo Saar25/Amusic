@@ -2,12 +2,13 @@ package org.saartako.playlist;
 
 import org.saartako.song.SongDTO;
 import org.saartako.user.User;
+import org.saartako.user.UserDTO;
 
 import java.util.Set;
 
 public class PlaylistDTO implements Playlist {
     private long id;
-    private User owner;
+    private UserDTO owner;
     private String name;
     private boolean isPrivate;
     private boolean isModifiable;

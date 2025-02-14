@@ -16,19 +16,19 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
-import org.saartako.client.services.SongService;
+import org.saartako.client.services.PlaylistService;
 import org.saartako.client.utils.FutureReplacer;
-import org.saartako.song.Song;
+import org.saartako.playlist.Playlist;
 
 import java.util.List;
 
-public class SongsGridSkin implements Skin<SongsGrid> {
+public class PlaylistsGridSkin implements Skin<PlaylistsGrid> {
 
     private static final int COLUMN_COUNT = 3;
 
-    private final SongService songService = SongService.getInstance();
+    private final PlaylistService playlistService = PlaylistService.getInstance();
 
-    private final SongsGrid control;
+    private final PlaylistsGrid control;
 
     private final ScrollPane node = new ScrollPane();
 
@@ -36,7 +36,7 @@ public class SongsGridSkin implements Skin<SongsGrid> {
 
     private final FutureReplacer filterListFutureReplacer = new FutureReplacer(true);
 
-    public SongsGridSkin(SongsGrid control) {
+    public PlaylistsGridSkin(PlaylistsGrid control) {
         this.control = control;
 
         this.node.setFitToWidth(true);
@@ -68,18 +68,18 @@ public class SongsGridSkin implements Skin<SongsGrid> {
         vBox.getChildren().add(this.gridPane);
 
         searchTextField.textProperty().addListener((observable, oldValue, newValue) ->
-            onSongsChange(this.control.getSongs(), newValue));
-        this.control.songsProperty().addListener((observable, oldValue, newValue) ->
-            onSongsChange(newValue, searchTextField.getText()));
+            onPlaylistsChange(this.control.getPlaylists(), newValue));
+        this.control.playlistsProperty().addListener((observable, oldValue, newValue) ->
+            onPlaylistsChange(newValue, searchTextField.getText()));
 
-        onSongsChange(this.control.getSongs(), searchTextField.getText());
+        onPlaylistsChange(this.control.getPlaylists(), searchTextField.getText());
     }
 
-    private void onSongsChange(List<? extends Song> songs, String filter) {
-        if (songs == null) {
+    private void onPlaylistsChange(List<? extends Playlist> playlists, String filter) {
+        if (playlists == null) {
             showLoading();
         } else {
-            showSongs(songs, filter);
+            showPlaylists(playlists, filter);
         }
     }
 
@@ -90,31 +90,31 @@ public class SongsGridSkin implements Skin<SongsGrid> {
         this.gridPane.getChildren().setAll(label);
     }
 
-    private void showSongs(List<? extends Song> songs, String filter) {
+    private void showPlaylists(List<? extends Playlist> playlists, String filter) {
         this.filterListFutureReplacer.replaceWith(
-            this.songService.filterSongsAsync(songs, filter)
+            this.playlistService.filterPlaylistsAsync(playlists, filter)
                 .handle((filtered, error) -> {
                     if (error != null) {
                         System.err.println("Error: " + error.getMessage());
                     } else {
-                        Platform.runLater(() -> updateSongsInGrid(filtered));
+                        Platform.runLater(() -> updatePlaylistsInGrid(filtered));
                     }
                     return null;
                 }));
     }
 
-    private void updateSongsInGrid(List<? extends Song> songs) {
+    private void updatePlaylistsInGrid(List<? extends Playlist> playlists) {
         this.gridPane.getChildren().clear();
-        for (int i = 0; i < songs.size(); i++) {
-            final SongCard songCard = new SongCard();
-            songCard.setSong(songs.get(i));
+        for (int i = 0; i < playlists.size(); i++) {
+            final PlaylistCard playlistCard = new PlaylistCard();
+            playlistCard.setPlaylist(playlists.get(i));
 
-            this.gridPane.add(songCard, i % 3, i / 3);
+            this.gridPane.add(playlistCard, i % 3, i / 3);
         }
     }
 
     @Override
-    public SongsGrid getSkinnable() {
+    public PlaylistsGrid getSkinnable() {
         return this.control;
     }
 
