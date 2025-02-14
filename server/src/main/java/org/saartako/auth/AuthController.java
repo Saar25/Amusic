@@ -1,7 +1,9 @@
 package org.saartako.auth;
 
-import org.saartako.user.UserEntity;
+import org.saartako.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,24 +19,28 @@ public class AuthController {
     private AuthService authService;
 
     @GetMapping("/login")
-    public String login(
+    public ResponseEntity<String> login(
         @RequestParam("username") String username,
         @RequestParam("password") String password
     ) {
-        final Optional<UserEntity> login = authService.login(username, password);
+        final Optional<? extends User> login = this.authService.login(username, password);
 
-        return login.map(userEntity -> this.authService.createJwt(userEntity)).orElse(null);
-
+        if (login.isPresent()) {
+            final User user = login.get();
+            final String jwt = this.authService.createJwt(user);
+            return ResponseEntity.status(HttpStatus.OK).body(jwt);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 
     @GetMapping("/register")
-    public String register(
+    public ResponseEntity<String> register(
         @RequestParam("username") String username,
         @RequestParam("password") String password,
         @RequestParam("displayName") String displayName
     ) {
-        final UserEntity save = authService.save(username, password, displayName);
-
-        return this.authService.createJwt(save);
+        final User user = this.authService.save(username, password, displayName);
+        final String jwt = this.authService.createJwt(user);
+        return ResponseEntity.accepted().body(jwt);
     }
 }
