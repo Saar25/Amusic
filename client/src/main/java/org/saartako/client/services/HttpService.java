@@ -13,13 +13,17 @@ import java.net.http.HttpResponse;
 public class HttpService {
 
     private final Gson gson = new Gson();
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final HttpClient httpClient = HttpClient.newBuilder().build();
 
     private HttpService() {
     }
 
     public static HttpService getInstance() {
         return InstanceHolder.INSTANCE;
+    }
+
+    public HttpClient getHttpClient() {
+        return this.httpClient;
     }
 
     public String login(String username, String password) throws IOException, InterruptedException {
