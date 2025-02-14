@@ -32,7 +32,9 @@ public class PlaylistService {
     private PlaylistService(HttpService httpService, AuthService authService) {
         this.httpService = httpService;
         this.authService = authService;
-        fetchData();
+
+        // TODO: do it lazily
+        this.authService.loggedUserProperty().addListener(observable -> fetchData());
     }
 
     public static PlaylistService getInstance() {
@@ -66,11 +68,11 @@ public class PlaylistService {
     }
 
     public CompletableFuture<Playlist[]> fetchPlaylists() {
-        if (!this.authService.isLoggedIn()) {
+        final String jwtToken = this.authService.getJwtToken();
+        if (jwtToken == null) {
             return CompletableFuture.completedFuture(null);
         }
 
-        final String jwtToken = this.authService.getJwtToken();
         final long userId = this.authService.getLoggedUser().getId();
 
         final HttpRequest request = HttpRequest.newBuilder()
