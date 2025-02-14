@@ -1,65 +1,44 @@
 package org.saartako.client.controls;
 
-import atlantafx.base.controls.Card;
-import atlantafx.base.controls.Tile;
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
+import org.saartako.client.models.CardItem;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.song.Song;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 public class SongCardSkin implements Skin<SongCard> {
 
     private final SongCard control;
-    private final Circle headerTileGraphic = new Circle(8);
-    private final Tile headerTile = new Tile();
-    private final VBox footer = new VBox();
-    private final ChangeListener<Song> footerLabelsListener;
-    private Card node = new Card();
+
+    private final MusicCard node = new MusicCard();
 
     public SongCardSkin(SongCard control) {
         this.control = control;
 
-//        TODO: Drastically decrease performance, try using virtualized view
-//        this.node.getStyleClass().add(Styles.ELEVATED_4);
-
-        this.headerTile.setGraphic(headerTileGraphic);
-        this.headerTile.titleProperty().bind(Bindings.createStringBinding(
-            () -> this.control.songProperty().getValue().getName(),
-            this.control.songProperty()));
-        this.node.setHeader(this.headerTile);
-
-        this.footerLabelsListener = (observable, oldValue, newValue) -> onSongChange(newValue);
-        this.control.songProperty().addListener(this.footerLabelsListener);
-
-        onSongChange(this.control.getSong());
-
-        this.node.setFooter(this.footer);
+        this.control.songProperty().addListener(
+            (o, prev, song) -> updateSong(song));
+        updateSong(this.control.getSong());
     }
 
-    private void onSongChange(Song song) {
-        this.footer.getChildren().clear();
-
+    private void updateSong(Song song) {
+        final Map<String, String> details = new TreeMap<>();
         if (song.getUploader() != null) {
-            final String value = song.getUploader().getDisplayName();
-            this.footer.getChildren().add(new Label("By: " + value));
+            details.put("By", song.getUploader().getDisplayName());
         }
         if (song.getGenre() != null) {
-            final String value = song.getGenre().getName();
-            this.footer.getChildren().add(new Label("Genre: " + value));
+            details.put("Genre", song.getGenre().getName());
         }
         if (song.getLanguage() != null) {
-            final String value = song.getLanguage().getName();
-            this.footer.getChildren().add(new Label("Language: " + value));
+            details.put("Language", song.getLanguage().getName());
         }
 
         final Paint songColor = SongUtils.getSongColor(song);
-        this.headerTileGraphic.setFill(songColor);
+
+        this.node.setCardItem(new CardItem(song.getName(), details, songColor));
     }
 
     @Override
@@ -74,7 +53,5 @@ public class SongCardSkin implements Skin<SongCard> {
 
     @Override
     public void dispose() {
-        this.headerTile.titleProperty().unbind();
-        this.control.songProperty().removeListener(this.footerLabelsListener);
     }
 }
