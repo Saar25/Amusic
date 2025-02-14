@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.saartako.client.services.PlaylistService;
 import org.saartako.client.services.SongService;
 import org.saartako.client.utils.FutureReplacer;
 import org.saartako.song.Song;
@@ -37,6 +38,9 @@ public class SongsGridSkin implements Skin<SongsGrid> {
     private final FutureReplacer filterListFutureReplacer = new FutureReplacer(true);
 
     public SongsGridSkin(SongsGrid control) {
+        PlaylistService.getInstance().playlistsProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println(newValue);
+        });
         this.control = control;
 
         this.node.setFitToWidth(true);

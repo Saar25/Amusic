@@ -9,6 +9,6 @@ import java.util.List;
 public interface PlaylistRepository extends JpaRepository<PlaylistEntity, Long> {
 
     @Query("SELECT p FROM playlists p WHERE p.owner.id = :ownerId")
-    List<PlaylistEntity> findByOwnerId(@Param("ownerId") String ownerId);
+    List<PlaylistEntity> findByOwnerId(@Param("ownerId") long ownerId);
 
 }

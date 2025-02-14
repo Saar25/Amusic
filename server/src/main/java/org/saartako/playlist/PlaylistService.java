@@ -20,7 +20,7 @@ public class PlaylistService {
         return this.playlistRepository.findById(id);
     }
 
-    public List<PlaylistEntity> findByOwnerId(String ownerId) {
+    public List<PlaylistEntity> findByOwnerId(long ownerId) {
         return this.playlistRepository.findByOwnerId(ownerId);
     }
 }

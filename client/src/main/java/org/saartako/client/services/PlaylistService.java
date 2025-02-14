@@ -73,10 +73,8 @@ public class PlaylistService {
             return CompletableFuture.completedFuture(null);
         }
 
-        final long userId = this.authService.getLoggedUser().getId();
-
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist?ownerId=" + userId))
+            .uri(URI.create("http://localhost:8080/playlist/mine"))
             .GET()
             .header("Authorization", "Bearer " + jwtToken)
             .build();
