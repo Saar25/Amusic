@@ -7,6 +7,7 @@ import org.saartako.user.UserDTO;
 import java.util.Set;
 
 public class PlaylistDTO implements Playlist {
+
     private long id;
     private UserDTO owner;
     private String name;
@@ -29,9 +30,17 @@ public class PlaylistDTO implements Playlist {
         return this.name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean isPrivate() {
         return this.isPrivate;
+    }
+
+    public void setPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
     }
 
     @Override
