@@ -26,7 +26,7 @@ public class AuthService {
     private JwtService jwtService;
 
     public Optional<UserEntity> login(String username, String password) {
-        final Optional<UserEntity> optionalUserEntity = this.userRepository.findByUsername(username);
+        final Optional<UserEntity> optionalUserEntity = this.userRepository.findByUsernameWithRoles(username);
         if (optionalUserEntity.isEmpty()) {
             throw new UserNotFoundException();
         }

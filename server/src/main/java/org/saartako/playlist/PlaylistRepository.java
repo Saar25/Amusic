@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PlaylistRepository extends JpaRepository<PlaylistEntity, Long> {
 
-    @Query("SELECT p FROM playlists p WHERE p.owner.id = :ownerId")
+    @Query("SELECT p FROM playlists p LEFT JOIN FETCH p.songs LEFT JOIN FETCH p.owner WHERE p.owner.id = :ownerId")
     List<PlaylistEntity> findByOwnerId(@Param("ownerId") long ownerId);
 
 }

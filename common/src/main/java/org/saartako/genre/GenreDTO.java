@@ -10,9 +10,19 @@ public class GenreDTO implements Genre {
         return this.id;
     }
 
+    public GenreDTO setId(long id) {
+        this.id = id;
+        return this;
+    }
+
     @Override
     public String getName() {
         return this.name;
+    }
+
+    public GenreDTO setName(String name) {
+        this.name = name;
+        return this;
     }
 
     @Override

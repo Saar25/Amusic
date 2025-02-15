@@ -10,9 +10,19 @@ public class LanguageDTO implements Language {
         return this.id;
     }
 
+    public LanguageDTO setId(long id) {
+        this.id = id;
+        return this;
+    }
+
     @Override
     public String getName() {
         return this.name;
+    }
+
+    public LanguageDTO setName(String name) {
+        this.name = name;
+        return this;
     }
 
     @Override

@@ -15,11 +15,11 @@ public class UserJwtParser implements JwtParser<User> {
 
     @Override
     public String sign(Algorithm algorithm, User user) {
-        final UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUsername());
-        userDTO.setDisplayName(user.getDisplayName());
-        userDTO.setRoles(user.getRoles());
+        final UserDTO userDTO = new UserDTO()
+            .setId(user.getId())
+            .setUsername(user.getUsername())
+            .setDisplayName(user.getDisplayName())
+            .setRoles(user.getRoles());
 
         final String payload = GSON.toJson(userDTO, UserDTO.class);
 

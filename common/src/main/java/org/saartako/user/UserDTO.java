@@ -18,8 +18,9 @@ public class UserDTO implements User {
         return this.id;
     }
 
-    public void setId(long id) {
+    public UserDTO setId(long id) {
         this.id = id;
+        return this;
     }
 
     @Override
@@ -27,8 +28,9 @@ public class UserDTO implements User {
         return this.username;
     }
 
-    public void setUsername(String username) {
+    public UserDTO setUsername(String username) {
         this.username = username;
+        return this;
     }
 
     @Override
@@ -36,8 +38,9 @@ public class UserDTO implements User {
         return this.password;
     }
 
-    public void setPassword(String password) {
+    public UserDTO setPassword(String password) {
         this.password = password;
+        return this;
     }
 
     @Override
@@ -45,8 +48,9 @@ public class UserDTO implements User {
         return salt;
     }
 
-    public void setSalt(String salt) {
+    public UserDTO setSalt(String salt) {
         this.salt = salt;
+        return this;
     }
 
     @Override
@@ -54,8 +58,9 @@ public class UserDTO implements User {
         return this.displayName;
     }
 
-    public void setDisplayName(String displayName) {
+    public UserDTO setDisplayName(String displayName) {
         this.displayName = displayName;
+        return this;
     }
 
     @Override
@@ -63,8 +68,9 @@ public class UserDTO implements User {
         return this.roles;
     }
 
-    public void setRoles(Collection<? extends Role> roles) {
+    public UserDTO setRoles(Collection<? extends Role> roles) {
         this.roles = roles;
+        return this;
     }
 
     @Override
