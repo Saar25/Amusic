@@ -19,8 +19,8 @@ import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.utils.ColorUtils;
+import org.saartako.playlist.CreatePlaylistDTO;
 import org.saartako.playlist.Playlist;
-import org.saartako.playlist.PlaylistDTO;
 
 import java.util.*;
 
@@ -59,8 +59,8 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
 
         this.createPlaylistButton.getStyleClass().add(Styles.ACCENT);
         this.createPlaylistButton.setOnAction(event -> {
-            final Optional<Playlist> playlist = openCreatePlaylistDialog();
-            playlist.ifPresent(System.out::println);
+            final Optional<CreatePlaylistDTO> result = openCreatePlaylistDialog();
+            result.ifPresent(this.playlistService::createPlaylist);
         });
         this.node.getChildren().add(this.createPlaylistButton);
 
@@ -73,8 +73,8 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
         updatePlaylists(this.playlistService.getPlaylists(), this.searchTextField.getText());
     }
 
-    private Optional<Playlist> openCreatePlaylistDialog() {
-        final Dialog<Playlist> dialog = new Dialog<>();
+    private Optional<CreatePlaylistDTO> openCreatePlaylistDialog() {
+        final Dialog<CreatePlaylistDTO> dialog = new Dialog<>();
         dialog.setTitle("Create new playlist");
 
         final GridPane gridPane = new GridPane();
@@ -98,10 +98,11 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
 
         dialog.setResultConverter(button -> {
             if (button.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                final PlaylistDTO playlistDTO = new PlaylistDTO();
-                playlistDTO.setName(playlistNameTextField.getText());
-                playlistDTO.setPrivate(isPrivateCheckBox.isSelected());
-                return playlistDTO;
+                return new CreatePlaylistDTO(
+                    playlistNameTextField.getText(),
+                    isPrivateCheckBox.isSelected(),
+                    false
+                );
             }
             return null;
         });

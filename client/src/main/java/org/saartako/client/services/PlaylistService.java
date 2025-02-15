@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import org.saartako.playlist.CreatePlaylistDTO;
 import org.saartako.playlist.Playlist;
 import org.saartako.playlist.PlaylistDTO;
 import org.slf4j.Logger;
@@ -99,6 +100,46 @@ public class PlaylistService {
                 LOGGER.info("Fetch playlists successfully");
 
                 return GSON.fromJson(response.body(), PlaylistDTO[].class);
+            }
+        });
+    }
+
+    public CompletableFuture<Playlist> createPlaylist(CreatePlaylistDTO createPlaylist) {
+        final String jwtToken = this.authService.getJwtToken();
+        if (jwtToken == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        final String payload = GSON.toJson(createPlaylist);
+
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/playlist"))
+            .POST(HttpRequest.BodyPublishers.ofString(payload))
+            .header("Authorization", "Bearer " + jwtToken)
+            .header("Content-Type", "application/json")
+            .build();
+
+        LOGGER.info("Trying to create playlist");
+
+        final CompletableFuture<HttpResponse<String>> send = this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString());
+
+        return send.handle((response, error) -> {
+            if (error != null) {
+                LOGGER.info("Failed to create playlist - {}", error.getMessage());
+
+                return null;
+            } else if (response.statusCode() != 200) {
+                LOGGER.info("Failed to create playlist - {}", response.body());
+
+                return null;
+            } else {
+                LOGGER.info("Create playlist successfully");
+
+                final Playlist playlist = GSON.fromJson(
+                    response.body(), PlaylistDTO.class);
+                this.playlists.add(playlist);
+                return playlist;
             }
         });
     }

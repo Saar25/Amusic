@@ -20,9 +20,17 @@ public class PlaylistDTO implements Playlist {
         return this.id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @Override
     public User getOwner() {
         return this.owner;
+    }
+
+    public void setOwner(UserDTO owner) {
+        this.owner = owner;
     }
 
     @Override
@@ -48,9 +56,17 @@ public class PlaylistDTO implements Playlist {
         return this.isModifiable;
     }
 
+    public void setModifiable(boolean modifiable) {
+        isModifiable = modifiable;
+    }
+
     @Override
     public Set<SongDTO> getSongs() {
         return this.songs;
+    }
+
+    public void setSongs(Set<SongDTO> songs) {
+        this.songs = songs;
     }
 
     @Override
