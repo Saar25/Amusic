@@ -22,7 +22,7 @@ public class SongService {
     private final HttpService httpService;
     private final AuthService authService;
 
-    private final ListProperty<Song> songsProperty = new SimpleListProperty<>(this, "songs");
+    private final ListProperty<Song> songs = new SimpleListProperty<>(this, "songs");
 
     private SongService(HttpService httpService, AuthService authService) {
         this.httpService = httpService;
@@ -35,7 +35,11 @@ public class SongService {
     }
 
     public ListProperty<Song> songsProperty() {
-        return this.songsProperty;
+        return this.songs;
+    }
+
+    public ObservableList<Song> getSongs() {
+        return this.songs.get();
     }
 
     public void fetchData() {
@@ -43,7 +47,7 @@ public class SongService {
             if (songs != null) {
                 final ObservableList<Song> list =
                     FXCollections.observableArrayList(songs);
-                this.songsProperty.setValue(list);
+                this.songs.setValue(list);
             }
             if (error != null) {
                 Platform.runLater(() -> {
