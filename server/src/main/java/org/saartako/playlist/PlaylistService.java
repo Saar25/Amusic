@@ -1,5 +1,6 @@
 package org.saartako.playlist;
 
+import org.saartako.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,9 @@ public class PlaylistService {
     @Autowired
     private PlaylistRepository playlistRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public List<PlaylistEntity> findAll() {
         return this.playlistRepository.findAll();
     }
@@ -22,5 +26,13 @@ public class PlaylistService {
 
     public List<PlaylistEntity> findByOwnerId(long ownerId) {
         return this.playlistRepository.findByOwnerId(ownerId);
+    }
+
+    public PlaylistEntity create(long ownerId, CreatePlaylistDTO createPlaylist) {
+        final PlaylistEntity playlist = new PlaylistEntity();
+        playlist.setName(createPlaylist.name());
+        playlist.setPrivate(createPlaylist.isPrivate());
+        playlist.setOwner(this.userRepository.getReferenceById(ownerId));
+        return this.playlistRepository.save(playlist);
     }
 }

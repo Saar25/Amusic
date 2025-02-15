@@ -44,9 +44,17 @@ public class PlaylistEntity implements Playlist {
         return this.owner;
     }
 
+    public void setOwner(UserEntity owner) {
+        this.owner = owner;
+    }
+
     @Override
     public String getName() {
         return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -54,9 +62,17 @@ public class PlaylistEntity implements Playlist {
         return this.isPrivate;
     }
 
+    public void setPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
+    }
+
     @Override
     public boolean isModifiable() {
         return this.isModifiable;
+    }
+
+    public void setModifiable(boolean isModifiable) {
+        this.isModifiable = isModifiable;
     }
 
     @Override

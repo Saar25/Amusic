@@ -3,10 +3,7 @@ package org.saartako.playlist;
 import org.saartako.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +20,13 @@ public class PlaylistController {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return playlistService.findByOwnerId(user.getId());
+    }
+
+    @PostMapping("/")
+    public PlaylistEntity create(@RequestBody CreatePlaylistDTO playlist) {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return playlistService.create(user.getId(), playlist);
     }
 
     @GetMapping("/{id}")
