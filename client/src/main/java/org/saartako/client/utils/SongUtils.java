@@ -26,6 +26,6 @@ public class SongUtils {
 
         final Paint songColor = ColorUtils.getSongColor(song);
 
-        return new CardItem(song.getName(), details, songColor);
+        return new CardItem(song.getId(), song.getName(), details, songColor);
     }
 }

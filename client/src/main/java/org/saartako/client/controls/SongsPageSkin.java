@@ -14,17 +14,21 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.saartako.client.constants.Route;
 import org.saartako.client.events.CardItemClickEvent;
 import org.saartako.client.models.CardItem;
+import org.saartako.client.services.RouterService;
 import org.saartako.client.services.SongService;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.common.song.Song;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SongsPageSkin implements Skin<SongsPage> {
 
     private final SongService songService = SongService.getInstance();
+    private final RouterService routerService = RouterService.getInstance();
 
     private final SongsPage control;
 
@@ -53,7 +57,14 @@ public class SongsPageSkin implements Skin<SongsPage> {
 
         this.musicCardGrid.addEventHandler(CardItemClickEvent.CARD_ITEM_CLICK, event -> {
             final CardItem cardItem = event.getCardItem();
-            System.out.println(cardItem);
+            final Optional<Song> song = this.songService.getSongs().stream()
+                .filter(s -> s.getId() == cardItem.id())
+                .findAny();
+
+            if (song.isPresent()) {
+                this.songService.setCurrentSong(song.get());
+                this.routerService.setCurrentRoute(Route.SONG_VIEW);
+            }
         });
 
         this.searchTextField.textProperty().addListener((o, prev, search) ->

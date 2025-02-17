@@ -2,7 +2,9 @@ package org.saartako.client.services;
 
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -24,6 +26,8 @@ public class SongService {
 
     private final ListProperty<Song> songs = new SimpleListProperty<>(this, "songs");
 
+    private final ObjectProperty<Song> currentSong = new SimpleObjectProperty<>(this, "song");
+
     private SongService(HttpService httpService, AuthService authService) {
         this.httpService = httpService;
         this.authService = authService;
@@ -40,6 +44,18 @@ public class SongService {
 
     public ObservableList<Song> getSongs() {
         return this.songs.get();
+    }
+
+    public ObjectProperty<Song> currentSongProperty() {
+        return this.currentSong;
+    }
+
+    public Song getCurrentSong() {
+        return this.currentSong.get();
+    }
+
+    public void setCurrentSong(Song song) {
+        this.currentSong.set(song);
     }
 
     public void fetchData() {

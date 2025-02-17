@@ -10,8 +10,6 @@ import org.saartako.common.song.Song;
 
 public class SongViewSkin implements Skin<SongView> {
 
-    private final SongService songService = SongService.getInstance();
-
     private final SongView control;
 
     private final MusicCard musicCard = new MusicCard();
@@ -23,10 +21,12 @@ public class SongViewSkin implements Skin<SongView> {
 
         this.node.getChildren().setAll(musicCard);
 
-        this.control.songProperty().addListener((observable, oldValue, newValue) ->
+        final SongService songService = SongService.getInstance();
+
+        songService.currentSongProperty().addListener((observable, oldValue, newValue) ->
             updateSong(newValue));
 
-        updateSong(this.control.getSong());
+        updateSong(songService.getCurrentSong());
     }
 
     private void updateSong(Song song) {
