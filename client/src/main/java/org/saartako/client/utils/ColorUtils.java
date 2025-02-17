@@ -2,8 +2,8 @@ package org.saartako.client.utils;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import org.saartako.playlist.Playlist;
-import org.saartako.song.Song;
+import org.saartako.common.playlist.Playlist;
+import org.saartako.common.song.Song;
 
 import java.util.Random;
 

@@ -2,7 +2,7 @@ package org.saartako.client.utils;
 
 import javafx.scene.paint.Paint;
 import org.saartako.client.models.CardItem;
-import org.saartako.song.Song;
+import org.saartako.common.song.Song;
 
 import java.util.Map;
 import java.util.TreeMap;

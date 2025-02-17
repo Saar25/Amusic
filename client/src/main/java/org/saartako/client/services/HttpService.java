@@ -1,8 +1,8 @@
 package org.saartako.client.services;
 
 import com.google.gson.Gson;
-import org.saartako.song.Song;
-import org.saartako.song.SongDTO;
+import org.saartako.common.song.Song;
+import org.saartako.common.song.SongDTO;
 
 import java.io.IOException;
 import java.net.URI;

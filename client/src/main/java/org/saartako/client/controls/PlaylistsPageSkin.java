@@ -18,8 +18,8 @@ import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.utils.PlaylistUtils;
-import org.saartako.playlist.CreatePlaylistDTO;
-import org.saartako.playlist.Playlist;
+import org.saartako.common.playlist.CreatePlaylistDTO;
+import org.saartako.common.playlist.Playlist;
 
 import java.util.List;
 import java.util.Optional;

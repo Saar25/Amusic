@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
-import org.saartako.song.Song;
+import org.saartako.common.song.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

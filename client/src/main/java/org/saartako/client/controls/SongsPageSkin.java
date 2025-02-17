@@ -18,7 +18,7 @@ import org.saartako.client.events.CardItemClickEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.SongService;
 import org.saartako.client.utils.SongUtils;
-import org.saartako.song.Song;
+import org.saartako.common.song.Song;
 
 import java.util.List;
 

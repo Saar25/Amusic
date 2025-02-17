@@ -5,9 +5,9 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.saartako.encrypt.JwtParser;
-import org.saartako.encrypt.UserJwtParser;
-import org.saartako.user.User;
+import org.saartako.common.encrypt.JwtParser;
+import org.saartako.common.encrypt.UserJwtParser;
+import org.saartako.common.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
