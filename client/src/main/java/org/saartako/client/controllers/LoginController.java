@@ -12,6 +12,7 @@ import org.saartako.client.constants.Route;
 import org.saartako.client.services.AuthService;
 import org.saartako.client.services.RouterService;
 
+// TODO: use control instead of fxml
 public class LoginController {
 
     private final RouterService routerService = RouterService.getInstance();

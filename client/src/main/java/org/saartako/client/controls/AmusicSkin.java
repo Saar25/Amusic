@@ -22,6 +22,7 @@ public class AmusicSkin implements Skin<Amusic> {
             final Map<Route, Node> routeObjectMap = Map.ofEntries(
                 Map.entry(Route.LOGIN, new FXMLLoader(getClass().getResource("/views/login.fxml")).load()),
                 Map.entry(Route.SONGS, new SongsPage()),
+                Map.entry(Route.SONG_VIEW, new SongView()),
                 Map.entry(Route.MY_PLAYLISTS, new PlaylistsPage())
             );
             final Node defaultRoute = new Label("Page not found");
