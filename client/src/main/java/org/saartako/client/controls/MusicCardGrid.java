@@ -9,7 +9,8 @@ import org.saartako.client.models.CardItem;
 
 public class MusicCardGrid extends Control {
 
-    private final ListProperty<CardItem> cardItems = new SimpleListProperty<>(this, "cardItems", FXCollections.observableArrayList());
+    private final ListProperty<CardItem> cardItems =
+        new SimpleListProperty<>(this, "cardItems", FXCollections.observableArrayList());
 
     @Override
     protected MusicCardGridSkin createDefaultSkin() {

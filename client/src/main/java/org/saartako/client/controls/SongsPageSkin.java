@@ -15,6 +15,7 @@ import javafx.scene.paint.Paint;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.saartako.client.events.CardItemClickEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.SongService;
 import org.saartako.client.utils.ColorUtils;
@@ -53,6 +54,11 @@ public class SongsPageSkin implements Skin<SongsPage> {
 
         this.loadingLabel.getStyleClass().addAll("title-big-1", Styles.TEXT_BOLDER);
         this.node.getChildren().add(this.loadingLabel);
+
+        this.musicCardGrid.addEventHandler(CardItemClickEvent.CARD_ITEM_CLICK, event -> {
+            final CardItem cardItem = event.getCardItem();
+            System.out.println(cardItem);
+        });
 
         this.searchTextField.textProperty().addListener((o, prev, search) ->
             updateSongs(this.songService.getSongs(), search));

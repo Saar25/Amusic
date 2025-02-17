@@ -2,6 +2,7 @@ package org.saartako.client.controls;
 
 import atlantafx.base.controls.Card;
 import atlantafx.base.controls.Tile;
+import atlantafx.base.theme.Styles;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
@@ -23,8 +24,7 @@ public class MusicCardSkin implements Skin<MusicCard> {
     public MusicCardSkin(MusicCard control) {
         this.control = control;
 
-        // TODO: Drastically decrease performance, try using virtualized view
-        // this.node.getStyleClass().add(Styles.ELEVATED_4);
+        this.node.getStyleClass().addAll(Styles.INTERACTIVE);
 
         this.headerTile.setGraphic(this.headerTileGraphic);
         this.node.setHeader(this.headerTile);

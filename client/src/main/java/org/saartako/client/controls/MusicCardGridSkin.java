@@ -10,6 +10,7 @@ import javafx.scene.control.Skin;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import org.saartako.client.events.CardItemClickEvent;
 import org.saartako.client.models.CardItem;
 
 import java.util.List;
@@ -70,8 +71,15 @@ public class MusicCardGridSkin implements Skin<MusicCardGrid> {
     private void showCardItems(List<? extends CardItem> cardItems) {
         this.gridPane.getChildren().clear();
         for (int i = 0; i < cardItems.size(); i++) {
+            final CardItem cardItem = cardItems.get(i);
+
             final MusicCard musicCard = new MusicCard();
-            musicCard.setCardItem(cardItems.get(i));
+            musicCard.setCardItem(cardItem);
+            musicCard.setOnMouseClicked(e -> {
+                final CardItemClickEvent event =
+                    CardItemClickEvent.ofClick(cardItem);
+                this.control.fireEvent(event);
+            });
 
             this.gridPane.add(musicCard, i % 3, i / 3);
         }
