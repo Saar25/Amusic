@@ -11,20 +11,16 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.events.CardItemClickEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.SongService;
-import org.saartako.client.utils.ColorUtils;
+import org.saartako.client.utils.SongUtils;
 import org.saartako.song.Song;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class SongsPageSkin implements Skin<SongsPage> {
 
@@ -75,22 +71,7 @@ public class SongsPageSkin implements Skin<SongsPage> {
         } else {
             final List<? extends Song> filtered = this.songService.filterSongs(songs, search);
 
-            final List<CardItem> cardItems = new ArrayList<>(filtered.stream().map(song -> {
-                final Map<String, String> details = new TreeMap<>();
-                if (song.getUploader() != null) {
-                    details.put("By", song.getUploader().getDisplayName());
-                }
-                if (song.getGenre() != null) {
-                    details.put("Genre", song.getGenre().getName());
-                }
-                if (song.getLanguage() != null) {
-                    details.put("Language", song.getLanguage().getName());
-                }
-
-                final Paint songColor = ColorUtils.getSongColor(song);
-
-                return new CardItem(song.getName(), details, songColor);
-            }).toList());
+            final List<CardItem> cardItems = filtered.stream().map(SongUtils::songToCardItem).toList();
 
             Platform.runLater(() -> {
                 this.musicCardGrid.cardItemsProperty().setAll(cardItems);

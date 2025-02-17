@@ -9,7 +9,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import org.saartako.client.events.CardItemClickEvent;
 import org.saartako.client.models.CardItem;
 
@@ -30,10 +29,6 @@ public class MusicCardGridSkin implements Skin<MusicCardGrid> {
 
         this.node.setFitToWidth(true);
 
-        final VBox vBox = new VBox(20);
-        vBox.setAlignment(Pos.TOP_CENTER);
-        this.node.setContent(vBox);
-
         this.gridPane.setAlignment(Pos.CENTER);
         this.gridPane.setVgap(16);
         this.gridPane.setHgap(16);
@@ -45,7 +40,7 @@ public class MusicCardGridSkin implements Skin<MusicCardGrid> {
             this.gridPane.getColumnConstraints().add(cc);
         }
 
-        vBox.getChildren().add(this.gridPane);
+        this.node.setContent(this.gridPane);
 
         this.control.cardItemsProperty().addListener((observable, oldValue, newValue) ->
             onCardItemsChange(newValue));
