@@ -1,7 +1,6 @@
 package org.saartako.client.controls;
 
 import atlantafx.base.controls.Card;
-import atlantafx.base.controls.Tile;
 import atlantafx.base.theme.Styles;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -16,9 +15,13 @@ import java.util.Map;
 public class MusicCardSkin implements Skin<MusicCard> {
 
     private final MusicCard control;
+
     private final Circle headerTileGraphic = new Circle(8);
-    private final Tile headerTile = new Tile();
+
+    private final Label headerTile = new Label();
+
     private final VBox footer = new VBox();
+
     private final Card node = new Card();
 
     public MusicCardSkin(MusicCard control) {
@@ -27,6 +30,7 @@ public class MusicCardSkin implements Skin<MusicCard> {
         this.node.getStyleClass().addAll(Styles.INTERACTIVE);
 
         this.headerTile.setGraphic(this.headerTileGraphic);
+        this.headerTile.getStyleClass().add(Styles.TITLE_4);
         this.node.setHeader(this.headerTile);
 
         this.control.cardItemProperty().addListener((observable, oldValue, newValue) ->
@@ -50,7 +54,7 @@ public class MusicCardSkin implements Skin<MusicCard> {
 
         final Paint cardItemColor = cardItem.paint();
         this.headerTileGraphic.setFill(cardItemColor);
-        this.headerTile.setTitle(cardItem.name());
+        this.headerTile.setText(cardItem.name());
     }
 
     @Override
