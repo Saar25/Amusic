@@ -15,8 +15,11 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.saartako.client.constants.Route;
+import org.saartako.client.events.ListItemClickEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
+import org.saartako.client.services.RouterService;
 import org.saartako.client.utils.PlaylistUtils;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
@@ -27,6 +30,7 @@ import java.util.Optional;
 public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
 
     private final PlaylistService playlistService = PlaylistService.getInstance();
+    private final RouterService routerService = RouterService.getInstance();
 
     private final PlaylistsPage control;
 
@@ -62,6 +66,14 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
 
         VBox.setVgrow(this.loader, Priority.ALWAYS);
         VBox.setVgrow(this.contentPane, Priority.ALWAYS);
+
+        this.musicCardGrid.addEventHandler(ListItemClickEvent.LIST_ITEM_CLICK, event -> {
+            final int index = event.getIndex();
+            final Playlist playlist = this.playlistService.getPlaylists().get(index);
+
+            this.playlistService.setCurrentPlaylist(playlist);
+            this.routerService.setCurrentRoute(Route.PLAYLIST_VIEW);
+        });
 
         this.createPlaylistButton.getStyleClass().add(Styles.ACCENT);
         this.createPlaylistButton.setOnAction(event -> {
