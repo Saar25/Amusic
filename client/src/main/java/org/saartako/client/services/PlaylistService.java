@@ -3,7 +3,9 @@ package org.saartako.client.services;
 import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -31,6 +33,8 @@ public class PlaylistService {
 
     private final ListProperty<Playlist> playlists = new SimpleListProperty<>(this, "playlists");
 
+    private final ObjectProperty<Playlist> currentPlaylist = new SimpleObjectProperty<>(this, "currentPlaylist");
+
     private PlaylistService(HttpService httpService, AuthService authService) {
         this.httpService = httpService;
         this.authService = authService;
@@ -50,6 +54,18 @@ public class PlaylistService {
 
     public ObservableList<Playlist> getPlaylists() {
         return this.playlists.get();
+    }
+
+    public ObjectProperty<Playlist> currentPlaylistProperty() {
+        return this.currentPlaylist;
+    }
+
+    public Playlist getCurrentPlaylist() {
+        return this.currentPlaylist.get();
+    }
+
+    public void setCurrentPlaylist(Playlist playlist) {
+        this.currentPlaylist.set(playlist);
     }
 
     public void fetchData() {

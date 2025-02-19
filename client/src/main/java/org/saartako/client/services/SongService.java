@@ -26,7 +26,7 @@ public class SongService {
 
     private final ListProperty<Song> songs = new SimpleListProperty<>(this, "songs");
 
-    private final ObjectProperty<Song> currentSong = new SimpleObjectProperty<>(this, "song");
+    private final ObjectProperty<Song> currentSong = new SimpleObjectProperty<>(this, "currentSong");
 
     private SongService(HttpService httpService, AuthService authService) {
         this.httpService = httpService;

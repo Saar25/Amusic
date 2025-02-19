@@ -5,6 +5,7 @@ public enum Route {
     SONGS("Songs"),
     SONG_VIEW("Song View"),
     MY_PLAYLISTS("My Playlists"),
+    PLAYLIST_VIEW("Playlist View"),
     UPLOAD("Upload"),
     ;
 
