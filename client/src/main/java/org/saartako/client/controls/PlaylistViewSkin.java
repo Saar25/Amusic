@@ -4,15 +4,18 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.saartako.client.constants.Route;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.services.RouterService;
+import org.saartako.client.services.SongService;
 import org.saartako.client.utils.PlaylistUtils;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.common.playlist.Playlist;
@@ -24,7 +27,7 @@ import java.util.List;
 public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
     private final PlaylistService playlistService = PlaylistService.getInstance();
-
+    private final SongService songService = SongService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
 
     private final MusicCard playlistCard = new MusicCard();
@@ -68,11 +71,15 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
 //        startButton.setOnAction(event -> startPlaying());
 
-        final List<MusicCard> cards = songs.stream()
-            .map(SongUtils::songToCardItem)
-            .map(MusicCard::new)
-            .toList();
+        final List<MusicCard> cards = songs.stream().map(song -> {
+            final CardItem songCardItem = SongUtils.songToCardItem(song);
+            final MusicCard songCard = new MusicCard(songCardItem);
+            songCard.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                this.songService.setCurrentSong(song);
+                this.routerService.push(Route.SONG_VIEW);
+            });
+            return songCard;
+        }).toList();
         this.songList.getChildren().setAll(cards);
-
     }
 }
