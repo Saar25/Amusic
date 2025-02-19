@@ -66,7 +66,7 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
             final Playlist playlist = this.playlistService.getPlaylists().get(index);
 
             this.playlistService.setCurrentPlaylist(playlist);
-            this.routerService.setCurrentRoute(Route.PLAYLIST_VIEW);
+            this.routerService.navigate(Route.PLAYLIST_VIEW);
         });
 
         this.createPlaylistButton.getStyleClass().add(Styles.ACCENT);

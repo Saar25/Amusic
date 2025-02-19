@@ -1,12 +1,19 @@
 package org.saartako.client.services;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import org.saartako.client.constants.Route;
 
 public class RouterService {
 
-    private final ObjectProperty<Route> currentRouteProperty = new SimpleObjectProperty<>(Route.LOGIN);
+    private final ListProperty<Route> history = new SimpleListProperty<>(
+        this, "history", FXCollections.observableArrayList(Route.LOGIN));
+
+    private final ObjectBinding<Route> currentRoute = Bindings.createObjectBinding(
+        () -> this.history.get(this.history.size() - 1), this.history);
 
     private RouterService() {
     }
@@ -15,16 +22,24 @@ public class RouterService {
         return InstanceHolder.INSTANCE;
     }
 
-    public ObjectProperty<Route> currentRouteProperty() {
-        return this.currentRouteProperty;
+    public ObjectBinding<Route> currentRouteProperty() {
+        return this.currentRoute;
     }
 
     public Route getCurrentRoute() {
-        return this.currentRouteProperty.getValue();
+        return this.currentRoute.getValue();
     }
 
     public void setCurrentRoute(Route route) {
-        this.currentRouteProperty.setValue(route);
+        this.history.setAll(route);
+    }
+
+    public void navigate(Route route) {
+        this.history.add(route);
+    }
+
+    public void previous() {
+        this.history.remove(this.history.size() - 1);
     }
 
     private static final class InstanceHolder {

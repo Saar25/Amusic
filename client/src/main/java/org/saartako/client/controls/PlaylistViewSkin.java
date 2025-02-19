@@ -1,5 +1,6 @@
 package org.saartako.client.controls;
 
+import atlantafx.base.theme.Styles;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -8,8 +9,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
+import org.saartako.client.services.RouterService;
 import org.saartako.client.utils.PlaylistUtils;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.common.playlist.Playlist;
@@ -22,11 +27,13 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
     private final PlaylistService playlistService = PlaylistService.getInstance();
 
-    private final Button previousButton = new Button("← Previous");
+    private final RouterService routerService = RouterService.getInstance();
+
+    private final Button previousButton = new Button("Previous", new FontIcon(Material2AL.ARROW_BACK));
 
     private final MusicCard playlistCard = new MusicCard();
 
-    private final Button startButton = new Button("▶ Start Playing");
+    private final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
 
     private final VBox songList = new VBox(10);
 
@@ -36,6 +43,8 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
     public PlaylistViewSkin(PlaylistView control) {
         super(control);
+
+        this.previousButton.getStyleClass().add(Styles.FLAT);
 
         final Region spacing = new Region();
         HBox.setHgrow(spacing, Priority.ALWAYS);
@@ -63,7 +72,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         final CardItem playlistCard = PlaylistUtils.playlistToCardItem(playlist);
         this.playlistCard.setCardItem(playlistCard);
 
-//        previousButton.setOnAction(event -> goBack());
+        this.previousButton.setOnAction(event -> this.routerService.previous());
 
 //        startButton.setOnAction(event -> startPlaying());
 
