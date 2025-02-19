@@ -9,6 +9,13 @@ public class MusicCard extends Control {
 
     private final ObjectProperty<CardItem> cardItem = new SimpleObjectProperty<>(this, "cardItem");
 
+    public MusicCard() {
+    }
+
+    public MusicCard(CardItem cardItem) {
+        this.cardItem.set(cardItem);
+    }
+
     @Override
     protected MusicCardSkin createDefaultSkin() {
         return new MusicCardSkin(this);
