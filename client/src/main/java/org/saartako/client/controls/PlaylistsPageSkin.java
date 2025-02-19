@@ -34,7 +34,7 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
 
     private final CustomTextField searchTextField = new CustomTextField();
     private final MusicCardGrid musicCardGrid = new MusicCardGrid();
-    private final Label loadingLabel = new Label("Loading...");
+    private final Loader loader = new Loader();
     private final Button createPlaylistButton = new Button("Create new playlist");
 
     private final VBox node = new VBox(16);
@@ -51,10 +51,9 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
         this.searchTextField.setRight(new FontIcon(Material2AL.CLEAR));
         this.node.getChildren().add(this.searchTextField);
 
-        this.loadingLabel.getStyleClass().addAll("title-big-1", Styles.TEXT_BOLDER);
-        this.node.getChildren().add(this.loadingLabel);
+        this.node.getChildren().add(this.loader);
 
-        VBox.setVgrow(this.loadingLabel, Priority.ALWAYS);
+        VBox.setVgrow(this.loader, Priority.ALWAYS);
         VBox.setVgrow(this.musicCardGrid, Priority.ALWAYS);
 
         this.createPlaylistButton.getStyleClass().add(Styles.ACCENT);
@@ -113,7 +112,7 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
     private void updatePlaylists(ObservableList<Playlist> playlists, String search) {
         if (playlists == null) {
             Platform.runLater(() -> {
-                this.node.getChildren().set(1, this.loadingLabel);
+                this.node.getChildren().set(1, this.loader);
                 this.createPlaylistButton.setVisible(false);
             });
         } else {

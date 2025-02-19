@@ -1,14 +1,12 @@
 package org.saartako.client.controls;
 
 import atlantafx.base.controls.CustomTextField;
-import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.Skin;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -36,7 +34,7 @@ public class SongsPageSkin implements Skin<SongsPage> {
 
     private final CustomTextField searchTextField = new CustomTextField();
     private final MusicCardGrid musicCardGrid = new MusicCardGrid();
-    private final Label loadingLabel = new Label("Loading...");
+    private final Loader loader = new Loader();
 
     private final VBox node = new VBox(16);
 
@@ -52,8 +50,7 @@ public class SongsPageSkin implements Skin<SongsPage> {
         this.searchTextField.setRight(new FontIcon(Material2AL.CLEAR));
         this.node.getChildren().add(this.searchTextField);
 
-        this.loadingLabel.getStyleClass().addAll("title-big-1", Styles.TEXT_BOLDER);
-        this.node.getChildren().add(this.loadingLabel);
+        this.node.getChildren().add(this.loader);
 
         this.musicCardGrid.addEventHandler(CardItemClickEvent.CARD_ITEM_CLICK, event -> {
             final CardItem cardItem = event.getCardItem();
@@ -78,7 +75,7 @@ public class SongsPageSkin implements Skin<SongsPage> {
 
     private void updateSongs(ObservableList<Song> songs, String search) {
         if (songs == null) {
-            this.node.getChildren().set(1, this.loadingLabel);
+            this.node.getChildren().set(1, this.loader);
         } else {
             final List<? extends Song> filtered = this.songService.filterSongs(songs, search);
 

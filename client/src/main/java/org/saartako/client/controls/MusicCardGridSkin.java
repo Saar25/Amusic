@@ -1,10 +1,8 @@
 package org.saartako.client.controls;
 
-import atlantafx.base.theme.Styles;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.layout.ColumnConstraints;
@@ -23,6 +21,7 @@ public class MusicCardGridSkin implements Skin<MusicCardGrid> {
     private final ScrollPane node = new ScrollPane();
 
     private final GridPane gridPane = new GridPane();
+    private final Loader loader = new Loader();
 
     public MusicCardGridSkin(MusicCardGrid control) {
         this.control = control;
@@ -40,8 +39,6 @@ public class MusicCardGridSkin implements Skin<MusicCardGrid> {
             this.gridPane.getColumnConstraints().add(cc);
         }
 
-        this.node.setContent(this.gridPane);
-
         this.control.cardItemsProperty().addListener((observable, oldValue, newValue) ->
             onCardItemsChange(newValue));
 
@@ -50,17 +47,11 @@ public class MusicCardGridSkin implements Skin<MusicCardGrid> {
 
     private void onCardItemsChange(List<? extends CardItem> cardItems) {
         if (cardItems == null) {
-            showLoading();
+            this.node.setContent(this.loader);
         } else {
             showCardItems(cardItems);
+            this.node.setContent(this.gridPane);
         }
-    }
-
-    private void showLoading() {
-        final Label label = new Label("Loading...");
-        label.getStyleClass().addAll("title-big-1", Styles.TEXT_BOLDER);
-        GridPane.setColumnSpan(label, 3);
-        this.gridPane.getChildren().setAll(label);
     }
 
     private void showCardItems(List<? extends CardItem> cardItems) {
@@ -76,7 +67,7 @@ public class MusicCardGridSkin implements Skin<MusicCardGrid> {
                 this.control.fireEvent(event);
             });
 
-            this.gridPane.add(musicCard, i % 3, i / 3);
+            this.gridPane.add(musicCard, i % COLUMN_COUNT, i / COLUMN_COUNT);
         }
     }
 
