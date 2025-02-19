@@ -3,11 +3,9 @@ package org.saartako.client.controls;
 import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -27,14 +25,10 @@ import org.saartako.common.playlist.Playlist;
 import java.util.List;
 import java.util.Optional;
 
-public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
+public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
 
     private final PlaylistService playlistService = PlaylistService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
-
-    private final PlaylistsPage control;
-
-    private final ChangeListener<ObservableList<Playlist>> playlistsChangeListener;
 
     private final CustomTextField searchTextField = new CustomTextField();
 
@@ -49,7 +43,7 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
     private final VBox node = new VBox(16);
 
     public PlaylistsPageSkin(PlaylistsPage control) {
-        this.control = control;
+        super(control);
 
         this.node.setAlignment(Pos.TOP_CENTER);
         this.node.setPadding(new Insets(8, 40, 8, 40));
@@ -82,13 +76,11 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
         });
         this.node.getChildren().add(this.createPlaylistButton);
 
-        this.searchTextField.textProperty().addListener((o, prev, search) ->
-            updatePlaylists(this.playlistService.getPlaylists(), search));
-        this.playlistsChangeListener = (o, prev, playlists) ->
-            updatePlaylists(playlists, this.searchTextField.getText());
-        this.playlistService.playlistsProperty().addListener(this.playlistsChangeListener);
+        registerChangeListener(this.searchTextField.textProperty(), observable -> updatePlaylists());
+        registerListChangeListener(this.playlistService.playlistsProperty(), observable -> updatePlaylists());
+        updatePlaylists();
 
-        updatePlaylists(this.playlistService.getPlaylists(), this.searchTextField.getText());
+        getChildren().setAll(this.node);
     }
 
     private Optional<CreatePlaylistDTO> openCreatePlaylistDialog() {
@@ -128,9 +120,14 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
         return dialog.showAndWait();
     }
 
+    private void updatePlaylists() {
+        updatePlaylists(this.playlistService.getPlaylists(), this.searchTextField.getText());
+    }
+
     private void updatePlaylists(ObservableList<Playlist> playlists, String search) {
         if (playlists == null) {
             Platform.runLater(() -> {
+                this.musicCardGrid.cardItemsProperty().clear();
                 this.node.getChildren().set(1, this.loader);
                 this.createPlaylistButton.setVisible(false);
             });
@@ -145,20 +142,5 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
                 this.createPlaylistButton.setVisible(true);
             });
         }
-    }
-
-    @Override
-    public PlaylistsPage getSkinnable() {
-        return this.control;
-    }
-
-    @Override
-    public Node getNode() {
-        return this.node;
-    }
-
-    @Override
-    public void dispose() {
-        this.playlistService.playlistsProperty().removeListener(this.playlistsChangeListener);
     }
 }

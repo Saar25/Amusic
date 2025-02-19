@@ -1,51 +1,36 @@
 package org.saartako.client.controls;
 
-import javafx.scene.Node;
-import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 import javafx.scene.layout.VBox;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.utils.PlaylistUtils;
 import org.saartako.common.playlist.Playlist;
 
-public class PlaylistViewSkin implements Skin<PlaylistView> {
+public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
-    private final PlaylistView control;
+    private final PlaylistService playlistService = PlaylistService.getInstance();
 
     private final MusicCard musicCard = new MusicCard();
 
     private final VBox node = new VBox(16);
 
     public PlaylistViewSkin(PlaylistView control) {
-        this.control = control;
+        super(control);
 
         this.node.getChildren().setAll(musicCard);
 
-        final PlaylistService playlistService = PlaylistService.getInstance();
+        registerChangeListener(this.playlistService.currentPlaylistProperty(), observable ->
+            updatePlaylist(this.playlistService.getCurrentPlaylist()));
 
-        playlistService.currentPlaylistProperty().addListener((observable, oldValue, newValue) ->
-            updatePlaylist(newValue));
+        updatePlaylist(this.playlistService.getCurrentPlaylist());
 
-        updatePlaylist(playlistService.getCurrentPlaylist());
+        getChildren().setAll(this.node);
     }
 
     private void updatePlaylist(Playlist playlist) {
         final CardItem cardItem = PlaylistUtils.playlistToCardItem(playlist);
 
         this.musicCard.setCardItem(cardItem);
-    }
-
-    @Override
-    public PlaylistView getSkinnable() {
-        return this.control;
-    }
-
-    @Override
-    public Node getNode() {
-        return this.node;
-    }
-
-    @Override
-    public void dispose() {
     }
 }

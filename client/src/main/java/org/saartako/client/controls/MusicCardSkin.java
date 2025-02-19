@@ -2,9 +2,8 @@ package org.saartako.client.controls;
 
 import atlantafx.base.controls.Card;
 import atlantafx.base.theme.Styles;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -12,9 +11,7 @@ import org.saartako.client.models.CardItem;
 
 import java.util.Map;
 
-public class MusicCardSkin implements Skin<MusicCard> {
-
-    private final MusicCard control;
+public class MusicCardSkin extends SkinBase<MusicCard> {
 
     private final Circle headerTileGraphic = new Circle(8);
 
@@ -22,22 +19,25 @@ public class MusicCardSkin implements Skin<MusicCard> {
 
     private final VBox footer = new VBox();
 
-    private final Card node = new Card();
+    private final Card card = new Card();
 
     public MusicCardSkin(MusicCard control) {
-        this.control = control;
+        super(control);
 
-        this.node.getStyleClass().addAll(Styles.INTERACTIVE);
+        this.card.getStyleClass().addAll(Styles.INTERACTIVE);
 
         this.headerTile.setGraphic(this.headerTileGraphic);
         this.headerTile.getStyleClass().add(Styles.TITLE_4);
-        this.node.setHeader(this.headerTile);
+        this.card.setHeader(this.headerTile);
 
-        this.control.cardItemProperty().addListener((observable, oldValue, newValue) ->
-            onCardItemChange(newValue));
-        onCardItemChange(this.control.getCardItem());
+        registerChangeListener(control.cardItemProperty(), (observable) ->
+            onCardItemChange(control.getCardItem()));
 
-        this.node.setFooter(this.footer);
+        onCardItemChange(control.getCardItem());
+
+        this.card.setFooter(this.footer);
+
+        getChildren().setAll(this.card);
     }
 
     private void onCardItemChange(CardItem cardItem) {
@@ -45,29 +45,13 @@ public class MusicCardSkin implements Skin<MusicCard> {
 
         this.footer.getChildren().clear();
 
-        for (Map.Entry<String, String> detail : cardItem.details().entrySet()) {
-            final String key = detail.getKey();
-            final String value = detail.getValue();
+        cardItem.details().forEach((key, value) -> {
             final Label label = new Label(key + ": " + value);
             this.footer.getChildren().add(label);
-        }
+        });
 
         final Paint cardItemColor = cardItem.paint();
         this.headerTileGraphic.setFill(cardItemColor);
         this.headerTile.setText(cardItem.name());
-    }
-
-    @Override
-    public MusicCard getSkinnable() {
-        return this.control;
-    }
-
-    @Override
-    public Node getNode() {
-        return this.node;
-    }
-
-    @Override
-    public void dispose() {
     }
 }

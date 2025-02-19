@@ -2,13 +2,11 @@ package org.saartako.client.controls;
 
 import atlantafx.base.controls.CustomTextField;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -24,14 +22,10 @@ import org.saartako.common.song.Song;
 
 import java.util.List;
 
-public class SongsPageSkin implements Skin<SongsPage> {
+public class SongsPageSkin extends SkinBase<SongsPage> {
 
     private final SongService songService = SongService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
-
-    private final SongsPage control;
-
-    private final ChangeListener<ObservableList<Song>> songsChangeListener;
 
     private final CustomTextField searchTextField = new CustomTextField();
 
@@ -44,7 +38,7 @@ public class SongsPageSkin implements Skin<SongsPage> {
     private final VBox node = new VBox(16);
 
     public SongsPageSkin(SongsPage control) {
-        this.control = control;
+        super(control);
 
         this.node.setAlignment(Pos.TOP_CENTER);
         this.node.setPadding(new Insets(8, 40, 8, 40));
@@ -70,12 +64,14 @@ public class SongsPageSkin implements Skin<SongsPage> {
             this.routerService.setCurrentRoute(Route.SONG_VIEW);
         });
 
-        this.searchTextField.textProperty().addListener((o, prev, search) ->
-            updateSongs(this.songService.getSongs(), search));
-        this.songsChangeListener = (o, prev, songs) ->
-            updateSongs(songs, this.searchTextField.getText());
-        this.songService.songsProperty().addListener(this.songsChangeListener);
+        registerChangeListener(this.searchTextField.textProperty(), observable -> updateSongs());
+        registerListChangeListener(this.songService.songsProperty(), observable -> updateSongs());
+        updateSongs();
 
+        getChildren().setAll(this.node);
+    }
+
+    private void updateSongs() {
         updateSongs(this.songService.getSongs(), this.searchTextField.getText());
     }
 
@@ -92,20 +88,5 @@ public class SongsPageSkin implements Skin<SongsPage> {
                 this.node.getChildren().set(1, this.contentPane);
             });
         }
-    }
-
-    @Override
-    public SongsPage getSkinnable() {
-        return this.control;
-    }
-
-    @Override
-    public Node getNode() {
-        return this.node;
-    }
-
-    @Override
-    public void dispose() {
-        this.songService.songsProperty().removeListener(this.songsChangeListener);
     }
 }

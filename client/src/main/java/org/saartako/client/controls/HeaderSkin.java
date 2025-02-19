@@ -4,7 +4,6 @@ import atlantafx.base.layout.InputGroup;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -17,22 +16,15 @@ import org.saartako.client.enums.AppTheme;
 import org.saartako.client.services.AuthService;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.ThemeService;
-import org.saartako.client.utils.InvalidationListenerDisposer;
 
-public class HeaderSkin implements Skin<Header> {
+public class HeaderSkin extends SkinBase<Header> {
 
     private final AuthService authService = AuthService.getInstance();
     private final ThemeService themeService = ThemeService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
 
-    private final InvalidationListenerDisposer disposer = new InvalidationListenerDisposer();
-
-    private final Header control;
-
-    private final ToolBar node;
-
     public HeaderSkin(Header control) {
-        this.control = control;
+        super(control);
 
         final Label titleLabel = new Label("Amusic");
         titleLabel.getStyleClass().add("title-2");
@@ -50,15 +42,17 @@ public class HeaderSkin implements Skin<Header> {
 
         final InputGroup tabsInputGroup = createToggleGroup();
 
-        this.node = new ToolBar(titleLabel, separator, welcomeLabel,
+        final ToolBar toolBar = new ToolBar(titleLabel, separator, welcomeLabel,
             themeChangeButton, signOutButton, spacing, tabsInputGroup);
-        this.node.getStyleClass().add("elevated-2");
-        this.node.setPadding(new Insets(16));
+        toolBar.getStyleClass().add("elevated-2");
+        toolBar.setPadding(new Insets(16));
+
+        getChildren().setAll(toolBar);
     }
 
     private Label createWelcomeLabel() {
         final Label welcomeLabel = new Label();
-        this.disposer.listen(this.authService.loggedUserProperty(), observable -> {
+        registerChangeListener(this.authService.loggedUserProperty(), observable -> {
             final String welcomeMessage = this.authService.getLoggedUser() == null
                 ? "Unidentified user"
                 : "Welcome " + this.authService.getLoggedUser().getDisplayName();
@@ -111,7 +105,7 @@ public class HeaderSkin implements Skin<Header> {
             this.routerService.setCurrentRoute(newRoute);
         });
 
-        this.disposer.listen(this.routerService.currentRouteProperty(), observable -> {
+        registerChangeListener(this.routerService.currentRouteProperty(), observable -> {
             switch (this.routerService.getCurrentRoute()) {
                 case SONGS -> toggleGroup.selectToggle(songsToggleButton);
                 case MY_PLAYLISTS -> toggleGroup.selectToggle(myPlaylistsToggleButton);
@@ -128,20 +122,5 @@ public class HeaderSkin implements Skin<Header> {
         toggleButton.setUserData(route);
         toggleButton.setText(route.toString());
         return toggleButton;
-    }
-
-    @Override
-    public Header getSkinnable() {
-        return this.control;
-    }
-
-    @Override
-    public Node getNode() {
-        return this.node;
-    }
-
-    @Override
-    public void dispose() {
-        this.disposer.dispose();
     }
 }

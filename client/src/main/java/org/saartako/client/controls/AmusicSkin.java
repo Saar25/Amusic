@@ -3,20 +3,18 @@ package org.saartako.client.controls;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.Skin;
+import javafx.scene.control.SkinBase;
 import javafx.scene.layout.BorderPane;
 import org.saartako.client.constants.Route;
 
 import java.util.Map;
 
-public class AmusicSkin implements Skin<Amusic> {
-
-    private final Amusic control;
+public class AmusicSkin extends SkinBase<Amusic> {
 
     private final BorderPane node = new BorderPane();
 
     public AmusicSkin(Amusic control) {
-        this.control = control;
+        super(control);
 
         try {
             final Map<Route, Node> routeObjectMap = Map.ofEntries(
@@ -34,22 +32,10 @@ public class AmusicSkin implements Skin<Amusic> {
 
             this.node.setCenter(center);
             this.node.setTop(top);
+
+            getChildren().setAll(this.node);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Amusic getSkinnable() {
-        return this.control;
-    }
-
-    @Override
-    public Node getNode() {
-        return this.node;
-    }
-
-    @Override
-    public void dispose() {
     }
 }
