@@ -61,7 +61,7 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
             final Song song = this.songService.getSongs().get(index);
 
             this.songService.setCurrentSong(song);
-            this.routerService.setCurrentRoute(Route.SONG_VIEW);
+            this.routerService.push(Route.SONG_VIEW);
         });
 
         registerChangeListener(this.searchTextField.textProperty(), observable -> updateSongs());

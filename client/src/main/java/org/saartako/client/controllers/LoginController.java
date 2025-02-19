@@ -72,7 +72,7 @@ public class LoginController {
 
         this.authService.login(username, password).whenComplete((jwtToken, error) -> {
             if (jwtToken != null) {
-                Platform.runLater(() -> this.routerService.setCurrentRoute(Route.SONGS));
+                Platform.runLater(() -> this.routerService.navigate(Route.SONGS));
             }
             if (error != null) {
                 Platform.runLater(() -> {
@@ -92,7 +92,7 @@ public class LoginController {
 
         this.authService.register(username, password, displayName).whenComplete((jwtToken, error) -> {
             if (jwtToken != null) {
-                Platform.runLater(() -> this.routerService.setCurrentRoute(Route.SONGS));
+                Platform.runLater(() -> this.routerService.navigate(Route.SONGS));
             }
             if (error != null) {
                 Platform.runLater(() -> {

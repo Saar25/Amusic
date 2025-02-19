@@ -1,6 +1,7 @@
 package org.saartako.client.controls;
 
 import atlantafx.base.layout.InputGroup;
+import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -8,7 +9,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.components.RequiredToggleButton;
 import org.saartako.client.constants.Route;
@@ -20,7 +23,9 @@ import org.saartako.client.services.ThemeService;
 public class HeaderSkin extends SkinBase<Header> {
 
     private final AuthService authService = AuthService.getInstance();
+
     private final ThemeService themeService = ThemeService.getInstance();
+
     private final RouterService routerService = RouterService.getInstance();
 
     public HeaderSkin(Header control) {
@@ -47,7 +52,16 @@ public class HeaderSkin extends SkinBase<Header> {
         toolBar.getStyleClass().add("elevated-2");
         toolBar.setPadding(new Insets(16));
 
-        getChildren().setAll(toolBar);
+        final Button previousButton = new Button("Previous",
+            new FontIcon(Material2AL.ARROW_BACK));
+        previousButton.getStyleClass().add(Styles.FLAT);
+        VBox.setMargin(previousButton, new Insets(8, 0, 0, 16));
+
+        previousButton.setOnAction(event -> this.routerService.previous());
+        previousButton.managedProperty().bind(this.routerService.hasHistoryProperty());
+        previousButton.visibleProperty().bind(this.routerService.hasHistoryProperty());
+
+        getChildren().setAll(new VBox(toolBar, previousButton));
     }
 
     private Label createWelcomeLabel() {
@@ -82,7 +96,7 @@ public class HeaderSkin extends SkinBase<Header> {
         signOutButton.getStyleClass().addAll("accent", "flat");
         signOutButton.setOnAction(event -> {
             this.authService.setJwtToken(null);
-            this.routerService.setCurrentRoute(Route.LOGIN);
+            this.routerService.navigate(Route.LOGIN);
         });
         signOutButton.managedProperty().bind(this.authService.isLoggedInProperty());
         signOutButton.visibleProperty().bind(this.authService.isLoggedInProperty());
@@ -102,7 +116,7 @@ public class HeaderSkin extends SkinBase<Header> {
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             final Route newRoute = (Route) newValue.getUserData();
-            this.routerService.setCurrentRoute(newRoute);
+            this.routerService.navigate(newRoute);
         });
 
         registerChangeListener(this.routerService.currentRouteProperty(), observable -> {

@@ -1,6 +1,5 @@
 package org.saartako.client.controls;
 
-import atlantafx.base.theme.Styles;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -10,7 +9,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
@@ -29,8 +27,6 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
     private final RouterService routerService = RouterService.getInstance();
 
-    private final Button previousButton = new Button("Previous", new FontIcon(Material2AL.ARROW_BACK));
-
     private final MusicCard playlistCard = new MusicCard();
 
     private final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
@@ -44,8 +40,6 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
     public PlaylistViewSkin(PlaylistView control) {
         super(control);
 
-        this.previousButton.getStyleClass().add(Styles.FLAT);
-
         final Region spacing = new Region();
         HBox.setHgrow(spacing, Priority.ALWAYS);
 
@@ -53,7 +47,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         this.songScrollPane.setFitToWidth(true);
 
         this.content.getChildren().addAll(
-            new VBox(this.previousButton, this.playlistCard, this.startButton),
+            new VBox(this.playlistCard, this.startButton),
             spacing,
             this.songScrollPane);
         this.content.setPadding(new Insets(16));
@@ -71,8 +65,6 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
         final CardItem playlistCard = PlaylistUtils.playlistToCardItem(playlist);
         this.playlistCard.setCardItem(playlistCard);
-
-        this.previousButton.setOnAction(event -> this.routerService.previous());
 
 //        startButton.setOnAction(event -> startPlaying());
 
