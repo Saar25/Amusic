@@ -7,7 +7,9 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -33,7 +35,11 @@ public class SongsPageSkin implements Skin<SongsPage> {
     private final ChangeListener<ObservableList<Song>> songsChangeListener;
 
     private final CustomTextField searchTextField = new CustomTextField();
+
     private final MusicCardGrid musicCardGrid = new MusicCardGrid();
+
+    private final ScrollPane contentPane = new ScrollPane(this.musicCardGrid);
+
     private final Loader loader = new Loader();
 
     private final VBox node = new VBox(16);
@@ -51,6 +57,11 @@ public class SongsPageSkin implements Skin<SongsPage> {
         this.node.getChildren().add(this.searchTextField);
 
         this.node.getChildren().add(this.loader);
+
+        this.contentPane.setFitToWidth(true);
+
+        VBox.setVgrow(this.loader, Priority.ALWAYS);
+        VBox.setVgrow(this.contentPane, Priority.ALWAYS);
 
         this.musicCardGrid.addEventHandler(CardItemClickEvent.CARD_ITEM_CLICK, event -> {
             final CardItem cardItem = event.getCardItem();
@@ -83,7 +94,7 @@ public class SongsPageSkin implements Skin<SongsPage> {
 
             Platform.runLater(() -> {
                 this.musicCardGrid.cardItemsProperty().setAll(cardItems);
-                this.node.getChildren().set(1, this.musicCardGrid);
+                this.node.getChildren().set(1, this.contentPane);
             });
         }
     }

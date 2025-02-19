@@ -33,8 +33,13 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
     private final ChangeListener<ObservableList<Playlist>> playlistsChangeListener;
 
     private final CustomTextField searchTextField = new CustomTextField();
+
     private final MusicCardGrid musicCardGrid = new MusicCardGrid();
+
+    private final ScrollPane contentPane = new ScrollPane(this.musicCardGrid);
+
     private final Loader loader = new Loader();
+
     private final Button createPlaylistButton = new Button("Create new playlist");
 
     private final VBox node = new VBox(16);
@@ -53,8 +58,10 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
 
         this.node.getChildren().add(this.loader);
 
+        this.contentPane.setFitToWidth(true);
+
         VBox.setVgrow(this.loader, Priority.ALWAYS);
-        VBox.setVgrow(this.musicCardGrid, Priority.ALWAYS);
+        VBox.setVgrow(this.contentPane, Priority.ALWAYS);
 
         this.createPlaylistButton.getStyleClass().add(Styles.ACCENT);
         this.createPlaylistButton.setOnAction(event -> {
@@ -122,7 +129,7 @@ public class PlaylistsPageSkin implements Skin<PlaylistsPage> {
 
             Platform.runLater(() -> {
                 this.musicCardGrid.cardItemsProperty().setAll(cardItems);
-                this.node.getChildren().set(1, this.musicCardGrid);
+                this.node.getChildren().set(1, this.contentPane);
                 this.createPlaylistButton.setVisible(true);
             });
         }
