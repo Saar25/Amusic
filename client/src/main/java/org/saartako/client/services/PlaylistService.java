@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import org.saartako.client.utils.HttpUtils;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.playlist.PlaylistDTO;
@@ -102,24 +103,19 @@ public class PlaylistService {
 
         LOGGER.info("Trying to fetch playlists");
 
-        final CompletableFuture<HttpResponse<String>> send = this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString());
-
-        return send.handle((response, error) -> {
-            if (error != null) {
+        return this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenCompose(HttpUtils::validateResponse)
+            .exceptionallyCompose(error -> {
                 LOGGER.info("Failed to fetch playlists - {}", error.getMessage());
 
-                return null;
-            } else if (response.statusCode() != 200) {
-                LOGGER.info("Failed to fetch playlists - {}", response.body());
-
-                return null;
-            } else {
+                return CompletableFuture.failedFuture(error);
+            })
+            .thenApply(response -> {
                 LOGGER.info("Fetch playlists successfully");
 
                 return GSON.fromJson(response.body(), PlaylistDTO[].class);
-            }
-        });
+            });
     }
 
     public CompletableFuture<Playlist> createPlaylist(CreatePlaylistDTO createPlaylist) {
@@ -142,23 +138,19 @@ public class PlaylistService {
 
         return this.httpService.getHttpClient()
             .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenCompose(HttpUtils::validateResponse)
             .exceptionallyCompose(error -> {
                 LOGGER.info("Failed to create playlist - {}", error.getMessage());
+
                 return CompletableFuture.failedFuture(error);
             })
-            .thenCompose(response -> {
-                if (response.statusCode() != 200) {
-                    LOGGER.info("Failed to create playlist - {}", response.body());
-                    final Exception exception = new Exception("Failed to add song to playlist: " + response.body());
-                    return CompletableFuture.failedFuture(exception);
-                }
-
+            .thenApply(response -> {
                 LOGGER.info("Create playlist successfully");
 
                 final Playlist playlist = GSON.fromJson(
                     response.body(), PlaylistDTO.class);
                 this.playlists.add(playlist);
-                return CompletableFuture.completedFuture(playlist);
+                return playlist;
             });
     }
 
@@ -180,29 +172,24 @@ public class PlaylistService {
 
         return this.httpService.getHttpClient()
             .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenCompose(HttpUtils::validateResponse)
             .exceptionallyCompose(e -> {
                 LOGGER.error("Failed to add song to playlist - {}", e.getMessage());
+
                 return CompletableFuture.failedFuture(e);
             })
-            .thenCompose(response -> {
-                if (response.statusCode() != 200) {
-                    LOGGER.info("Failed to add song to playlist - {}", response.body());
-                    final Exception exception = new Exception("Failed to add song to playlist: " + response.body());
-                    return CompletableFuture.failedFuture(exception);
-                }
-
+            .thenApply(response -> {
                 LOGGER.info("Added song to playlist successfully");
 
                 int index = playlists.indexOf(playlist);
                 if (index == -1) {
                     LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
-                    return CompletableFuture.completedFuture(null);
                 }
 
                 ((PlaylistDTO) playlist).getSongs().add((SongDTO) song);
                 playlists.set(index, playlist);
 
-                return CompletableFuture.completedFuture(null);
+                return null;
             });
     }
 
