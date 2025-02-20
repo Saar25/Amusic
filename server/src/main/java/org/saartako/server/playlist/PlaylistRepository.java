@@ -1,8 +1,10 @@
 package org.saartako.server.playlist;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,4 +18,8 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, Long> 
            "WHERE p.owner.id = :ownerId")
     List<PlaylistEntity> findByOwnerId(@Param("ownerId") long ownerId);
 
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO playlist_songs (playlist_id, song_id) VALUES (:playlistId, :songId)", nativeQuery = true)
+    void addPlaylistSong(@Param("playlistId") long playlistId, @Param("songId") long songId);
 }

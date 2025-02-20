@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,8 +82,15 @@ public class PlaylistController {
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 
-    @GetMapping("/{id}")
-    public Optional<PlaylistEntity> findById(@PathVariable("id") long id) {
-        return this.playlistService.findById(id);
+    @PostMapping("/{id}/song/{songId}")
+    public ResponseEntity<Void> addPlaylistSong(@PathVariable("id") long id, @PathVariable("songId") long songId) {
+        try {
+            final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            this.playlistService.addPlaylistSong(user, id, songId);
+            return ResponseEntity.ok(null);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 }

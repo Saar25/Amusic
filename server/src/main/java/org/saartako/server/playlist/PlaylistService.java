@@ -1,6 +1,8 @@
 package org.saartako.server.playlist;
 
 import org.saartako.common.playlist.CreatePlaylistDTO;
+import org.saartako.common.user.User;
+import org.saartako.server.exceptions.BadCredentialsException;
 import org.saartako.server.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,5 +37,14 @@ public class PlaylistService {
         playlist.setPrivate(createPlaylist.isPrivate());
         playlist.setOwner(this.userRepository.getReferenceById(ownerId));
         return this.playlistRepository.save(playlist);
+    }
+
+    public void addPlaylistSong(User owner, long playlistId, long songId) {
+        final PlaylistEntity playlistReference = this.playlistRepository.getReferenceById(playlistId);
+        if (playlistReference.getOwner().getId() != owner.getId()) {
+            throw new BadCredentialsException();
+        }
+
+        this.playlistRepository.addPlaylistSong(playlistId, songId);
     }
 }

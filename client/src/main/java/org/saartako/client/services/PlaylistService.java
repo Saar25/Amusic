@@ -161,10 +161,40 @@ public class PlaylistService {
         });
     }
 
-    public CompletableFuture<Playlist> addPlaylistSong(Playlist playlist, Song song) {
-        // TODO: implement this
+    public CompletableFuture<Void> addPlaylistSong(Playlist playlist, Song song) {
+        final String jwtToken = this.authService.getJwtToken();
+        if (jwtToken == null) {
+            return CompletableFuture.completedFuture(null);
+        }
 
-        return CompletableFuture.completedFuture(null);
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/playlist/" + playlist.getId() + "/song/" + song.getId()))
+            .POST(HttpRequest.BodyPublishers.noBody())
+            .header("Authorization", "Bearer " + jwtToken)
+            .header("Content-Type", "application/json")
+            .build();
+
+        LOGGER.info("Trying to add song to playlist");
+
+        final CompletableFuture<HttpResponse<String>> send = this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString());
+
+        return send.handle((response, error) -> {
+            if (error != null) {
+                LOGGER.info("Failed to add song to playlist - {}", error.getMessage());
+
+                return null;
+            } else if (response.statusCode() != 200) {
+                LOGGER.info("Failed to add song to playlist - {}", response.body());
+
+                return null;
+            } else {
+                LOGGER.info("Added song to playlist successfully");
+
+                fetchData();
+                return null;
+            }
+        });
     }
 
     public List<? extends Playlist> filterPlaylists(List<? extends Playlist> playlists, String filter) {
