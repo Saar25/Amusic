@@ -35,7 +35,7 @@ public class PlaylistController {
             new PlaylistDTO()
                 .setId(playlistEntity.getId())
                 .setOwner(new UserDTO()
-                    .setId(playlistEntity.getOwner().getId())
+                    .setId(playlistEntity.getOwnerId())
                     .setDisplayName(playlistEntity.getOwner().getDisplayName())
                 )
                 .setName(playlistEntity.getName())

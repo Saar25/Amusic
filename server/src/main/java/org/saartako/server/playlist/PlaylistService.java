@@ -3,6 +3,8 @@ package org.saartako.server.playlist;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.user.User;
 import org.saartako.server.exceptions.BadCredentialsException;
+import org.saartako.server.song.SongEntity;
+import org.saartako.server.song.SongRepository;
 import org.saartako.server.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class PlaylistService {
 
     @Autowired
     private PlaylistRepository playlistRepository;
+
+    @Autowired
+    private SongRepository songRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -35,13 +40,16 @@ public class PlaylistService {
         final PlaylistEntity playlist = new PlaylistEntity();
         playlist.setName(createPlaylist.name());
         playlist.setPrivate(createPlaylist.isPrivate());
-        playlist.setOwner(this.userRepository.getReferenceById(ownerId));
+        playlist.setOwnerId(ownerId);
         return this.playlistRepository.save(playlist);
     }
 
     public void addPlaylistSong(User owner, long playlistId, long songId) {
-        final PlaylistEntity playlistReference = this.playlistRepository.getReferenceById(playlistId);
-        if (playlistReference.getOwner().getId() != owner.getId()) {
+        final Optional<PlaylistEntity> playlistReference = this.playlistRepository.findById(playlistId);
+        final Optional<SongEntity> songReference = this.songRepository.findById(songId);
+
+        if (playlistReference.isEmpty() || songReference.isEmpty() ||
+            playlistReference.get().getOwnerId() != owner.getId()) {
             throw new BadCredentialsException();
         }
 

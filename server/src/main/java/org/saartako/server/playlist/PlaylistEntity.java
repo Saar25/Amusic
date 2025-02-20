@@ -15,9 +15,12 @@ public class PlaylistEntity implements Playlist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false, insertable = false, updatable = false)
     private UserEntity owner;
+
+    @Column(name = "owner_id", nullable = false)
+    private Long ownerId;
 
     @Column(length = 64, nullable = false)
     private String name;
@@ -46,8 +49,12 @@ public class PlaylistEntity implements Playlist {
         return this.owner;
     }
 
-    public void setOwner(UserEntity owner) {
-        this.owner = owner;
+    public Long getOwnerId() {
+        return this.ownerId;
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 
     @Override
