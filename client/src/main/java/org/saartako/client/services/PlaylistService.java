@@ -125,7 +125,8 @@ public class PlaylistService {
     public CompletableFuture<Playlist> createPlaylist(CreatePlaylistDTO createPlaylist) {
         final String jwtToken = this.authService.getJwtToken();
         if (jwtToken == null) {
-            return CompletableFuture.completedFuture(null);
+            final Exception exception = new Exception("Unauthorized");
+            return CompletableFuture.failedFuture(exception);
         }
 
         final String payload = GSON.toJson(createPlaylist);
@@ -139,24 +140,25 @@ public class PlaylistService {
 
         LOGGER.info("Trying to create playlist");
 
-        final CompletableFuture<HttpResponse<String>> send = this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString());
-
-        return send
-            .whenComplete((response, error) -> {
-                if (error != null) {
-                    LOGGER.info("Failed to create playlist - {}", error.getMessage());
-                } else if (response.statusCode() != 200) {
-                    LOGGER.info("Failed to create playlist - {}", response.body());
-                }
+        return this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .exceptionallyCompose(error -> {
+                LOGGER.info("Failed to create playlist - {}", error.getMessage());
+                return CompletableFuture.failedFuture(error);
             })
-            .thenApply(response -> {
+            .thenCompose(response -> {
+                if (response.statusCode() != 200) {
+                    LOGGER.info("Failed to create playlist - {}", response.body());
+                    final Exception exception = new Exception("Failed to add song to playlist: " + response.body());
+                    return CompletableFuture.failedFuture(exception);
+                }
+
                 LOGGER.info("Create playlist successfully");
 
                 final Playlist playlist = GSON.fromJson(
                     response.body(), PlaylistDTO.class);
                 this.playlists.add(playlist);
-                return playlist;
+                return CompletableFuture.completedFuture(playlist);
             });
     }
 
