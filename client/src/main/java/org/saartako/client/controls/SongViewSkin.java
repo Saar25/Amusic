@@ -1,11 +1,11 @@
 package org.saartako.client.controls;
 
+import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.SkinBase;
+import javafx.beans.property.ListProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -19,6 +19,7 @@ import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class SongViewSkin extends SkinBase<SongView> {
 
@@ -32,29 +33,82 @@ public class SongViewSkin extends SkinBase<SongView> {
         super(control);
 
         registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
-        registerListChangeListener(this.playlistService.playlistsProperty(), observable -> updateSong());
         updateSong();
 
         getChildren().setAll(new Loader());
     }
 
     private void updateSong() {
-        final ObservableList<Playlist> playlists = this.playlistService.getPlaylists();
         final Song song = this.songService.getCurrentSong();
-        if (playlists == null || song == null) {
+        if (song == null) {
             return;
         }
 
         final CardItem cardItem = SongUtils.songToCardItem(song);
 
-        Platform.runLater(() -> this.musicCard.setCardItem(cardItem));
+        final Button favoriteButton = new Button("",
+            new FontIcon(Material2AL.FAVORITE_BORDER));
+        favoriteButton.getStyleClass().add(Styles.BUTTON_ICON);
 
-        final ComboBox<Playlist> playlistComboBox = new ComboBox<>(
-            FXCollections.observableArrayList(playlists));
+        final Button addToPlaylistButton = new Button("Add to Playlist",
+            new FontIcon(Material2AL.FEATURED_PLAY_LIST));
+        addToPlaylistButton.getStyleClass().add(Styles.ACCENT);
+
+        addToPlaylistButton.setOnAction(event -> {
+            final Optional<Playlist> result = openAddToPlaylistDialog();
+
+            result.ifPresent(playlist -> this.playlistService.addPlaylistSong(playlist, song));
+        });
+
+        Platform.runLater(() -> {
+            this.musicCard.setCardItem(cardItem);
+
+            final HBox content = new HBox(
+                this.musicCard,
+                new VBox(favoriteButton, addToPlaylistButton)
+            );
+            getChildren().setAll(content);
+        });
+    }
+
+    private Optional<Playlist> openAddToPlaylistDialog() {
+        final Dialog<Playlist> dialog = new Dialog<>();
+        dialog.setTitle("Add to playlist");
+
+        final HBox hBox = new HBox(16);
+        hBox.setPadding(new Insets(16));
+        hBox.setAlignment(Pos.CENTER);
+
+        final Label playlistLabel = new Label("Choose playlist:");
+
+        final ComboBox<Playlist> playlistComboBox = createPlaylistComboBox();
+
+        hBox.getChildren().addAll(playlistLabel, playlistComboBox);
+
+        dialog.getDialogPane().setContent(hBox);
+        dialog.getDialogPane().getButtonTypes().addAll(
+            new ButtonType("Add", ButtonBar.ButtonData.OK_DONE),
+            new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE));
+
+        dialog.setResultConverter(button -> {
+            if (button.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                return playlistComboBox.getValue();
+            }
+            return null;
+        });
+
+        return dialog.showAndWait();
+    }
+
+    private ComboBox<Playlist> createPlaylistComboBox() {
+        final ListProperty<Playlist> playlists = this.playlistService.playlistsProperty();
+
+        final ComboBox<Playlist> playlistComboBox = new ComboBox<>(playlists);
+        playlistComboBox.setPlaceholder(new Label("Loading..."));
         playlistComboBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(Playlist object) {
-                return object == null ? "..." : object.getName();
+                return object == null ? "Choose playlist..." : object.getName();
             }
 
             @Override
@@ -64,13 +118,6 @@ public class SongViewSkin extends SkinBase<SongView> {
             }
         });
 
-        final HBox content = new HBox(
-            this.musicCard,
-            new VBox(
-                new Button("", new FontIcon(Material2AL.FAVORITE_BORDER)),
-                playlistComboBox
-            )
-        );
-        Platform.runLater(() -> getChildren().setAll(content));
+        return playlistComboBox;
     }
 }

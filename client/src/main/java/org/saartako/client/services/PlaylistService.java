@@ -12,6 +12,7 @@ import javafx.scene.control.Alert;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.playlist.PlaylistDTO;
+import org.saartako.common.song.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,6 +159,12 @@ public class PlaylistService {
                 return playlist;
             }
         });
+    }
+
+    public CompletableFuture<Playlist> addPlaylistSong(Playlist playlist, Song song) {
+        // TODO: implement this
+
+        return CompletableFuture.completedFuture(null);
     }
 
     public List<? extends Playlist> filterPlaylists(List<? extends Playlist> playlists, String filter) {
