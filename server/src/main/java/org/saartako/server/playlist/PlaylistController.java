@@ -84,13 +84,9 @@ public class PlaylistController {
 
     @PostMapping("/{id}/song/{songId}")
     public ResponseEntity<Void> addPlaylistSong(@PathVariable("id") long id, @PathVariable("songId") long songId) {
-        try {
-            final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-            this.playlistService.addPlaylistSong(user, id, songId);
-            return ResponseEntity.ok(null);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+        this.playlistService.addPlaylistSong(user, id, songId);
+        return ResponseEntity.ok(null);
     }
 }
