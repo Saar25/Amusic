@@ -13,6 +13,7 @@ import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.playlist.PlaylistDTO;
 import org.saartako.common.song.Song;
+import org.saartako.common.song.SongDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -191,7 +192,9 @@ public class PlaylistService {
             } else {
                 LOGGER.info("Added song to playlist successfully");
 
-                fetchData();
+                final int i = playlists.indexOf(playlist);
+                ((PlaylistDTO) playlist).getSongs().add((SongDTO) song);
+                playlists.set(i, playlist);
                 return null;
             }
         });
