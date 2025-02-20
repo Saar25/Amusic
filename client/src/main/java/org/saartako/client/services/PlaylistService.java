@@ -168,7 +168,7 @@ public class PlaylistService {
         }
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist/" + 12739 + "/song/" + song.getId()))
+            .uri(URI.create("http://localhost:8080/playlist/" + playlist.getId() + "/song/" + song.getId()))
             .POST(HttpRequest.BodyPublishers.noBody())
             .header("Authorization", "Bearer " + jwtToken)
             .header("Content-Type", "application/json")
