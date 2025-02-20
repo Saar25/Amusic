@@ -57,7 +57,14 @@ public class SongViewSkin extends SkinBase<SongView> {
         addToPlaylistButton.setOnAction(event -> {
             final Optional<Playlist> result = openAddToPlaylistDialog();
 
-            result.ifPresent(playlist -> this.playlistService.addPlaylistSong(playlist, song));
+            result.ifPresent(playlist ->
+                this.playlistService.addPlaylistSong(playlist, song).whenComplete((response, error) ->
+                    Platform.runLater(() -> {
+                        final Alert alert = error != null
+                            ? new Alert(Alert.AlertType.ERROR, "Failed too add song\n" + error.getMessage())
+                            : new Alert(Alert.AlertType.INFORMATION, "Added song to playlist successfully");
+                        alert.showAndWait();
+                    })));
         });
 
         Platform.runLater(() -> {

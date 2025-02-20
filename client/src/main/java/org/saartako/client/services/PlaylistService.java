@@ -142,34 +142,33 @@ public class PlaylistService {
         final CompletableFuture<HttpResponse<String>> send = this.httpService.getHttpClient()
             .sendAsync(request, HttpResponse.BodyHandlers.ofString());
 
-        return send.handle((response, error) -> {
-            if (error != null) {
-                LOGGER.info("Failed to create playlist - {}", error.getMessage());
-
-                return null;
-            } else if (response.statusCode() != 200) {
-                LOGGER.info("Failed to create playlist - {}", response.body());
-
-                return null;
-            } else {
+        return send
+            .whenComplete((response, error) -> {
+                if (error != null) {
+                    LOGGER.info("Failed to create playlist - {}", error.getMessage());
+                } else if (response.statusCode() != 200) {
+                    LOGGER.info("Failed to create playlist - {}", response.body());
+                }
+            })
+            .thenApply(response -> {
                 LOGGER.info("Create playlist successfully");
 
                 final Playlist playlist = GSON.fromJson(
                     response.body(), PlaylistDTO.class);
                 this.playlists.add(playlist);
                 return playlist;
-            }
-        });
+            });
     }
 
     public CompletableFuture<Void> addPlaylistSong(Playlist playlist, Song song) {
         final String jwtToken = this.authService.getJwtToken();
         if (jwtToken == null) {
-            return CompletableFuture.completedFuture(null);
+            final Exception exception = new Exception("Unauthorized");
+            return CompletableFuture.failedFuture(exception);
         }
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist/" + playlist.getId() + "/song/" + song.getId()))
+            .uri(URI.create("http://localhost:8080/playlist/" + 12739 + "/song/" + song.getId()))
             .POST(HttpRequest.BodyPublishers.noBody())
             .header("Authorization", "Bearer " + jwtToken)
             .header("Content-Type", "application/json")
@@ -177,27 +176,32 @@ public class PlaylistService {
 
         LOGGER.info("Trying to add song to playlist");
 
-        final CompletableFuture<HttpResponse<String>> send = this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        return this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .exceptionallyCompose(e -> {
+                LOGGER.error("Failed to add song to playlist - {}", e.getMessage());
+                return CompletableFuture.failedFuture(e);
+            })
+            .thenCompose(response -> {
+                if (response.statusCode() != 200) {
+                    LOGGER.info("Failed to add song to playlist - {}", response.body());
+                    final Exception exception = new Exception("Failed to add song to playlist: " + response.body());
+                    return CompletableFuture.failedFuture(exception);
+                }
 
-        return send.handle((response, error) -> {
-            if (error != null) {
-                LOGGER.info("Failed to add song to playlist - {}", error.getMessage());
-
-                return null;
-            } else if (response.statusCode() != 200) {
-                LOGGER.info("Failed to add song to playlist - {}", response.body());
-
-                return null;
-            } else {
                 LOGGER.info("Added song to playlist successfully");
 
-                final int i = playlists.indexOf(playlist);
+                int index = playlists.indexOf(playlist);
+                if (index == -1) {
+                    LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
+                    return CompletableFuture.completedFuture(null);
+                }
+
                 ((PlaylistDTO) playlist).getSongs().add((SongDTO) song);
-                playlists.set(i, playlist);
-                return null;
-            }
-        });
+                playlists.set(index, playlist);
+
+                return CompletableFuture.completedFuture(null);
+            });
     }
 
     public List<? extends Playlist> filterPlaylists(List<? extends Playlist> playlists, String filter) {

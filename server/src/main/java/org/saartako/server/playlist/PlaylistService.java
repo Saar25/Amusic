@@ -50,7 +50,7 @@ public class PlaylistService {
 
         if (playlistReference.isEmpty() || songReference.isEmpty() ||
             playlistReference.get().getOwnerId() != owner.getId()) {
-            throw new BadCredentialsException();
+            throw new BadCredentialsException("Playlist is not owned by user");
         }
 
         this.playlistRepository.addPlaylistSong(playlistId, songId);
