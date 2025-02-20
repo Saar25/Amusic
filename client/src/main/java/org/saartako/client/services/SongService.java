@@ -1,5 +1,6 @@
 package org.saartako.client.services;
 
+import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -8,18 +9,24 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import org.saartako.client.utils.HttpUtils;
 import org.saartako.common.song.Song;
+import org.saartako.common.song.SongDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class SongService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final Gson GSON = new Gson();
 
     private final HttpService httpService;
     private final AuthService authService;
@@ -77,21 +84,33 @@ public class SongService {
     }
 
     public CompletableFuture<Song[]> fetchSongs() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                final String jwtToken = this.authService.getJwtToken();
+        if (!this.authService.isLoggedIn()) {
+            return CompletableFuture.completedFuture(null);
+        }
 
-                LOGGER.info("Trying to fetch songs");
-                final Song[] songs = this.httpService.fetchSongs(jwtToken);
+        final String authorization = this.authService.getJwtToken();
+
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/song"))
+            .GET()
+            .header("Authorization", "Bearer " + authorization)
+            .build();
+
+        LOGGER.info("Trying to fetch songs");
+
+        return this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenCompose(HttpUtils::validateResponse)
+            .exceptionallyCompose(error -> {
+                LOGGER.info("Failed to fetch songs - {}", error.getMessage());
+
+                return CompletableFuture.failedFuture(error);
+            })
+            .thenApply(response -> {
                 LOGGER.info("Fetch songs successfully");
 
-                return songs;
-            } catch (IOException | InterruptedException e) {
-                LOGGER.info("Failed fetch songs - {}", e.getMessage());
-
-                throw new RuntimeException(e);
-            }
-        });
+                return GSON.fromJson(response.body(), SongDTO[].class);
+            });
     }
 
     public List<? extends Song> filterSongs(List<? extends Song> songs, String filter) {
