@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -92,7 +91,8 @@ public class SongService {
         return filter.isEmpty() ? songs : songs.stream().filter(song ->
             song.getName().toLowerCase().contains(lowercaseFilter) ||
             (song.getUploader() != null && song.getUploader().getDisplayName().toLowerCase().contains(lowercaseFilter)) ||
-            (song.getGenre() != null && song.getGenre().getName().toLowerCase().contains(lowercaseFilter))
+            (song.getGenre() != null && song.getGenre().getName().toLowerCase().contains(lowercaseFilter)) ||
+            (song.getLanguage() != null && song.getLanguage().getName().toLowerCase().contains(lowercaseFilter))
         ).toList();
     }
 
