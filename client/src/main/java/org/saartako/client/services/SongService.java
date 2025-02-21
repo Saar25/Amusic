@@ -1,6 +1,5 @@
 package org.saartako.client.services;
 
-import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -9,16 +8,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
-import org.saartako.client.utils.HttpUtils;
 import org.saartako.common.song.Song;
-import org.saartako.common.song.SongDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -26,18 +20,14 @@ public class SongService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final Gson GSON = new Gson();
-
-    private final HttpService httpService;
-    private final AuthService authService;
+    private final SongApiService songApiService;
 
     private final ListProperty<Song> songs = new SimpleListProperty<>(this, "songs");
 
     private final ObjectProperty<Song> currentSong = new SimpleObjectProperty<>(this, "currentSong");
 
-    private SongService(HttpService httpService, AuthService authService) {
-        this.httpService = httpService;
-        this.authService = authService;
+    private SongService(SongApiService songApiService) {
+        this.songApiService = songApiService;
         fetchData();
     }
 
@@ -84,32 +74,15 @@ public class SongService {
     }
 
     public CompletableFuture<Song[]> fetchSongs() {
-        if (!this.authService.isLoggedIn()) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        final String authorization = this.authService.getJwtToken();
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/song"))
-            .GET()
-            .header("Authorization", "Bearer " + authorization)
-            .build();
-
         LOGGER.info("Trying to fetch songs");
 
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .exceptionallyCompose(error -> {
-                LOGGER.info("Failed to fetch songs - {}", error.getMessage());
-
-                return CompletableFuture.failedFuture(error);
-            })
-            .thenApply(response -> {
-                LOGGER.info("Fetch songs successfully");
-
-                return GSON.fromJson(response.body(), SongDTO[].class);
+        return this.songApiService.fetchSongs()
+            .whenComplete((song, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to fetch songs - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Fetch songs successfully");
+                }
             });
     }
 
@@ -129,7 +102,7 @@ public class SongService {
 
     private static final class InstanceHolder {
         private static final SongService INSTANCE = new SongService(
-            HttpService.getInstance(),
-            AuthService.getInstance());
+            SongApiService.getInstance()
+        );
     }
 }
