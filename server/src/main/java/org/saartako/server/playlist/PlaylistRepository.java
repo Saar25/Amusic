@@ -22,4 +22,9 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, Long> 
     @Transactional
     @Query(value = "INSERT INTO playlist_songs (playlist_id, song_id) VALUES (:playlistId, :songId)", nativeQuery = true)
     void addPlaylistSong(@Param("playlistId") long playlistId, @Param("songId") long songId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM playlist_songs ps WHERE ps.song_id = :songId", nativeQuery = true)
+    void deleteSongFromPlaylists(@Param("songId") Long songId);
 }

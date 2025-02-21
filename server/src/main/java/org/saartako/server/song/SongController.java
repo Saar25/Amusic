@@ -8,9 +8,7 @@ import org.saartako.common.user.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,16 +32,24 @@ public class SongController {
                     .setId(songEntity.getUploader().getId())
                     .setDisplayName(songEntity.getUploader().getDisplayName())
                 )
-                .setGenre(new GenreDTO()
-                    .setId(songEntity.getGenre().getId())
-                    .setName(songEntity.getGenre().getName())
+                .setGenre(songEntity.getGenre() == null ? null :
+                    new GenreDTO()
+                        .setId(songEntity.getGenre().getId())
+                        .setName(songEntity.getGenre().getName())
                 )
-                .setLanguage(new LanguageDTO()
+                .setLanguage(songEntity.getLanguage() == null ? null : new LanguageDTO()
                     .setId(songEntity.getLanguage().getId())
                     .setName(songEntity.getLanguage().getName())
                 )
         ).toList();
 
         return ResponseEntity.status(HttpStatus.OK).body(body);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteSong(@PathVariable("id") long id) {
+        this.songService.deleteSong(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }
