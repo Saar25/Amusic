@@ -73,6 +73,28 @@ public class PlaylistApiService {
             .thenApply(response -> GSON.fromJson(response.body(), PlaylistDTO.class));
     }
 
+    public CompletableFuture<Playlist> deletePlaylist(long playlistId) {
+        if (!this.authService.isLoggedIn()) {
+            final Exception exception = new NullPointerException("User is not logged in");
+
+            return CompletableFuture.failedFuture(exception);
+        }
+
+        final String authorization = this.authService.getJwtToken();
+
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/playlist/" + playlistId))
+            .DELETE()
+            .header("Authorization", "Bearer " + authorization)
+            .header("Content-Type", "application/json")
+            .build();
+
+        return this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenCompose(HttpUtils::validateResponse)
+            .thenApply(response -> null);
+    }
+
     public CompletableFuture<Void> addPlaylistSong(Playlist playlist, Song song) {
         if (!this.authService.isLoggedIn()) {
             final Exception exception = new NullPointerException("User is not logged in");

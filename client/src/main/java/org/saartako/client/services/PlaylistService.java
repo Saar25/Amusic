@@ -107,6 +107,21 @@ public class PlaylistService {
             });
     }
 
+    public CompletableFuture<Playlist> deletePlaylist(Playlist playlist) {
+        LOGGER.info("Trying to delete playlist");
+
+        return this.playlistApiService.deletePlaylist(playlist.getId())
+            .whenComplete((never, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to delete playlist - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to delete playlist");
+
+                    this.playlists.remove(playlist);
+                }
+            });
+    }
+
     public CompletableFuture<Void> addPlaylistSong(Playlist playlist, Song song) {
         LOGGER.info("Trying to add song to playlist");
 

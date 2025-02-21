@@ -85,6 +85,21 @@ public class SongService {
             });
     }
 
+    public CompletableFuture<Void> deleteSong(Song song) {
+        LOGGER.info("Trying to delete song");
+
+        return this.songApiService.deleteSong(song.getId())
+            .whenComplete((never, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to delete song - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to delete song");
+
+                    this.songs.remove(song);
+                }
+            });
+    }
+
     public List<? extends Song> filterSongs(List<? extends Song> songs, String filter) {
         final String lowercaseFilter = filter.toLowerCase();
 
