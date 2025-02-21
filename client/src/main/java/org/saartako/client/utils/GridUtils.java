@@ -18,8 +18,6 @@ public class GridUtils {
     }
 
     public static List<ColumnConstraints> divideColumnConstraints(int count) {
-        final ColumnConstraints columnConstraints = columnConstraintsOfPercentage(100. / count);
-
         return IntStream.range(0, count).mapToObj(i -> columnConstraintsOfPercentage(100. / count)).toList();
     }
 
@@ -30,8 +28,6 @@ public class GridUtils {
     }
 
     public static List<RowConstraints> divideRowConstraints(int count) {
-        final RowConstraints rowConstraints = rowConstraintsOfPercentage(100. / count);
-
         return IntStream.range(0, count).mapToObj(i -> rowConstraintsOfPercentage(100. / count)).toList();
     }
 }

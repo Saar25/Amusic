@@ -1,11 +1,13 @@
 package org.saartako.client.controls;
 
+import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -14,6 +16,7 @@ import org.kordamp.ikonli.material2.Material2AL;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.services.SongService;
+import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
@@ -27,24 +30,16 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private final PlaylistService playlistService = PlaylistService.getInstance();
 
-    private final MusicCard musicCard = new MusicCard();
+    private final Loader loader = new Loader();
+
+    private final MusicCard songCard = new MusicCard();
+
+    private final Slider slider = new Slider(0, 100, 20);
+
+    private final GridPane gridPane = new GridPane();
 
     public SongViewSkin(SongView control) {
         super(control);
-
-        registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
-        updateSong();
-
-        getChildren().setAll(new Loader());
-    }
-
-    private void updateSong() {
-        final Song song = this.songService.getCurrentSong();
-        if (song == null) {
-            return;
-        }
-
-        final CardItem cardItem = SongUtils.songToCardItem(song);
 
         final Button favoriteButton = new Button("",
             new FontIcon(Material2AL.FAVORITE_BORDER));
@@ -57,25 +52,52 @@ public class SongViewSkin extends SkinBase<SongView> {
         addToPlaylistButton.setOnAction(event -> {
             final Optional<Playlist> result = openAddToPlaylistDialog();
 
-            result.ifPresent(playlist ->
+            result.ifPresent(playlist -> {
+                final Song song = this.songService.getCurrentSong();
                 this.playlistService.addPlaylistSong(playlist, song).whenComplete((response, error) ->
                     Platform.runLater(() -> {
                         final Alert alert = error != null
                             ? new Alert(Alert.AlertType.ERROR, "Failed too add song\n" + error.getMessage())
                             : new Alert(Alert.AlertType.INFORMATION, "Added song to playlist successfully");
                         alert.showAndWait();
-                    })));
+                    }));
+            });
         });
 
-        Platform.runLater(() -> {
-            this.musicCard.setCardItem(cardItem);
+        final VBox vBox = new VBox(16, favoriteButton, addToPlaylistButton);
 
-            final HBox content = new HBox(
-                this.musicCard,
-                new VBox(favoriteButton, addToPlaylistButton)
-            );
-            getChildren().setAll(content);
-        });
+        this.slider.setSkin(new ProgressSliderSkin(this.slider));
+        this.slider.getStyleClass().add(Styles.LARGE);
+
+        this.gridPane.setVgap(16);
+        this.gridPane.setHgap(16);
+        this.gridPane.setPadding(new Insets(16));
+        this.gridPane.getColumnConstraints().addAll(GridUtils.divideColumnConstraints(12));
+        this.gridPane.getRowConstraints().addAll(GridUtils.divideRowConstraints(12));
+
+        this.gridPane.add(this.songCard, 1, 2, 6, 6);
+        this.gridPane.add(vBox, 8, 2, 4, 6);
+        this.gridPane.add(this.slider, 0, 11, 12, 1);
+
+        registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
+        updateSong();
+    }
+
+    private void updateSong() {
+        final Song song = this.songService.getCurrentSong();
+        if (song == null) {
+            Platform.runLater(() -> {
+                getChildren().setAll(this.loader);
+            });
+        } else {
+            final CardItem cardItem = SongUtils.songToCardItem(song);
+
+            Platform.runLater(() -> {
+                this.songCard.setCardItem(cardItem);
+
+                getChildren().setAll(this.gridPane);
+            });
+        }
     }
 
     private Optional<Playlist> openAddToPlaylistDialog() {
