@@ -1,6 +1,5 @@
 package org.saartako.client.services;
 
-import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
@@ -9,7 +8,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
-import org.saartako.client.utils.HttpUtils;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.playlist.PlaylistDTO;
@@ -19,9 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -29,21 +24,17 @@ public class PlaylistService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final Gson GSON = new Gson();
-
-    private final HttpService httpService;
-    private final AuthService authService;
+    private final PlaylistApiService playlistApiService;
 
     private final ListProperty<Playlist> playlists = new SimpleListProperty<>(this, "playlists");
 
     private final ObjectProperty<Playlist> currentPlaylist = new SimpleObjectProperty<>(this, "currentPlaylist");
 
-    private PlaylistService(HttpService httpService, AuthService authService) {
-        this.httpService = httpService;
-        this.authService = authService;
+    private PlaylistService(PlaylistApiService playlistApiService, AuthService authService) {
+        this.playlistApiService = playlistApiService;
 
         // TODO: do it lazily
-        this.authService.loggedUserProperty().addListener(observable -> fetchData());
+        authService.loggedUserProperty().addListener(observable -> fetchData());
         fetchData();
     }
 
@@ -73,11 +64,6 @@ public class PlaylistService {
 
     public void fetchData() {
         fetchPlaylists().whenComplete((playlists, error) -> {
-            if (playlists != null) {
-                final ObservableList<Playlist> list =
-                    FXCollections.observableArrayList(playlists);
-                this.playlists.setValue(list);
-            }
             if (error != null) {
                 Platform.runLater(() -> {
                     final Alert alert = new Alert(
@@ -90,106 +76,55 @@ public class PlaylistService {
     }
 
     public CompletableFuture<Playlist[]> fetchPlaylists() {
-        final String jwtToken = this.authService.getJwtToken();
-        if (jwtToken == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist/mine"))
-            .GET()
-            .header("Authorization", "Bearer " + jwtToken)
-            .build();
-
         LOGGER.info("Trying to fetch playlists");
 
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .exceptionallyCompose(error -> {
-                LOGGER.info("Failed to fetch playlists - {}", error.getMessage());
+        return this.playlistApiService.fetchPlaylists()
+            .whenComplete((playlists, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to fetch playlists - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Fetch playlists successfully");
 
-                return CompletableFuture.failedFuture(error);
-            })
-            .thenApply(response -> {
-                LOGGER.info("Fetch playlists successfully");
-
-                return GSON.fromJson(response.body(), PlaylistDTO[].class);
+                    final ObservableList<Playlist> list =
+                        FXCollections.observableArrayList(playlists);
+                    this.playlists.setValue(list);
+                }
             });
     }
 
     public CompletableFuture<Playlist> createPlaylist(CreatePlaylistDTO createPlaylist) {
-        final String jwtToken = this.authService.getJwtToken();
-        if (jwtToken == null) {
-            final Exception exception = new Exception("Unauthorized");
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final String payload = GSON.toJson(createPlaylist);
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist"))
-            .POST(HttpRequest.BodyPublishers.ofString(payload))
-            .header("Authorization", "Bearer " + jwtToken)
-            .header("Content-Type", "application/json")
-            .build();
-
         LOGGER.info("Trying to create playlist");
 
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .exceptionallyCompose(error -> {
-                LOGGER.info("Failed to create playlist - {}", error.getMessage());
+        return this.playlistApiService.createPlaylist(createPlaylist)
+            .whenComplete((playlist, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to create playlist - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to create playlist");
 
-                return CompletableFuture.failedFuture(error);
-            })
-            .thenApply(response -> {
-                LOGGER.info("Create playlist successfully");
-
-                final Playlist playlist = GSON.fromJson(
-                    response.body(), PlaylistDTO.class);
-                this.playlists.add(playlist);
-                return playlist;
+                    this.playlists.add(playlist);
+                }
             });
     }
 
     public CompletableFuture<Void> addPlaylistSong(Playlist playlist, Song song) {
-        final String jwtToken = this.authService.getJwtToken();
-        if (jwtToken == null) {
-            final Exception exception = new Exception("Unauthorized");
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist/" + playlist.getId() + "/song/" + song.getId()))
-            .POST(HttpRequest.BodyPublishers.noBody())
-            .header("Authorization", "Bearer " + jwtToken)
-            .header("Content-Type", "application/json")
-            .build();
-
         LOGGER.info("Trying to add song to playlist");
 
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .exceptionallyCompose(e -> {
-                LOGGER.error("Failed to add song to playlist - {}", e.getMessage());
+        return this.playlistApiService.addPlaylistSong(playlist, song)
+            .whenComplete((never, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to add song to playlist - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to add song to playlist");
 
-                return CompletableFuture.failedFuture(e);
-            })
-            .thenApply(response -> {
-                LOGGER.info("Added song to playlist successfully");
+                    int index = this.playlists.indexOf(playlist);
+                    if (index == -1) {
+                        LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
+                    }
 
-                int index = playlists.indexOf(playlist);
-                if (index == -1) {
-                    LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
+                    ((PlaylistDTO) playlist).getSongs().add((SongDTO) song);
+                    this.playlists.set(index, playlist);
                 }
-
-                ((PlaylistDTO) playlist).getSongs().add((SongDTO) song);
-                playlists.set(index, playlist);
-
-                return null;
             });
     }
 
@@ -208,7 +143,8 @@ public class PlaylistService {
 
     private static final class InstanceHolder {
         private static final PlaylistService INSTANCE = new PlaylistService(
-            HttpService.getInstance(),
-            AuthService.getInstance());
+            PlaylistApiService.getInstance(),
+            AuthService.getInstance()
+        );
     }
 }

@@ -4,18 +4,13 @@ import com.google.gson.Gson;
 import org.saartako.client.utils.HttpUtils;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class SongApiService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final Gson GSON = new Gson();
 

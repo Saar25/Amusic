@@ -57,11 +57,6 @@ public class SongService {
 
     public void fetchData() {
         fetchSongs().whenComplete((songs, error) -> {
-            if (songs != null) {
-                final ObservableList<Song> list =
-                    FXCollections.observableArrayList(songs);
-                this.songs.setValue(list);
-            }
             if (error != null) {
                 Platform.runLater(() -> {
                     final Alert alert = new Alert(
@@ -82,6 +77,10 @@ public class SongService {
                     LOGGER.error("Failed to fetch songs - {}", throwable.getMessage());
                 } else {
                     LOGGER.info("Fetch songs successfully");
+
+                    final ObservableList<Song> list =
+                        FXCollections.observableArrayList(songs);
+                    this.songs.setValue(list);
                 }
             });
     }
