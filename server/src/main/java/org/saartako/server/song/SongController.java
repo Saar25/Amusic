@@ -1,10 +1,7 @@
 package org.saartako.server.song;
 
-import org.saartako.common.genre.GenreDTO;
-import org.saartako.common.language.LanguageDTO;
 import org.saartako.common.song.Song;
-import org.saartako.common.song.SongDTO;
-import org.saartako.common.user.UserDTO;
+import org.saartako.common.song.SongUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,25 +20,7 @@ public class SongController {
     public ResponseEntity<List<? extends Song>> findAll() {
         final List<SongEntity> songEntities = this.songService.findAll();
 
-        final List<? extends Song> body = songEntities.stream().map(songEntity ->
-            new SongDTO()
-                .setId(songEntity.getId())
-                .setName(songEntity.getName())
-                .setFileName(songEntity.getFileName())
-                .setUploader(new UserDTO()
-                    .setId(songEntity.getUploader().getId())
-                    .setDisplayName(songEntity.getUploader().getDisplayName())
-                )
-                .setGenre(songEntity.getGenre() == null ? null :
-                    new GenreDTO()
-                        .setId(songEntity.getGenre().getId())
-                        .setName(songEntity.getGenre().getName())
-                )
-                .setLanguage(songEntity.getLanguage() == null ? null : new LanguageDTO()
-                    .setId(songEntity.getLanguage().getId())
-                    .setName(songEntity.getLanguage().getName())
-                )
-        ).toList();
+        final List<? extends Song> body = SongUtils.copyDisplay(songEntities);
 
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }

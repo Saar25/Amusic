@@ -1,11 +1,9 @@
 package org.saartako.server.playlist;
 
-import org.saartako.common.genre.GenreDTO;
-import org.saartako.common.language.LanguageDTO;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.playlist.PlaylistDTO;
-import org.saartako.common.song.SongDTO;
+import org.saartako.common.playlist.PlaylistUtils;
 import org.saartako.common.user.User;
 import org.saartako.common.user.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/playlist")
@@ -31,36 +28,7 @@ public class PlaylistController {
 
         final List<PlaylistEntity> playlistEntities = this.playlistService.findByOwnerId(user.getId());
 
-        final List<? extends Playlist> body = playlistEntities.stream().map(playlistEntity ->
-            new PlaylistDTO()
-                .setId(playlistEntity.getId())
-                .setOwner(new UserDTO()
-                    .setId(playlistEntity.getOwnerId())
-                    .setDisplayName(playlistEntity.getOwner().getDisplayName())
-                )
-                .setName(playlistEntity.getName())
-                .setPrivate(playlistEntity.isPrivate())
-                .setModifiable(playlistEntity.isModifiable())
-                .setSongs(playlistEntity.getSongs().stream().map(songEntity ->
-                    new SongDTO()
-                        .setId(songEntity.getId())
-                        .setName(songEntity.getName())
-                        .setFileName(songEntity.getFileName())
-                        .setUploader(
-                            new UserDTO()
-                                .setId(songEntity.getUploader().getId())
-                                .setDisplayName(songEntity.getUploader().getDisplayName())
-                        )
-                        .setGenre(songEntity.getGenre() == null ? null : new GenreDTO()
-                            .setId(songEntity.getGenre().getId())
-                            .setName(songEntity.getGenre().getName())
-                        )
-                        .setLanguage(songEntity.getLanguage() == null ? null : new LanguageDTO()
-                            .setId(songEntity.getLanguage().getId())
-                            .setName(songEntity.getLanguage().getName())
-                        )
-                ).collect(Collectors.toSet()))
-        ).toList();
+        final List<? extends Playlist> body = PlaylistUtils.copyDisplay(playlistEntities);
 
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }

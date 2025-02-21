@@ -6,6 +6,14 @@ public class UserUtils {
         throw new RuntimeException("Cannot create instance of class " + getClass().getName());
     }
 
+    public static UserDTO copyDisplay(User user) {
+        return user == null
+            ? null
+            : new UserDTO()
+                .setId(user.getId())
+                .setDisplayName(user.getDisplayName());
+    }
+
     public static String toString(User user) {
         return "User{" +
                "id=" + user.getId() +
