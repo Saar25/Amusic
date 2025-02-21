@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -72,7 +73,7 @@ public class SongService {
         LOGGER.info("Trying to fetch songs");
 
         return this.songApiService.fetchSongs()
-            .whenComplete((song, throwable) -> {
+            .whenComplete((songs, throwable) -> {
                 if (throwable != null) {
                     LOGGER.error("Failed to fetch songs - {}", throwable.getMessage());
                 } else {

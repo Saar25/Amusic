@@ -11,7 +11,6 @@ import org.saartako.common.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 
@@ -19,7 +18,7 @@ public class AuthService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final HttpService httpService;
+    private final AuthApiService authApiService;
 
     private final JwtParser<User> userJwtParser = new UserJwtParser();
 
@@ -32,8 +31,8 @@ public class AuthService {
 
     private final BooleanBinding isLoggedIn = this.jwtToken.isNotNull();
 
-    private AuthService(HttpService httpService) {
-        this.httpService = httpService;
+    private AuthService(AuthApiService authApiService) {
+        this.authApiService = authApiService;
     }
 
     public static AuthService getInstance() {
@@ -69,42 +68,38 @@ public class AuthService {
     }
 
     public CompletableFuture<String> login(String username, String password) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                LOGGER.info("Trying to sign in {}", username);
-                final String jwtToken = this.httpService.login(username, password);
-                LOGGER.info("Signed in successfully - {}", jwtToken);
+        LOGGER.info("Trying to sign in {}", username);
 
-                this.jwtToken.set(jwtToken);
+        return this.authApiService.login(username, password)
+            .whenComplete((jwtToken, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.info("Failed to sign in - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to sign in - {}", jwtToken);
 
-                return jwtToken;
-            } catch (IOException | InterruptedException e) {
-                LOGGER.info("Failed to sign - {}", e.getMessage());
-
-                throw new RuntimeException(e);
-            }
-        });
+                    this.jwtToken.set(jwtToken);
+                }
+            });
     }
 
     public CompletableFuture<String> register(String username, String password, String displayName) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                LOGGER.info("Trying to registry {}", username);
-                final String jwtToken = this.httpService.register(username, password, displayName);
-                LOGGER.info("Registered successfully - {}", jwtToken);
+        LOGGER.info("Trying to register {}", username);
 
-                this.jwtToken.set(jwtToken);
+        return this.authApiService.register(username, password, displayName)
+            .whenComplete((jwtToken, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.info("Failed to register - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to register - {}", jwtToken);
 
-                return jwtToken;
-            } catch (IOException | InterruptedException e) {
-                LOGGER.info("Failed to register - {}", e.getMessage());
-
-                throw new RuntimeException(e);
-            }
-        });
+                    this.jwtToken.set(jwtToken);
+                }
+            });
     }
 
     private static final class InstanceHolder {
-        private static final AuthService INSTANCE = new AuthService(HttpService.getInstance());
+        private static final AuthService INSTANCE = new AuthService(
+            AuthApiService.getInstance()
+        );
     }
 }
