@@ -29,7 +29,7 @@ public class AuthService {
         this.jwtToken
     );
 
-    private final BooleanBinding isLoggedIn = this.jwtToken.isNotNull();
+    private final BooleanBinding isLoggedIn = this.loggedUser.isNotNull();
 
     private AuthService(AuthApiService authApiService) {
         this.authApiService = authApiService;

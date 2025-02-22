@@ -82,6 +82,8 @@ public class PlaylistService {
             .whenComplete((playlists, throwable) -> {
                 if (throwable != null) {
                     LOGGER.error("Failed to fetch playlists - {}", throwable.getMessage());
+
+                    this.playlists.setValue(FXCollections.emptyObservableList());
                 } else {
                     LOGGER.info("Fetch playlists successfully");
 
