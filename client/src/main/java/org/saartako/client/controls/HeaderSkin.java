@@ -5,8 +5,8 @@ import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -18,7 +18,7 @@ import org.saartako.client.enums.AppTheme;
 import org.saartako.client.services.AuthService;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.ThemeService;
-import org.saartako.client.utils.RegionUtils;
+import org.saartako.client.utils.LayoutUtils;
 
 public class HeaderSkin extends SkinBase<Header> {
 
@@ -42,12 +42,12 @@ public class HeaderSkin extends SkinBase<Header> {
 
         final Button signOutButton = createSignOutButton();
 
-        final Region spacing = RegionUtils.createHorizontal();
+        final Node vSpace = LayoutUtils.createHorizontalSpace();
 
         final InputGroup tabsInputGroup = createToggleGroup();
 
         final ToolBar toolBar = new ToolBar(titleLabel, separator, welcomeLabel,
-            themeChangeButton, signOutButton, spacing, tabsInputGroup);
+            themeChangeButton, signOutButton, vSpace, tabsInputGroup);
         toolBar.getStyleClass().add("elevated-2");
         toolBar.setPadding(new Insets(Config.GAP_LARGE));
 
