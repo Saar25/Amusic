@@ -80,6 +80,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         final List<? extends Node> cards = songs.stream().map(song -> {
             final CardItem songCardItem = SongUtils.songToCardItem(song);
             final MusicCard songCard = new MusicCard(songCardItem);
+            songCard.setExpandable(true);
             songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e -> {
                 this.songService.setCurrentSong(song);
                 this.routerService.push(Route.SONG_VIEW);

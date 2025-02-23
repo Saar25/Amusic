@@ -136,6 +136,7 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
                     final CardItem cardItem = PlaylistUtils.playlistToCardItem(playlist);
                     final MusicCard musicCard = new MusicCard();
                     musicCard.setCardItem(cardItem);
+                    musicCard.setExpandable(true);
                     musicCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, event -> {
                         this.playlistService.setCurrentPlaylist(playlist);
                         this.routerService.push(Route.PLAYLIST_VIEW);

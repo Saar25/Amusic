@@ -50,6 +50,9 @@ public class MusicCardSkin extends SkinBase<MusicCard> {
             getSkinnable().fireEvent(event);
         });
 
+        button.visibleProperty().bind(control.expandableProperty());
+        button.managedProperty().bind(control.expandableProperty());
+
         final HBox footer = new HBox(this.detailsList, RegionUtils.createHorizontal(), button);
         footer.setAlignment(Pos.BOTTOM_CENTER);
         this.card.setFooter(footer);

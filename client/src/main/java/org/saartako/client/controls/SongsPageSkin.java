@@ -84,6 +84,7 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
                     final CardItem cardItem = SongUtils.songToCardItem(song);
                     final MusicCard musicCard = new MusicCard();
                     musicCard.setCardItem(cardItem);
+                    musicCard.setExpandable(true);
                     musicCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, event -> {
                         this.songService.setCurrentSong(song);
                         this.routerService.push(Route.SONG_VIEW);
