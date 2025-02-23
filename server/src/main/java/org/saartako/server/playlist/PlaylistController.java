@@ -62,6 +62,14 @@ public class PlaylistController {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         this.playlistService.addPlaylistSong(user, id, songId);
-        return ResponseEntity.ok(null);
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @DeleteMapping("/{id}/song/{songId}")
+    public ResponseEntity<Void> deletePlaylistSong(@PathVariable("id") long id, @PathVariable("songId") long songId) {
+        this.playlistService.deletePlaylistSong(id, songId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 }

@@ -45,6 +45,11 @@ public class PlaylistService {
         return this.playlistRepository.save(playlist);
     }
 
+    public void deletePlaylist(long id) {
+        this.playlistRepository.deletePlaylistFromSongs(id);
+        this.playlistRepository.deleteById(id);
+    }
+
     public void addPlaylistSong(User owner, long playlistId, long songId) {
         final Optional<PlaylistEntity> playlistReference = this.playlistRepository.findById(playlistId);
         final Optional<SongEntity> songReference = this.songRepository.findById(songId);
@@ -60,8 +65,7 @@ public class PlaylistService {
         this.playlistRepository.addPlaylistSong(playlistId, songId);
     }
 
-    public void deletePlaylist(long id) {
-        this.playlistRepository.deletePlaylistFromSongs(id);
-        this.playlistRepository.deleteById(id);
+    public void deletePlaylistSong(long playlistId, long songId) {
+        this.playlistRepository.deletePlaylistSong(playlistId, songId);
     }
 }
