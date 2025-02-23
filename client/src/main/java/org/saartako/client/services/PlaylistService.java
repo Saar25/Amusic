@@ -145,6 +145,27 @@ public class PlaylistService {
             });
     }
 
+    public CompletableFuture<Void> deletePlaylistSong(Playlist playlist, Song song) {
+        LOGGER.info("Trying to delete song from playlist");
+
+        return this.playlistApiService.deletePlaylistSong(playlist, song)
+            .whenComplete((never, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to delete song from playlist - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to delete song from playlist");
+
+                    int index = this.playlists.indexOf(playlist);
+                    if (index == -1) {
+                        LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
+                    }
+
+                    ((PlaylistDTO) playlist).getSongs().remove((SongDTO) song);
+                    this.playlists.set(index, playlist);
+                }
+            });
+    }
+
     public List<? extends Playlist> filterPlaylists(List<? extends Playlist> playlists, String filter) {
         final String lowercaseFilter = filter.toLowerCase();
 

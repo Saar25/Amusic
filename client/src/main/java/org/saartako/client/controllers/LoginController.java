@@ -79,7 +79,7 @@ public class LoginController {
                     final Alert alert = new Alert(
                         Alert.AlertType.INFORMATION,
                         "Failed to sign in\n" + error.getMessage());
-                    alert.showAndWait();
+                    alert.show();
                 });
             }
         });
@@ -99,7 +99,7 @@ public class LoginController {
                     final Alert alert = new Alert(
                         Alert.AlertType.INFORMATION,
                         "Failed to register\n" + error.getMessage());
-                    alert.showAndWait();
+                    alert.show();
                 });
             }
         });

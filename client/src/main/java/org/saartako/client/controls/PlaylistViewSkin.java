@@ -3,12 +3,16 @@ package org.saartako.client.controls;
 import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -68,31 +72,35 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
     }
 
     private void updatePlaylist(Playlist playlist) {
-        Collection<? extends Song> songs = playlist.getSongs();
+        final Collection<? extends Song> songs = playlist.getSongs();
 
         final CardItem playlistCard = PlaylistUtils.playlistToCardItem(playlist);
         this.playlistCard.setCardItem(playlistCard);
 
 //        startButton.setOnAction(event -> startPlaying());
 
-        final List<MusicCard> cards = songs.stream().map(song -> {
+        final List<? extends Node> cards = songs.stream().map(song -> {
             final CardItem songCardItem = SongUtils.songToCardItem(song);
             final MusicCard songCard = new MusicCard(songCardItem);
             songCard.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
                 this.songService.setCurrentSong(song);
                 this.routerService.push(Route.SONG_VIEW);
             });
-            return songCard;
+
+            HBox.setHgrow(songCard, Priority.ALWAYS);
+            final Button deletePlaylistSongButton = createDeletePlaylistSongButton(song);
+            final HBox hBox = new HBox(16, songCard, deletePlaylistSongButton);
+            hBox.setAlignment(Pos.CENTER);
+            return hBox;
         }).toList();
         this.songList.getChildren().setAll(cards);
     }
 
     private Button createDeletePlaylistButton() {
-        final Button deletePlaylistButton = new Button("Delete Playlist",
-            new FontIcon(Material2AL.DELETE));
-        deletePlaylistButton.getStyleClass().add(Styles.DANGER);
+        final Button button = new Button("Delete Playlist", new FontIcon(Material2AL.DELETE));
+        button.getStyleClass().add(Styles.DANGER);
 
-        deletePlaylistButton.setOnAction(event -> {
+        button.setOnAction(event -> {
             final Playlist playlist = this.playlistService.getCurrentPlaylist();
 
             this.playlistService.deletePlaylist(playlist).whenComplete((response, error) -> {
@@ -109,6 +117,26 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
             });
         });
 
-        return deletePlaylistButton;
+        return button;
+    }
+
+    private Button createDeletePlaylistSongButton(Song song) {
+        final Button button = new Button("", new FontIcon(Material2AL.DELETE));
+        button.getStyleClass().addAll(Styles.DANGER, Styles.BUTTON_ICON);
+
+        button.setOnAction(event -> {
+            final Playlist playlist = this.playlistService.getCurrentPlaylist();
+
+            this.playlistService.deletePlaylistSong(playlist, song).whenComplete((response, error) -> {
+                Platform.runLater(() -> {
+                    final Alert alert = error != null
+                        ? new Alert(Alert.AlertType.ERROR, "Failed too delete song from playlist\n" + error.getMessage())
+                        : new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete song from playlist");
+                    alert.show();
+                });
+            });
+        });
+
+        return button;
     }
 }

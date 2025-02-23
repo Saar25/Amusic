@@ -42,34 +42,10 @@ public class SongViewSkin extends SkinBase<SongView> {
     public SongViewSkin(SongView control) {
         super(control);
 
-        final Button favoriteButton = new Button("",
-            new FontIcon(Material2AL.FAVORITE_BORDER));
-        favoriteButton.getStyleClass().add(Styles.BUTTON_ICON);
-
-        final Button addToPlaylistButton = new Button("Add to Playlist",
-            new FontIcon(Material2AL.FEATURED_PLAY_LIST));
-        addToPlaylistButton.getStyleClass().add(Styles.ACCENT);
-
-        addToPlaylistButton.setOnAction(event -> {
-            final Optional<Playlist> result = openAddToPlaylistDialog();
-
-            result.ifPresent(playlist -> {
-                final Song song = this.songService.getCurrentSong();
-
-                this.playlistService.addPlaylistSong(playlist, song).whenComplete((response, error) -> {
-                    Platform.runLater(() -> {
-                        final Alert alert = error != null
-                            ? new Alert(Alert.AlertType.ERROR, "Failed too add song\n" + error.getMessage())
-                            : new Alert(Alert.AlertType.INFORMATION, "Added song to playlist successfully");
-                        alert.showAndWait();
-                    });
-                });
-            });
-        });
-
-        final Button deleteSongButton = createDeleteSongButton();
-
-        final VBox vBox = new VBox(16, favoriteButton, addToPlaylistButton, deleteSongButton);
+        final VBox vBox = new VBox(16,
+            createAddToFavoritesButton(),
+            createAddToPlaylistButton(),
+            createDeleteSongButton());
 
         this.slider.setSkin(new ProgressSliderSkin(this.slider));
         this.slider.getStyleClass().add(Styles.LARGE);
@@ -151,12 +127,47 @@ public class SongViewSkin extends SkinBase<SongView> {
         return playlistComboBox;
     }
 
-    private Button createDeleteSongButton() {
-        final Button deleteSongButton = new Button("Delete Song",
-            new FontIcon(Material2AL.DELETE));
-        deleteSongButton.getStyleClass().add(Styles.DANGER);
+    private Button createAddToFavoritesButton() {
+        final Button button = new Button("", new FontIcon(Material2AL.FAVORITE_BORDER));
+        button.getStyleClass().add(Styles.BUTTON_ICON);
 
-        deleteSongButton.setOnAction(event -> {
+        button.setOnAction(event -> {
+            Platform.runLater(() -> {
+                final Alert alert = new Alert(Alert.AlertType.WARNING, "Behaviour not implemented!");
+                alert.show();
+            });
+        });
+        return button;
+    }
+
+    private Button createAddToPlaylistButton() {
+        final Button button = new Button("Add to Playlist", new FontIcon(Material2AL.FEATURED_PLAY_LIST));
+        button.getStyleClass().add(Styles.ACCENT);
+
+        button.setOnAction(event -> {
+            final Optional<Playlist> result = openAddToPlaylistDialog();
+
+            result.ifPresent(playlist -> {
+                final Song song = this.songService.getCurrentSong();
+
+                this.playlistService.addPlaylistSong(playlist, song).whenComplete((response, error) -> {
+                    Platform.runLater(() -> {
+                        final Alert alert = error != null
+                            ? new Alert(Alert.AlertType.ERROR, "Failed too add song\n" + error.getMessage())
+                            : new Alert(Alert.AlertType.INFORMATION, "Added song to playlist successfully");
+                        alert.show();
+                    });
+                });
+            });
+        });
+        return button;
+    }
+
+    private Button createDeleteSongButton() {
+        final Button button = new Button("Delete Song", new FontIcon(Material2AL.DELETE));
+        button.getStyleClass().add(Styles.DANGER);
+
+        button.setOnAction(event -> {
             final Song song = this.songService.getCurrentSong();
 
             this.songService.deleteSong(song).whenComplete((response, error) -> {
@@ -172,6 +183,6 @@ public class SongViewSkin extends SkinBase<SongView> {
                 });
             });
         });
-        return deleteSongButton;
+        return button;
     }
 }

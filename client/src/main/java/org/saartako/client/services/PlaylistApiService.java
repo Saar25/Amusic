@@ -117,6 +117,27 @@ public class PlaylistApiService {
             .thenApply(response -> null);
     }
 
+    public CompletableFuture<Void> deletePlaylistSong(Playlist playlist, Song song) {
+        if (!this.authService.isLoggedIn()) {
+            final Exception exception = new NullPointerException("User is not logged in");
+
+            return CompletableFuture.failedFuture(exception);
+        }
+
+        final String authorization = this.authService.getJwtToken();
+
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("http://localhost:8080/playlist/" + playlist.getId() + "/song/" + song.getId()))
+            .DELETE()
+            .header("Authorization", "Bearer " + authorization)
+            .build();
+
+        return this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenCompose(HttpUtils::validateResponse)
+            .thenApply(response -> null);
+    }
+
     private static final class InstanceHolder {
         private static final PlaylistApiService INSTANCE = new PlaylistApiService(
             HttpService.getInstance(),
