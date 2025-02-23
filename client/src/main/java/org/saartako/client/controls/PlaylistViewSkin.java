@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.saartako.client.Config;
 import org.saartako.client.constants.Route;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
@@ -50,13 +51,13 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         songScrollPane.setFitToWidth(true);
 
         final Button deletePlaylistButton = createDeletePlaylistButton();
-        final VBox vBox = new VBox(16, deletePlaylistButton);
+        final VBox vBox = new VBox(Config.GAP_LARGE, deletePlaylistButton);
 
         final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
         startButton.setOnAction(event -> startPlaying());
 
         final GridPane gridPane = new GridPane();
-        GridUtils.initializeGrid(gridPane, 12, 12, 16, 16);
+        GridUtils.initializeGrid(gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
 
         gridPane.add(this.playlistCard, 0, 2, 6, 6);
         gridPane.add(vBox, 6, 2, 2, 6);
@@ -86,7 +87,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
             HBox.setHgrow(songCard, Priority.ALWAYS);
             final Button deletePlaylistSongButton = createDeletePlaylistSongButton(song);
-            final HBox hBox = new HBox(16, songCard, deletePlaylistSongButton);
+            final HBox hBox = new HBox(Config.GAP_LARGE, songCard, deletePlaylistSongButton);
             hBox.setAlignment(Pos.CENTER);
             return hBox;
         }).toList();

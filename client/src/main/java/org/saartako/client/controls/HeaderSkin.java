@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.saartako.client.Config;
 import org.saartako.client.components.RequiredToggleButton;
 import org.saartako.client.constants.Route;
 import org.saartako.client.enums.AppTheme;
@@ -48,12 +49,12 @@ public class HeaderSkin extends SkinBase<Header> {
         final ToolBar toolBar = new ToolBar(titleLabel, separator, welcomeLabel,
             themeChangeButton, signOutButton, spacing, tabsInputGroup);
         toolBar.getStyleClass().add("elevated-2");
-        toolBar.setPadding(new Insets(16));
+        toolBar.setPadding(new Insets(Config.GAP_LARGE));
 
         final Button previousButton = new Button("Previous",
             new FontIcon(Material2AL.ARROW_BACK));
         previousButton.getStyleClass().add(Styles.FLAT);
-        VBox.setMargin(previousButton, new Insets(8, 0, 0, 16));
+        VBox.setMargin(previousButton, new Insets(Config.GAP_MEDIUM, 0, 0, Config.GAP_LARGE));
 
         previousButton.setOnAction(event -> this.routerService.previous());
         previousButton.managedProperty().bind(this.routerService.hasHistoryProperty());

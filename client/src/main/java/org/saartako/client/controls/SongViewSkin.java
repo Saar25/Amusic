@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
+import org.saartako.client.Config;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.services.RouterService;
@@ -42,7 +43,7 @@ public class SongViewSkin extends SkinBase<SongView> {
     public SongViewSkin(SongView control) {
         super(control);
 
-        final VBox vBox = new VBox(16,
+        final VBox vBox = new VBox(Config.GAP_LARGE,
             createAddToFavoritesButton(),
             createAddToPlaylistButton(),
             createDeleteSongButton());
@@ -50,7 +51,7 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.slider.setSkin(new ProgressSliderSkin(this.slider));
         this.slider.getStyleClass().add(Styles.LARGE);
 
-        GridUtils.initializeGrid(this.gridPane, 12, 12, 16, 16);
+        GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
 
         this.gridPane.add(this.songCard, 1, 2, 6, 6);
         this.gridPane.add(vBox, 8, 2, 4, 6);
@@ -81,8 +82,8 @@ public class SongViewSkin extends SkinBase<SongView> {
         final Dialog<Playlist> dialog = new Dialog<>();
         dialog.setTitle("Add to playlist");
 
-        final HBox hBox = new HBox(16);
-        hBox.setPadding(new Insets(16));
+        final HBox hBox = new HBox(Config.GAP_LARGE);
+        hBox.setPadding(new Insets(Config.GAP_LARGE));
         hBox.setAlignment(Pos.CENTER);
 
         final Label playlistLabel = new Label("Choose playlist:");

@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.saartako.client.Config;
 import org.saartako.client.constants.Route;
 import org.saartako.client.events.ListItemClickEvent;
 import org.saartako.client.models.CardItem;
@@ -40,13 +41,13 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
 
     private final Button createPlaylistButton = new Button("Create new playlist");
 
-    private final VBox node = new VBox(16);
+    private final VBox node = new VBox(Config.GAP_LARGE);
 
     public PlaylistsPageSkin(PlaylistsPage control) {
         super(control);
 
         this.node.setAlignment(Pos.TOP_CENTER);
-        this.node.setPadding(new Insets(8, 40, 8, 40));
+        this.node.setPadding(new Insets(Config.GAP_MEDIUM, 40, Config.GAP_MEDIUM, 40));
 
         this.searchTextField.setPromptText("Search");
         this.searchTextField.setMaxWidth(300);
@@ -88,9 +89,9 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
         dialog.setTitle("Create new playlist");
 
         final GridPane gridPane = new GridPane();
-        gridPane.setPadding(new Insets(8));
-        gridPane.setHgap(8);
-        gridPane.setVgap(8);
+        gridPane.setPadding(new Insets(Config.GAP_MEDIUM));
+        gridPane.setHgap(Config.GAP_MEDIUM);
+        gridPane.setVgap(Config.GAP_MEDIUM);
 
         final Label playlistNameLabel = new Label("Enter playlist name:");
         final TextField playlistNameTextField = new TextField();

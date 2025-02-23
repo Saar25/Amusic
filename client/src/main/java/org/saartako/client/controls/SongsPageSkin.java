@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.saartako.client.Config;
 import org.saartako.client.constants.Route;
 import org.saartako.client.events.ListItemClickEvent;
 import org.saartako.client.models.CardItem;
@@ -35,13 +36,13 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
 
     private final Loader loader = new Loader();
 
-    private final VBox node = new VBox(16);
+    private final VBox node = new VBox(Config.GAP_LARGE);
 
     public SongsPageSkin(SongsPage control) {
         super(control);
 
         this.node.setAlignment(Pos.TOP_CENTER);
-        this.node.setPadding(new Insets(8, 40, 8, 40));
+        this.node.setPadding(new Insets(Config.GAP_MEDIUM, 40, Config.GAP_MEDIUM, 40));
 
         this.searchTextField.setPromptText("Search");
         this.searchTextField.setMaxWidth(300);
