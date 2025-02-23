@@ -9,9 +9,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -50,21 +53,39 @@ public class SongViewSkin extends SkinBase<SongView> {
             createAddToPlaylistButton(),
             createDeleteSongButton());
 
+        final Media media = new Media("http://localhost:8080/song/1/audio");
+
+        // Create a MediaPlayer to control playback
+        final MediaPlayer mediaPlayer = new MediaPlayer(media);
+
+        // Update the Slider position as the media plays
+        mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+            this.slider.setValue(newValue.toMillis());
+        });
+
         this.slider.setSkin(new ProgressSliderSkin(this.slider));
         this.slider.getStyleClass().add(Styles.LARGE);
+        this.slider.setMin(0);
+        this.slider.setMax(6000);
+        this.slider.setOnMousePressed(event -> {
+            mediaPlayer.pause();
+        });
+        this.slider.setOnMouseReleased(event -> {
+            mediaPlayer.seek(Duration.millis(this.slider.getValue()));
+            mediaPlayer.play();
+        });
 
         GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
 
+        final MediaView thing = new MediaView(mediaPlayer);
+        mediaPlayer.play();
+
         this.gridPane.add(this.songCard, 1, 2, 6, 6);
         this.gridPane.add(vBox, 8, 2, 4, 6);
-        this.gridPane.add(this.slider, 0, 11, 12, 1);
+        this.gridPane.add(new StackPane(this.slider, thing), 0, 11, 12, 1);
 
         registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
         updateSong();
-
-        final Media media = new Media("http://localhost:8080/song/1/audio");
-        final MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.play();
     }
 
     private void updateSong() {
