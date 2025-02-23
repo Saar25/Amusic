@@ -3,11 +3,9 @@ package org.saartako.client.controls;
 import atlantafx.base.controls.Card;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.SkinBase;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
@@ -17,13 +15,18 @@ import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
+import org.saartako.client.models.MenuAction;
 import org.saartako.client.utils.LayoutUtils;
+
+import java.util.List;
 
 public class MusicCardSkin extends SkinBase<MusicCard> {
 
     private final Circle headerTileGraphic = new Circle(8);
 
     private final Label headerTile = new Label();
+
+    private final MenuButton menuButton = new MenuButton(null, new FontIcon(Material2MZ.MORE_VERT));
 
     private final VBox detailsList = new VBox();
 
@@ -37,24 +40,43 @@ public class MusicCardSkin extends SkinBase<MusicCard> {
         this.headerTile.setGraphic(this.headerTileGraphic);
         this.headerTile.getStyleClass().add(Styles.TITLE_4);
 
-        final MenuButton menuButton = new MenuButton(null, new FontIcon(Material2MZ.MORE_VERT));
-        menuButton.getStyleClass().addAll(Styles.FLAT, Tweaks.NO_ARROW);
-        this.card.setHeader(new HBox(this.headerTile, LayoutUtils.createHorizontalSpace(), menuButton));
+        this.menuButton.getStyleClass().addAll(Styles.FLAT, Tweaks.NO_ARROW);
 
-        registerChangeListener(control.cardItemProperty(), (observable) ->
+        registerChangeListener(getSkinnable().menuActionsProperty(), observable ->
+            updateMenuItems());
+        updateMenuItems();
+
+        final HBox header = new HBox(this.headerTile, LayoutUtils.createHorizontalSpace(), this.menuButton);
+        header.setAlignment(Pos.TOP_CENTER);
+        this.card.setHeader(header);
+
+        registerChangeListener(control.cardItemProperty(), observable ->
             onCardItemChange(control.getCardItem()));
 
         onCardItemChange(control.getCardItem());
 
         this.card.setBody(LayoutUtils.createVerticalSpace());
 
-        final Button button = createExpandCardButton();
+        final Button exapndCardButton = createExpandCardButton();
 
-        final HBox footer = new HBox(this.detailsList, LayoutUtils.createHorizontalSpace(), button);
+        final HBox footer = new HBox(this.detailsList, LayoutUtils.createHorizontalSpace(), exapndCardButton);
         footer.setAlignment(Pos.BOTTOM_CENTER);
         this.card.setFooter(footer);
 
         getChildren().setAll(this.card);
+    }
+
+    private void updateMenuItems() {
+        final ObservableList<MenuAction> menuActions = getSkinnable().getMenuActions();
+
+        final List<MenuItem> menuItems = menuActions.stream().map(menuAction -> {
+            final MenuItem menuItem = new MenuItem();
+            menuItem.setText(menuAction.name());
+            menuItem.setOnAction(menuAction.onAction());
+            return menuItem;
+        }).toList();
+
+        this.menuButton.getItems().setAll(menuItems);
     }
 
     private void onCardItemChange(CardItem cardItem) {

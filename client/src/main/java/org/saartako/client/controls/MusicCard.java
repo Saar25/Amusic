@@ -1,17 +1,20 @@
 package org.saartako.client.controls;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Control;
 import org.saartako.client.models.CardItem;
+import org.saartako.client.models.MenuAction;
 
 public class MusicCard extends Control {
 
     private final ObjectProperty<CardItem> cardItem = new SimpleObjectProperty<>(this, "cardItem");
 
     private final BooleanProperty expandable = new SimpleBooleanProperty(this, "expandable");
+
+    private final ListProperty<MenuAction> menuActions = new SimpleListProperty<>(
+        this, "menuActions", FXCollections.observableArrayList());
 
     public MusicCard() {
     }
@@ -47,5 +50,17 @@ public class MusicCard extends Control {
 
     public void setExpandable(boolean expandable) {
         this.expandable.set(expandable);
+    }
+
+    public ListProperty<MenuAction> menuActionsProperty() {
+        return this.menuActions;
+    }
+
+    public ObservableList<MenuAction> getMenuActions() {
+        return this.menuActions.get();
+    }
+
+    public void setMenuActions(ObservableList<MenuAction> menuActions) {
+        this.menuActions.set(menuActions);
     }
 }

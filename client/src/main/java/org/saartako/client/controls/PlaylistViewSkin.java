@@ -3,15 +3,12 @@ package org.saartako.client.controls;
 import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -20,6 +17,7 @@ import org.saartako.client.Config;
 import org.saartako.client.constants.Route;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
+import org.saartako.client.models.MenuAction;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.SongService;
@@ -40,12 +38,12 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
     private final MusicCard playlistCard = new MusicCard();
 
-    private final VBox songList = new VBox(10);
+    private final VBox songList = new VBox(Config.GAP_MEDIUM);
 
     public PlaylistViewSkin(PlaylistView control) {
         super(control);
 
-        this.songList.setPadding(new Insets(4));
+        this.songList.setPadding(new Insets(Config.GAP_SMALL));
 
         final ScrollPane songScrollPane = new ScrollPane(songList);
         songScrollPane.setFitToWidth(true);
@@ -81,16 +79,15 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
             final CardItem songCardItem = SongUtils.songToCardItem(song);
             final MusicCard songCard = new MusicCard(songCardItem);
             songCard.setExpandable(true);
+            songCard.getMenuActions().setAll(
+                new MenuAction("Delete from playlist",
+                    event -> deletePlaylistSong(playlist, song))
+            );
             songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e -> {
                 this.songService.setCurrentSong(song);
                 this.routerService.push(Route.SONG_VIEW);
             });
-
-            HBox.setHgrow(songCard, Priority.ALWAYS);
-            final Button deletePlaylistSongButton = createDeletePlaylistSongButton(song);
-            final HBox hBox = new HBox(Config.GAP_LARGE, songCard, deletePlaylistSongButton);
-            hBox.setAlignment(Pos.CENTER);
-            return hBox;
+            return songCard;
         }).toList();
 
         Platform.runLater(() -> {
@@ -113,40 +110,35 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         button.setOnAction(event -> {
             final Playlist playlist = this.playlistService.getCurrentPlaylist();
 
-            this.playlistService.deletePlaylist(playlist).whenComplete((response, error) -> {
-                Platform.runLater(() -> {
-                    final Alert alert;
-                    if (error != null) {
-                        alert = new Alert(Alert.AlertType.ERROR, "Failed too delete playlist\n" + error.getMessage());
-                    } else {
-                        alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete playlist");
-                        alert.resultProperty().addListener(o -> this.routerService.previous());
-                    }
-                    alert.show();
-                });
-            });
+            deletePlaylist(playlist);
         });
 
         return button;
     }
 
-    private Button createDeletePlaylistSongButton(Song song) {
-        final Button button = new Button("", new FontIcon(Material2AL.DELETE));
-        button.getStyleClass().addAll(Styles.DANGER, Styles.BUTTON_ICON);
-
-        button.setOnAction(event -> {
-            final Playlist playlist = this.playlistService.getCurrentPlaylist();
-
-            this.playlistService.deletePlaylistSong(playlist, song).whenComplete((response, error) -> {
-                Platform.runLater(() -> {
-                    final Alert alert = error != null
-                        ? new Alert(Alert.AlertType.ERROR, "Failed too delete song from playlist\n" + error.getMessage())
-                        : new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete song from playlist");
-                    alert.show();
-                });
+    private void deletePlaylist(Playlist playlist) {
+        this.playlistService.deletePlaylist(playlist).whenComplete((response, error) -> {
+            Platform.runLater(() -> {
+                final Alert alert;
+                if (error != null) {
+                    alert = new Alert(Alert.AlertType.ERROR, "Failed too delete playlist\n" + error.getMessage());
+                } else {
+                    alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete playlist");
+                    alert.resultProperty().addListener(o -> this.routerService.previous());
+                }
+                alert.show();
             });
         });
+    }
 
-        return button;
+    private void deletePlaylistSong(Playlist playlist, Song song) {
+        this.playlistService.deletePlaylistSong(playlist, song).whenComplete((response, error) -> {
+            Platform.runLater(() -> {
+                final Alert alert = error != null
+                    ? new Alert(Alert.AlertType.ERROR, "Failed too delete song from playlist\n" + error.getMessage())
+                    : new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete song from playlist");
+                alert.show();
+            });
+        });
     }
 }
