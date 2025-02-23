@@ -2,11 +2,11 @@ package org.saartako.server.auth;
 
 import org.saartako.common.encrypt.Encryption;
 import org.saartako.common.encrypt.Encryptions;
+import org.saartako.common.user.User;
 import org.saartako.server.exceptions.BadCredentialsException;
 import org.saartako.server.exceptions.BadStringLengthException;
 import org.saartako.server.exceptions.UserAlreadyExistsException;
 import org.saartako.server.exceptions.UserNotFoundException;
-import org.saartako.common.user.User;
 import org.saartako.server.user.UserEntity;
 import org.saartako.server.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AuthService {
@@ -45,7 +46,7 @@ public class AuthService {
         return optionalUserEntity;
     }
 
-    public UserEntity save(String username, String password, String displayName) {
+    public UserEntity register(String username, String password, String displayName) {
         final Optional<UserEntity> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistsException();
@@ -67,6 +68,7 @@ public class AuthService {
         userEntity.setPassword(encryptedPassword);
         userEntity.setSalt(salt);
         userEntity.setDisplayName(displayName);
+        userEntity.setRoles(Set.of());
         return this.userRepository.save(userEntity);
     }
 

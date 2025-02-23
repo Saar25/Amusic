@@ -39,7 +39,7 @@ public class AuthController {
         @RequestParam("password") String password,
         @RequestParam("displayName") String displayName
     ) {
-        final User user = this.authService.save(username, password, displayName);
+        final User user = this.authService.register(username, password, displayName);
         final String jwt = this.authService.createJwt(user);
         return ResponseEntity.accepted().body(jwt);
     }
