@@ -122,6 +122,7 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
     }
 
     private void updatePlaylists(ObservableList<Playlist> playlists, String search) {
+        System.out.println(playlists);
         if (playlists == null) {
             Platform.runLater(() -> {
                 this.playlistGrid.getChildren().clear();
@@ -146,6 +147,7 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
                 .toList();
 
             Platform.runLater(() -> {
+                this.playlistGrid.getChildren().clear();
                 GridUtils.addInColumns(this.playlistGrid, musicCards);
                 this.node.getChildren().set(1, this.contentPane);
                 this.createPlaylistButton.setVisible(true);

@@ -29,6 +29,7 @@ public class PlaylistService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final PlaylistApiService playlistApiService;
+    private final AuthService authService;
 
     private final ListProperty<Playlist> playlists = new SimpleListProperty<>(this, "playlists");
 
@@ -43,6 +44,7 @@ public class PlaylistService {
 
     private PlaylistService(PlaylistApiService playlistApiService, AuthService authService) {
         this.playlistApiService = playlistApiService;
+        this.authService = authService;
 
         // TODO: do it lazily
         authService.loggedUserProperty().addListener(observable -> fetchData());
@@ -74,16 +76,20 @@ public class PlaylistService {
     }
 
     public void fetchData() {
-        fetchPlaylists().whenComplete((playlists, error) -> {
-            if (error != null) {
-                Platform.runLater(() -> {
-                    final Alert alert = new Alert(
-                        Alert.AlertType.INFORMATION,
-                        "Failed to fetch playlists\n" + error.getMessage());
-                    alert.show();
-                });
-            }
-        });
+        if (!this.authService.isLoggedIn()) {
+            this.playlists.setValue(FXCollections.observableArrayList());
+        } else {
+            fetchPlaylists().whenComplete((playlists, error) -> {
+                if (error != null) {
+                    Platform.runLater(() -> {
+                        final Alert alert = new Alert(
+                            Alert.AlertType.INFORMATION,
+                            "Failed to fetch playlists\n" + error.getMessage());
+                        alert.show();
+                    });
+                }
+            });
+        }
     }
 
     public CompletableFuture<Playlist[]> fetchPlaylists() {
@@ -94,13 +100,11 @@ public class PlaylistService {
                 if (throwable != null) {
                     LOGGER.error("Failed to fetch playlists - {}", throwable.getMessage());
 
-                    this.playlists.setValue(FXCollections.emptyObservableList());
+                    this.playlists.setValue(FXCollections.observableArrayList());
                 } else {
                     LOGGER.info("Fetch playlists successfully");
 
-                    final ObservableList<Playlist> list =
-                        FXCollections.observableArrayList(playlists);
-                    this.playlists.setValue(list);
+                    this.playlists.setValue(FXCollections.observableArrayList(playlists));
                 }
             });
     }
