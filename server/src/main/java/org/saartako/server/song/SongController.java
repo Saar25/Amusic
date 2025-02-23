@@ -3,11 +3,14 @@ package org.saartako.server.song;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/song")
@@ -29,6 +32,26 @@ public class SongController {
     public ResponseEntity<Void> deleteSong(@PathVariable("id") long id) {
         this.songService.deleteSong(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/{id}/audio")
+    public ResponseEntity<?> getSongAudio(@PathVariable("id") long id) {
+        final Optional<String> filenameOpt = this.songService.findById(id).map(SongEntity::getFileName);
+        if (filenameOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        final File file = new File("./data/audio/" + filenameOpt.get());
+        if (!file.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        final Resource resource = new FileSystemResource(file);
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("audio/mpeg"));
+        headers.setContentDisposition(ContentDisposition.inline().filename(file.getName()).build());
+
+        return ResponseEntity.ok().headers(headers).body(resource);
     }
 }

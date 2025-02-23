@@ -10,7 +10,7 @@ public class HttpUtils {
 
     public static <T> CompletableFuture<HttpResponse<T>> validateResponse(HttpResponse<T> response) {
         return switch (response.statusCode()) {
-            case 200, 201, 204 -> CompletableFuture.completedFuture(response);
+            case 200, 201, 202, 204 -> CompletableFuture.completedFuture(response);
             case 400 -> CompletableFuture.failedFuture(
                 new Exception("Bad Request: " + response.body()));
             case 401 -> CompletableFuture.failedFuture(

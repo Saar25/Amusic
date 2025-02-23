@@ -54,7 +54,7 @@ public class PlaylistController {
     public ResponseEntity<Void> deleteSong(@PathVariable("id") long id) {
         this.playlistService.deletePlaylist(id);
 
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("/{id}/song/{songId}")
@@ -63,13 +63,13 @@ public class PlaylistController {
 
         this.playlistService.addPlaylistSong(user, id, songId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/{id}/song/{songId}")
     public ResponseEntity<Void> deletePlaylistSong(@PathVariable("id") long id, @PathVariable("songId") long songId) {
         this.playlistService.deletePlaylistSong(id, songId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
