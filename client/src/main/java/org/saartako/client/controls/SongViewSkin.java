@@ -10,6 +10,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -59,6 +61,10 @@ public class SongViewSkin extends SkinBase<SongView> {
 
         registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
         updateSong();
+
+        final Media media = new Media("http://localhost:8080/song/1/audio");
+        final MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.play();
     }
 
     private void updateSong() {

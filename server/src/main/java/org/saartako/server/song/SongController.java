@@ -49,7 +49,7 @@ public class SongController {
 
         final Resource resource = new FileSystemResource(file);
         final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("audio/mpeg"));
+        headers.setContentType(MediaType.parseMediaType("audio/wav"));
         headers.setContentDisposition(ContentDisposition.inline().filename(file.getName()).build());
 
         return ResponseEntity.ok().headers(headers).body(resource);
