@@ -7,6 +7,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -14,10 +16,10 @@ import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
 import org.saartako.client.constants.Route;
-import org.saartako.client.events.ListItemClickEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.SongService;
+import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.common.song.Song;
 
@@ -30,9 +32,9 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
 
     private final CustomTextField searchTextField = new CustomTextField();
 
-    private final MusicCardGrid musicCardGrid = new MusicCardGrid();
+    private final GridPane songGrid = new GridPane();
 
-    private final ScrollPane contentPane = new ScrollPane(this.musicCardGrid);
+    private final ScrollPane contentPane = new ScrollPane(this.songGrid);
 
     private final Loader loader = new Loader();
 
@@ -57,13 +59,8 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
         VBox.setVgrow(this.loader, Priority.ALWAYS);
         VBox.setVgrow(this.contentPane, Priority.ALWAYS);
 
-        this.musicCardGrid.addEventHandler(ListItemClickEvent.LIST_ITEM_CLICK, event -> {
-            final int index = event.getIndex();
-            final Song song = this.songService.getSongs().get(index);
-
-            this.songService.setCurrentSong(song);
-            this.routerService.push(Route.SONG_VIEW);
-        });
+        GridUtils.initializeGrid(this.songGrid,
+            Config.GRID_LARGE_COLUMNS, 0, Config.GAP_LARGE, Config.GAP_MEDIUM);
 
         registerChangeListener(this.searchTextField.textProperty(), observable -> updateSongs());
         registerListChangeListener(this.songService.songsProperty(), observable -> updateSongs());
@@ -82,10 +79,21 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
         } else {
             final List<? extends Song> filtered = this.songService.filterSongs(songs, search);
 
-            final List<CardItem> cardItems = filtered.stream().map(SongUtils::songToCardItem).toList();
+            final List<MusicCard> musicCards = filtered.stream()
+                .map(song -> {
+                    final CardItem cardItem = SongUtils.songToCardItem(song);
+                    final MusicCard musicCard = new MusicCard();
+                    musicCard.setCardItem(cardItem);
+                    musicCard.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+                        this.songService.setCurrentSong(song);
+                        this.routerService.push(Route.SONG_VIEW);
+                    });
+                    return musicCard;
+                })
+                .toList();
 
             Platform.runLater(() -> {
-                this.musicCardGrid.cardItemsProperty().setAll(cardItems);
+                GridUtils.addInColumns(this.songGrid, musicCards);
                 this.node.getChildren().set(1, this.contentPane);
             });
         }

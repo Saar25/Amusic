@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -15,10 +16,10 @@ import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
 import org.saartako.client.constants.Route;
-import org.saartako.client.events.ListItemClickEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.services.RouterService;
+import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.PlaylistUtils;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
@@ -33,9 +34,9 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
 
     private final CustomTextField searchTextField = new CustomTextField();
 
-    private final MusicCardGrid musicCardGrid = new MusicCardGrid();
+    private final GridPane playlistGrid = new GridPane();
 
-    private final ScrollPane contentPane = new ScrollPane(this.musicCardGrid);
+    private final ScrollPane contentPane = new ScrollPane(this.playlistGrid);
 
     private final Loader loader = new Loader();
 
@@ -62,13 +63,8 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
         VBox.setVgrow(this.loader, Priority.ALWAYS);
         VBox.setVgrow(this.contentPane, Priority.ALWAYS);
 
-        this.musicCardGrid.addEventHandler(ListItemClickEvent.LIST_ITEM_CLICK, event -> {
-            final int index = event.getIndex();
-            final Playlist playlist = this.playlistService.getPlaylists().get(index);
-
-            this.playlistService.setCurrentPlaylist(playlist);
-            this.routerService.push(Route.PLAYLIST_VIEW);
-        });
+        GridUtils.initializeGrid(this.playlistGrid,
+            Config.GRID_LARGE_COLUMNS, 0, Config.GAP_LARGE, Config.GAP_MEDIUM);
 
         this.createPlaylistButton.getStyleClass().add(Styles.ACCENT);
         this.createPlaylistButton.setOnAction(event -> {
@@ -128,17 +124,28 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
     private void updatePlaylists(ObservableList<Playlist> playlists, String search) {
         if (playlists == null) {
             Platform.runLater(() -> {
-                this.musicCardGrid.cardItemsProperty().clear();
+                this.playlistGrid.getChildren().clear();
                 this.node.getChildren().set(1, this.loader);
                 this.createPlaylistButton.setVisible(false);
             });
         } else {
             final List<? extends Playlist> filtered = this.playlistService.filterPlaylists(playlists, search);
 
-            final List<CardItem> cardItems = filtered.stream().map(PlaylistUtils::playlistToCardItem).toList();
+            final List<MusicCard> musicCards = filtered.stream()
+                .map(playlist -> {
+                    final CardItem cardItem = PlaylistUtils.playlistToCardItem(playlist);
+                    final MusicCard musicCard = new MusicCard();
+                    musicCard.setCardItem(cardItem);
+                    musicCard.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+                        this.playlistService.setCurrentPlaylist(playlist);
+                        this.routerService.push(Route.PLAYLIST_VIEW);
+                    });
+                    return musicCard;
+                })
+                .toList();
 
             Platform.runLater(() -> {
-                this.musicCardGrid.cardItemsProperty().setAll(cardItems);
+                GridUtils.addInColumns(this.playlistGrid, musicCards);
                 this.node.getChildren().set(1, this.contentPane);
                 this.createPlaylistButton.setVisible(true);
             });
