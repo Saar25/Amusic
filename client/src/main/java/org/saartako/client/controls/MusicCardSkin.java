@@ -3,6 +3,7 @@ package org.saartako.client.controls;
 import atlantafx.base.controls.Card;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -41,6 +42,10 @@ public class MusicCardSkin extends SkinBase<MusicCard> {
         this.headerTile.getStyleClass().add(Styles.TITLE_4);
 
         this.menuButton.getStyleClass().addAll(Styles.FLAT, Tweaks.NO_ARROW);
+
+        final BooleanBinding hasMenuActions = getSkinnable().menuActionsProperty().emptyProperty().not();
+        this.menuButton.visibleProperty().bind(hasMenuActions);
+        this.menuButton.managedProperty().bind(hasMenuActions);
 
         registerChangeListener(getSkinnable().menuActionsProperty(), observable ->
             updateMenuItems());
