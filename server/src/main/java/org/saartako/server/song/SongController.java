@@ -42,7 +42,7 @@ public class SongController {
             return ResponseEntity.notFound().build();
         }
 
-        final File file = new File("./data/audio/" + filenameOpt.get());
+        final File file = new File("../data/audio/" + filenameOpt.get());
         if (!file.exists()) {
             return ResponseEntity.notFound().build();
         }
