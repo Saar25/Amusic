@@ -75,7 +75,6 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         final Collection<? extends Song> songs = playlist.getSongs();
 
         final CardItem playlistCard = PlaylistUtils.playlistToCardItem(playlist);
-        this.playlistCard.setCardItem(playlistCard);
 
         final List<? extends Node> cards = songs.stream().map(song -> {
             final CardItem songCardItem = SongUtils.songToCardItem(song);
@@ -91,7 +90,11 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
             hBox.setAlignment(Pos.CENTER);
             return hBox;
         }).toList();
-        this.songList.getChildren().setAll(cards);
+
+        Platform.runLater(() -> {
+            this.playlistCard.setCardItem(playlistCard);
+            this.songList.getChildren().setAll(cards);
+        });
     }
 
     public void startPlaying() {

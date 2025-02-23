@@ -1,16 +1,19 @@
 package org.saartako.client.services;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.playlist.PlaylistDTO;
+import org.saartako.common.playlist.PlaylistUtils;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongDTO;
 import org.slf4j.Logger;
@@ -18,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class PlaylistService {
@@ -28,7 +32,14 @@ public class PlaylistService {
 
     private final ListProperty<Playlist> playlists = new SimpleListProperty<>(this, "playlists");
 
-    private final ObjectProperty<Playlist> currentPlaylist = new SimpleObjectProperty<>(this, "currentPlaylist");
+    private final LongProperty currentPlaylistId = new SimpleLongProperty(this, "currentPlaylistId");
+
+    private final ObjectBinding<Playlist> currentPlaylist = Bindings.createObjectBinding(() -> {
+        final long playlistId = this.currentPlaylistId.get();
+        final Optional<Playlist> optional = this.playlists.stream()
+            .filter(p -> p.getId() == playlistId).findAny();
+        return optional.orElse(null);
+    }, this.playlists, this.currentPlaylistId);
 
     private PlaylistService(PlaylistApiService playlistApiService, AuthService authService) {
         this.playlistApiService = playlistApiService;
@@ -50,7 +61,7 @@ public class PlaylistService {
         return this.playlists.get();
     }
 
-    public ObjectProperty<Playlist> currentPlaylistProperty() {
+    public ObjectBinding<Playlist> currentPlaylistProperty() {
         return this.currentPlaylist;
     }
 
@@ -59,7 +70,7 @@ public class PlaylistService {
     }
 
     public void setCurrentPlaylist(Playlist playlist) {
-        this.currentPlaylist.set(playlist);
+        this.currentPlaylistId.set(playlist.getId());
     }
 
     public void fetchData() {
@@ -139,8 +150,9 @@ public class PlaylistService {
                         LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
                     }
 
-                    ((PlaylistDTO) playlist).getSongs().add((SongDTO) song);
-                    this.playlists.set(index, playlist);
+                    final PlaylistDTO newPlaylist = PlaylistUtils.copyDisplay(playlist);
+                    newPlaylist.getSongs().add((SongDTO) song);
+                    this.playlists.set(index, newPlaylist);
                 }
             });
     }
@@ -160,8 +172,9 @@ public class PlaylistService {
                         LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
                     }
 
-                    ((PlaylistDTO) playlist).getSongs().remove((SongDTO) song);
-                    this.playlists.set(index, playlist);
+                    final PlaylistDTO newPlaylist = PlaylistUtils.copyDisplay(playlist);
+                    newPlaylist.getSongs().removeIf(s -> s.getId() == song.getId());
+                    this.playlists.set(index, newPlaylist);
                 }
             });
     }
