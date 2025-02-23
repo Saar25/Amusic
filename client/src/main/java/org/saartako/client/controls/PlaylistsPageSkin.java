@@ -7,7 +7,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -16,6 +15,7 @@ import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
 import org.saartako.client.constants.Route;
+import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.services.RouterService;
@@ -136,7 +136,7 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
                     final CardItem cardItem = PlaylistUtils.playlistToCardItem(playlist);
                     final MusicCard musicCard = new MusicCard();
                     musicCard.setCardItem(cardItem);
-                    musicCard.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+                    musicCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, event -> {
                         this.playlistService.setCurrentPlaylist(playlist);
                         this.routerService.push(Route.PLAYLIST_VIEW);
                     });
