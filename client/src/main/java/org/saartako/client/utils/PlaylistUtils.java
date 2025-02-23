@@ -23,6 +23,6 @@ public class PlaylistUtils {
 
         final Paint playlistColor = ColorUtils.getPlaylistColor(playlist);
 
-        return new CardItem(playlist.getId(), playlist.getName(), details, playlistColor);
+        return new CardItem(playlist.getName(), details, playlistColor);
     }
 }
