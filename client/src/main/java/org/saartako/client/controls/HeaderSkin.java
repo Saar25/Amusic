@@ -6,8 +6,6 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -19,6 +17,7 @@ import org.saartako.client.enums.AppTheme;
 import org.saartako.client.services.AuthService;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.ThemeService;
+import org.saartako.client.utils.RegionUtils;
 
 public class HeaderSkin extends SkinBase<Header> {
 
@@ -42,8 +41,7 @@ public class HeaderSkin extends SkinBase<Header> {
 
         final Button signOutButton = createSignOutButton();
 
-        final Region spacing = new Region();
-        HBox.setHgrow(spacing, Priority.ALWAYS);
+        final Region spacing = RegionUtils.createHorizontal();
 
         final InputGroup tabsInputGroup = createToggleGroup();
 
