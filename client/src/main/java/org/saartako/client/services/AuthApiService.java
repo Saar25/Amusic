@@ -1,9 +1,7 @@
 package org.saartako.client.services;
 
+import org.saartako.client.Config;
 import org.saartako.client.utils.HttpUtils;
-import org.saartako.common.encrypt.JwtParser;
-import org.saartako.common.encrypt.UserJwtParser;
-import org.saartako.common.user.User;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -24,7 +22,7 @@ public class AuthApiService {
 
     public CompletableFuture<String> login(String username, String password) {
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/auth/login?username=" + username + "&password=" + password))
+            .uri(URI.create(Config.serverUrl + "/auth/login?username=" + username + "&password=" + password))
             .GET()
             .build();
 
@@ -36,7 +34,7 @@ public class AuthApiService {
 
     public CompletableFuture<String> register(String username, String password, String displayName) {
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/auth/register?" +
+            .uri(URI.create(Config.serverUrl + "/auth/register?" +
                             "username=" + username +
                             "&password=" + password +
                             "&displayName=" + displayName))

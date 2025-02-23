@@ -1,6 +1,7 @@
 package org.saartako.client.services;
 
 import com.google.gson.Gson;
+import org.saartako.client.Config;
 import org.saartako.client.utils.HttpUtils;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
@@ -38,7 +39,7 @@ public class PlaylistApiService {
         final String authorization = this.authService.getJwtToken();
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist/mine"))
+            .uri(URI.create(Config.serverUrl + "/playlist/mine"))
             .GET()
             .header("Authorization", "Bearer " + authorization)
             .build();
@@ -61,7 +62,7 @@ public class PlaylistApiService {
         final String payload = GSON.toJson(createPlaylist);
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist"))
+            .uri(URI.create(Config.serverUrl + "/playlist"))
             .POST(HttpRequest.BodyPublishers.ofString(payload))
             .header("Authorization", "Bearer " + authorization)
             .header("Content-Type", "application/json")
@@ -83,7 +84,7 @@ public class PlaylistApiService {
         final String authorization = this.authService.getJwtToken();
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist/" + playlistId))
+            .uri(URI.create(Config.serverUrl + "/playlist/" + playlistId))
             .DELETE()
             .header("Authorization", "Bearer " + authorization)
             .header("Content-Type", "application/json")
@@ -105,7 +106,7 @@ public class PlaylistApiService {
         final String authorization = this.authService.getJwtToken();
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist/" + playlist.getId() + "/song/" + song.getId()))
+            .uri(URI.create(Config.serverUrl + "/playlist/" + playlist.getId() + "/song/" + song.getId()))
             .POST(HttpRequest.BodyPublishers.noBody())
             .header("Authorization", "Bearer " + authorization)
             .header("Content-Type", "application/json")
@@ -127,7 +128,7 @@ public class PlaylistApiService {
         final String authorization = this.authService.getJwtToken();
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/playlist/" + playlist.getId() + "/song/" + song.getId()))
+            .uri(URI.create(Config.serverUrl + "/playlist/" + playlist.getId() + "/song/" + song.getId()))
             .DELETE()
             .header("Authorization", "Bearer " + authorization)
             .build();

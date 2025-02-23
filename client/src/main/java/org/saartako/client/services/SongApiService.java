@@ -1,6 +1,7 @@
 package org.saartako.client.services;
 
 import com.google.gson.Gson;
+import org.saartako.client.Config;
 import org.saartako.client.utils.HttpUtils;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongDTO;
@@ -36,7 +37,7 @@ public class SongApiService {
         final String authorization = this.authService.getJwtToken();
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/song"))
+            .uri(URI.create(Config.serverUrl + "/song"))
             .GET()
             .header("Authorization", "Bearer " + authorization)
             .build();
@@ -57,7 +58,7 @@ public class SongApiService {
         final String authorization = this.authService.getJwtToken();
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8080/song/" + songId))
+            .uri(URI.create(Config.serverUrl + "/song/" + songId))
             .DELETE()
             .header("Authorization", "Bearer " + authorization)
             .header("Content-Type", "application/json")

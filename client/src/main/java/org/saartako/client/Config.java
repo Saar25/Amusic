@@ -12,6 +12,9 @@ public class Config {
     public static final int GAP_MEDIUM = 8;
     public static final int GAP_LARGE = 16;
 
+    // TODO: use environment variables instead
+    public static final String serverUrl = "http://localhost:8080";
+
     private Config() {
     }
 
