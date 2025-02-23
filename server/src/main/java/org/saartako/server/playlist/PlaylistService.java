@@ -59,4 +59,9 @@ public class PlaylistService {
 
         this.playlistRepository.addPlaylistSong(playlistId, songId);
     }
+
+    public void deletePlaylist(long id) {
+        this.playlistRepository.deletePlaylistFromSongs(id);
+        this.playlistRepository.deleteById(id);
+    }
 }

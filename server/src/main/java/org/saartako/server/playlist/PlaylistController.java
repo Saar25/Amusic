@@ -34,7 +34,7 @@ public class PlaylistController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Playlist> create(@RequestBody CreatePlaylistDTO playlist) {
+    public ResponseEntity<Playlist> createPlaylist(@RequestBody CreatePlaylistDTO playlist) {
         final UserDTO user = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         final PlaylistEntity create = this.playlistService.create(user.getId(), playlist);
@@ -48,6 +48,13 @@ public class PlaylistController {
             .setSongs(Set.of());
 
         return ResponseEntity.status(HttpStatus.OK).body(body);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deleteSong(@PathVariable("id") long id) {
+        this.playlistService.deletePlaylist(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PostMapping("/{id}/song/{songId}")

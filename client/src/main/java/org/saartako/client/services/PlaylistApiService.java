@@ -73,7 +73,7 @@ public class PlaylistApiService {
             .thenApply(response -> GSON.fromJson(response.body(), PlaylistDTO.class));
     }
 
-    public CompletableFuture<Playlist> deletePlaylist(long playlistId) {
+    public CompletableFuture<Void> deletePlaylist(long playlistId) {
         if (!this.authService.isLoggedIn()) {
             final Exception exception = new NullPointerException("User is not logged in");
 

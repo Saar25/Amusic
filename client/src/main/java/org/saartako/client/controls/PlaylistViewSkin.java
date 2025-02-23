@@ -1,6 +1,9 @@
 package org.saartako.client.controls;
 
+import atlantafx.base.theme.Styles;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
@@ -8,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.constants.Route;
 import org.saartako.client.models.CardItem;
@@ -45,13 +49,13 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         this.songList.setPadding(new Insets(4));
         this.songScrollPane.setFitToWidth(true);
 
-        this.gridPane.setVgap(16);
-        this.gridPane.setHgap(16);
-        this.gridPane.setPadding(new Insets(16));
-        this.gridPane.getColumnConstraints().addAll(GridUtils.divideColumnConstraints(12));
-        this.gridPane.getRowConstraints().addAll(GridUtils.divideRowConstraints(12));
+        final Button deletePlaylistButton = createDeletePlaylistButton();
+        final VBox vBox = new VBox(16, deletePlaylistButton);
 
-        this.gridPane.add(this.playlistCard, 1, 2, 6, 6);
+        GridUtils.initializeGrid(this.gridPane, 12, 12, 16, 16);
+
+        this.gridPane.add(this.playlistCard, 0, 2, 6, 6);
+        this.gridPane.add(vBox, 6, 2, 2, 6);
         this.gridPane.add(this.songScrollPane, 8, 0, 4, 12);
         this.gridPane.add(this.startButton, 0, 10, 8, 2);
 
@@ -81,5 +85,30 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
             return songCard;
         }).toList();
         this.songList.getChildren().setAll(cards);
+    }
+
+    private Button createDeletePlaylistButton() {
+        final Button deletePlaylistButton = new Button("Delete Playlist",
+            new FontIcon(Material2AL.DELETE));
+        deletePlaylistButton.getStyleClass().add(Styles.DANGER);
+
+        deletePlaylistButton.setOnAction(event -> {
+            final Playlist playlist = this.playlistService.getCurrentPlaylist();
+
+            this.playlistService.deletePlaylist(playlist).whenComplete((response, error) -> {
+                Platform.runLater(() -> {
+                    final Alert alert;
+                    if (error != null) {
+                        alert = new Alert(Alert.AlertType.ERROR, "Failed too delete playlist\n" + error.getMessage());
+                    } else {
+                        alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete playlist");
+                        alert.resultProperty().addListener(o -> this.routerService.previous());
+                    }
+                    alert.show();
+                });
+            });
+        });
+
+        return deletePlaylistButton;
     }
 }

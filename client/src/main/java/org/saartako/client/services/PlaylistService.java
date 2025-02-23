@@ -109,7 +109,7 @@ public class PlaylistService {
             });
     }
 
-    public CompletableFuture<Playlist> deletePlaylist(Playlist playlist) {
+    public CompletableFuture<Void> deletePlaylist(Playlist playlist) {
         LOGGER.info("Trying to delete playlist");
 
         return this.playlistApiService.deletePlaylist(playlist.getId())

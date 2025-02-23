@@ -15,6 +15,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.PlaylistService;
+import org.saartako.client.services.RouterService;
 import org.saartako.client.services.SongService;
 import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.SongUtils;
@@ -28,6 +29,7 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private final SongService songService = SongService.getInstance();
     private final PlaylistService playlistService = PlaylistService.getInstance();
+    private final RouterService routerService = RouterService.getInstance();
 
     private final Loader loader = new Loader();
 
@@ -65,33 +67,14 @@ public class SongViewSkin extends SkinBase<SongView> {
             });
         });
 
-        final Button deletePlaylistButton = new Button("Delete Song",
-            new FontIcon(Material2AL.DELETE));
-        deletePlaylistButton.getStyleClass().add(Styles.DANGER);
+        final Button deleteSongButton = createDeleteSongButton();
 
-        deletePlaylistButton.setOnAction(event -> {
-            final Song song = this.songService.getCurrentSong();
-
-            this.songService.deleteSong(song).whenComplete((response, error) -> {
-                Platform.runLater(() -> {
-                    final Alert alert = error != null
-                        ? new Alert(Alert.AlertType.ERROR, "Failed too delete song\n" + error.getMessage())
-                        : new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete song");
-                    alert.showAndWait();
-                });
-            });
-        });
-
-        final VBox vBox = new VBox(16, favoriteButton, addToPlaylistButton, deletePlaylistButton);
+        final VBox vBox = new VBox(16, favoriteButton, addToPlaylistButton, deleteSongButton);
 
         this.slider.setSkin(new ProgressSliderSkin(this.slider));
         this.slider.getStyleClass().add(Styles.LARGE);
 
-        this.gridPane.setVgap(16);
-        this.gridPane.setHgap(16);
-        this.gridPane.setPadding(new Insets(16));
-        this.gridPane.getColumnConstraints().addAll(GridUtils.divideColumnConstraints(12));
-        this.gridPane.getRowConstraints().addAll(GridUtils.divideRowConstraints(12));
+        GridUtils.initializeGrid(this.gridPane, 12, 12, 16, 16);
 
         this.gridPane.add(this.songCard, 1, 2, 6, 6);
         this.gridPane.add(vBox, 8, 2, 4, 6);
@@ -166,5 +149,29 @@ public class SongViewSkin extends SkinBase<SongView> {
         });
 
         return playlistComboBox;
+    }
+
+    private Button createDeleteSongButton() {
+        final Button deleteSongButton = new Button("Delete Song",
+            new FontIcon(Material2AL.DELETE));
+        deleteSongButton.getStyleClass().add(Styles.DANGER);
+
+        deleteSongButton.setOnAction(event -> {
+            final Song song = this.songService.getCurrentSong();
+
+            this.songService.deleteSong(song).whenComplete((response, error) -> {
+                Platform.runLater(() -> {
+                    final Alert alert;
+                    if (error != null) {
+                        alert = new Alert(Alert.AlertType.ERROR, "Failed too delete song\n" + error.getMessage());
+                    } else {
+                        alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete song");
+                        alert.resultProperty().addListener(o -> this.routerService.previous());
+                    }
+                    alert.show();
+                });
+            });
+        });
+        return deleteSongButton;
     }
 }

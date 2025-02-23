@@ -1,6 +1,8 @@
 package org.saartako.client.utils;
 
+import javafx.geometry.Insets;
 import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
 import java.util.List;
@@ -9,6 +11,20 @@ import java.util.stream.IntStream;
 public class GridUtils {
 
     private GridUtils() {
+    }
+
+    public static void initializeGrid(GridPane gridPane, int columns, int rows, int gap, int padding) {
+        gridPane.setVgap(gap);
+        gridPane.setHgap(gap);
+
+        final Insets insets = new Insets(padding);
+        gridPane.setPadding(insets);
+
+        final List<ColumnConstraints> cc = divideColumnConstraints(columns);
+        gridPane.getColumnConstraints().addAll(cc);
+
+        final List<RowConstraints> rc = divideRowConstraints(rows);
+        gridPane.getRowConstraints().addAll(rc);
     }
 
     public static ColumnConstraints columnConstraintsOfPercentage(double percentage) {
