@@ -39,31 +39,31 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
     private final MusicCard playlistCard = new MusicCard();
 
-    private final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
-
     private final VBox songList = new VBox(10);
-
-    private final ScrollPane songScrollPane = new ScrollPane(songList);
-
-    private final GridPane gridPane = new GridPane();
 
     public PlaylistViewSkin(PlaylistView control) {
         super(control);
 
         this.songList.setPadding(new Insets(4));
-        this.songScrollPane.setFitToWidth(true);
+
+        final ScrollPane songScrollPane = new ScrollPane(songList);
+        songScrollPane.setFitToWidth(true);
 
         final Button deletePlaylistButton = createDeletePlaylistButton();
         final VBox vBox = new VBox(16, deletePlaylistButton);
 
-        GridUtils.initializeGrid(this.gridPane, 12, 12, 16, 16);
+        final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
+        startButton.setOnAction(event -> startPlaying());
 
-        this.gridPane.add(this.playlistCard, 0, 2, 6, 6);
-        this.gridPane.add(vBox, 6, 2, 2, 6);
-        this.gridPane.add(this.songScrollPane, 8, 0, 4, 12);
-        this.gridPane.add(this.startButton, 0, 10, 8, 2);
+        final GridPane gridPane = new GridPane();
+        GridUtils.initializeGrid(gridPane, 12, 12, 16, 16);
 
-        getChildren().setAll(this.gridPane);
+        gridPane.add(this.playlistCard, 0, 2, 6, 6);
+        gridPane.add(vBox, 6, 2, 2, 6);
+        gridPane.add(songScrollPane, 8, 0, 4, 12);
+        gridPane.add(startButton, 0, 10, 8, 2);
+
+        getChildren().setAll(gridPane);
 
         registerChangeListener(this.playlistService.currentPlaylistProperty(), observable ->
             updatePlaylist(this.playlistService.getCurrentPlaylist()));
@@ -76,8 +76,6 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
         final CardItem playlistCard = PlaylistUtils.playlistToCardItem(playlist);
         this.playlistCard.setCardItem(playlistCard);
-
-//        startButton.setOnAction(event -> startPlaying());
 
         final List<? extends Node> cards = songs.stream().map(song -> {
             final CardItem songCardItem = SongUtils.songToCardItem(song);
@@ -94,6 +92,13 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
             return hBox;
         }).toList();
         this.songList.getChildren().setAll(cards);
+    }
+
+    public void startPlaying() {
+        Platform.runLater(() -> {
+            final Alert alert = new Alert(Alert.AlertType.WARNING, "Behaviour not implemented!");
+            alert.show();
+        });
     }
 
     private Button createDeletePlaylistButton() {
