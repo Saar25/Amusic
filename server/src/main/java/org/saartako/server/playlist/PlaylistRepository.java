@@ -16,9 +16,9 @@ public interface PlaylistRepository extends JpaRepository<PlaylistEntity, Long> 
         LEFT JOIN FETCH p.owner
         LEFT JOIN FETCH s.genre
         LEFT JOIN FETCH s.language
-        WHERE p.owner.id = :ownerId
+        WHERE p.owner.id = :ownerId OR p.isPrivate IS NOT TRUE
         """)
-    List<PlaylistEntity> findByOwnerId(@Param("ownerId") long ownerId);
+    List<PlaylistEntity> findPublicOrByOwnerId(@Param("ownerId") long ownerId);
 
     @Modifying
     @Transactional

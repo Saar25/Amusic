@@ -25,16 +25,8 @@ public class PlaylistService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<PlaylistEntity> findAll() {
-        return this.playlistRepository.findAll();
-    }
-
-    public Optional<PlaylistEntity> findById(long id) {
-        return this.playlistRepository.findById(id);
-    }
-
-    public List<PlaylistEntity> findByOwnerId(long ownerId) {
-        return this.playlistRepository.findByOwnerId(ownerId);
+    public List<PlaylistEntity> findUserPlaylists(User user) {
+        return this.playlistRepository.findPublicOrByOwnerId(user.getId());
     }
 
     public PlaylistEntity create(long ownerId, CreatePlaylistDTO createPlaylist) {

@@ -23,10 +23,10 @@ public class PlaylistController {
     private PlaylistService playlistService;
 
     @GetMapping("/mine")
-    public ResponseEntity<List<? extends Playlist>> findAll() {
+    public ResponseEntity<List<? extends Playlist>> findMine() {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        final List<PlaylistEntity> playlistEntities = this.playlistService.findByOwnerId(user.getId());
+        final List<PlaylistEntity> playlistEntities = this.playlistService.findUserPlaylists(user);
 
         final List<? extends Playlist> body = PlaylistUtils.copyDisplay(playlistEntities);
 
