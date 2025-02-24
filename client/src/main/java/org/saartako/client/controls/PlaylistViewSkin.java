@@ -79,6 +79,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
     }
 
     private void updatePlaylist(User user, Playlist playlist) {
+        // TODO: handle null values
         final boolean isPlaylistPersonal = playlist.getOwner().getId() == user.getId();
         this.deletePlaylistButton.setVisible(isPlaylistPersonal);
         this.deletePlaylistButton.setManaged(isPlaylistPersonal);

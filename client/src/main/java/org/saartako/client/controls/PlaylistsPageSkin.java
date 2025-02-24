@@ -48,7 +48,7 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
         super(control);
 
         this.node.setAlignment(Pos.TOP_CENTER);
-        this.node.setPadding(new Insets(Config.GAP_MEDIUM, 40, Config.GAP_MEDIUM, 40));
+        this.node.setPadding(new Insets(Config.GAP_MEDIUM, Config.GAP_HUGE, Config.GAP_MEDIUM, Config.GAP_HUGE));
 
         this.searchTextField.setPromptText("Search");
         this.searchTextField.setMaxWidth(300);
