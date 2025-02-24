@@ -4,7 +4,6 @@ import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.user.User;
 import org.saartako.server.song.SongEntity;
 import org.saartako.server.song.SongRepository;
-import org.saartako.server.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,9 +21,6 @@ public class PlaylistService {
     @Autowired
     private SongRepository songRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
     public List<PlaylistEntity> findUserPlaylists(User user) {
         return this.playlistRepository.findPublicOrByOwnerId(user.getId());
     }
@@ -37,9 +33,17 @@ public class PlaylistService {
         return this.playlistRepository.save(playlist);
     }
 
-    public void deletePlaylist(long id) {
-        this.playlistRepository.deletePlaylistFromSongs(id);
-        this.playlistRepository.deleteById(id);
+    public void deletePlaylist(User owner, long playlistId) {
+        final Optional<PlaylistEntity> playlistReference = this.playlistRepository.findById(playlistId);
+
+        if (playlistReference.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such playlist");
+        } else if (playlistReference.get().getOwnerId() != owner.getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Playlist is not owned by user");
+        }
+
+        this.playlistRepository.deletePlaylistFromSongs(playlistId);
+        this.playlistRepository.deleteById(playlistId);
     }
 
     public void addPlaylistSong(User owner, long playlistId, long songId) {
@@ -57,7 +61,18 @@ public class PlaylistService {
         this.playlistRepository.addPlaylistSong(playlistId, songId);
     }
 
-    public void deletePlaylistSong(long playlistId, long songId) {
+    public void deletePlaylistSong(User owner, long playlistId, long songId) {
+        final Optional<PlaylistEntity> playlistReference = this.playlistRepository.findById(playlistId);
+        final Optional<SongEntity> songReference = this.songRepository.findById(songId);
+
+        if (playlistReference.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such playlist");
+        } else if (songReference.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such song");
+        } else if (playlistReference.get().getOwnerId() != owner.getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Playlist is not owned by user");
+        }
+
         this.playlistRepository.deletePlaylistSong(playlistId, songId);
     }
 }

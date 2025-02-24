@@ -52,7 +52,9 @@ public class PlaylistController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteSong(@PathVariable("id") long id) {
-        this.playlistService.deletePlaylist(id);
+        final UserDTO user = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        this.playlistService.deletePlaylist(user, id);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -68,7 +70,9 @@ public class PlaylistController {
 
     @DeleteMapping("/{id}/song/{songId}")
     public ResponseEntity<Void> deletePlaylistSong(@PathVariable("id") long id, @PathVariable("songId") long songId) {
-        this.playlistService.deletePlaylistSong(id, songId);
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        this.playlistService.deletePlaylistSong(user, id, songId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
