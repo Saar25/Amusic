@@ -20,6 +20,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.saartako.client.Config;
 import org.saartako.client.models.CardItem;
+import org.saartako.client.services.AuthService;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.SongService;
@@ -27,6 +28,7 @@ import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
+import org.saartako.common.user.User;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -35,6 +37,7 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private final SongService songService = SongService.getInstance();
     private final PlaylistService playlistService = PlaylistService.getInstance();
+    private final AuthService authService = AuthService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
 
     private final Loader loader = new Loader();
@@ -43,15 +46,18 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private final Slider slider = new Slider(0, 100, 20);
 
+    private final Button deleteSongButton;
+
     private final GridPane gridPane = new GridPane();
 
     public SongViewSkin(SongView control) {
         super(control);
 
+        this.deleteSongButton = createDeleteSongButton();
         final VBox vBox = new VBox(Config.GAP_LARGE,
             createAddToFavoritesButton(),
             createAddToPlaylistButton(),
-            createDeleteSongButton());
+            this.deleteSongButton);
 
         final Media media = new Media("http://localhost:8080/song/1/audio");
 
@@ -85,16 +91,23 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.gridPane.add(new StackPane(this.slider, thing), 0, 11, 12, 1);
 
         registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
+        registerChangeListener(this.authService.loggedUserProperty(), observable -> updateSong());
         updateSong();
     }
 
     private void updateSong() {
         final Song song = this.songService.getCurrentSong();
+        final User user = this.authService.getLoggedUser();
+
         if (song == null) {
             Platform.runLater(() -> {
                 getChildren().setAll(this.loader);
             });
         } else {
+            final boolean isSongPersonal = song.getUploader().getId() == user.getId();
+            this.deleteSongButton.setVisible(isSongPersonal);
+            this.deleteSongButton.setManaged(isSongPersonal);
+
             final CardItem cardItem = SongUtils.songToCardItem(song);
 
             Platform.runLater(() -> {
