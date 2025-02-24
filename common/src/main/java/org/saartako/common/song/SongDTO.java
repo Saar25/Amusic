@@ -10,8 +10,8 @@ import org.saartako.common.user.UserDTO;
 public class SongDTO implements Song {
 
     private long id;
-    private String fileName;
     private String name;
+    private String fileName;
     private UserDTO uploader;
     private GenreDTO genre;
     private LanguageDTO language;
@@ -27,22 +27,22 @@ public class SongDTO implements Song {
     }
 
     @Override
-    public String getFileName() {
-        return this.fileName;
-    }
-
-    public SongDTO setFileName(String fileName) {
-        this.fileName = fileName;
-        return this;
-    }
-
-    @Override
     public String getName() {
         return this.name;
     }
 
     public SongDTO setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    @Override
+    public String getFileName() {
+        return this.fileName;
+    }
+
+    public SongDTO setFileName(String fileName) {
+        this.fileName = fileName;
         return this;
     }
 

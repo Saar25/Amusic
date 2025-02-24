@@ -37,7 +37,8 @@ public class SongController {
 
     @GetMapping("/{id}/audio")
     public ResponseEntity<?> getSongAudio(@PathVariable("id") long id) {
-        final Optional<String> filenameOpt = this.songService.findById(id).map(SongEntity::getFileName);
+        final Optional<SongEntity> songEntityOpt = this.songService.findById(id);
+        final Optional<String> filenameOpt = songEntityOpt.map(SongEntity::getFileName);
         if (filenameOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -47,9 +48,11 @@ public class SongController {
             return ResponseEntity.notFound().build();
         }
 
+        final String mediaType = songEntityOpt.get().getMediaType();
+
         final Resource resource = new FileSystemResource(file);
         final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("audio/wav"));
+        headers.setContentType(MediaType.parseMediaType(mediaType));
         headers.setContentDisposition(ContentDisposition.inline().filename(file.getName()).build());
 
         return ResponseEntity.ok().headers(headers).body(resource);

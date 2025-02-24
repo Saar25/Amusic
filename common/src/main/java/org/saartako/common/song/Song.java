@@ -7,9 +7,9 @@ import org.saartako.common.user.User;
 public interface Song {
     long getId();
 
-    String getFileName();
-
     String getName();
+
+    String getFileName();
 
     User getUploader();
 

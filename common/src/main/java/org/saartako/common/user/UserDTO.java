@@ -1,8 +1,8 @@
 package org.saartako.common.user;
 
-import org.saartako.common.role.Role;
+import org.saartako.common.role.RoleDTO;
 
-import java.util.Collection;
+import java.util.Set;
 
 public class UserDTO implements User {
 
@@ -11,7 +11,7 @@ public class UserDTO implements User {
     private String password;
     private String salt;
     private String displayName;
-    private Collection<? extends Role> roles;
+    private Set<RoleDTO> roles;
 
     @Override
     public long getId() {
@@ -64,11 +64,11 @@ public class UserDTO implements User {
     }
 
     @Override
-    public Collection<? extends Role> getRoles() {
+    public Set<RoleDTO> getRoles() {
         return this.roles;
     }
 
-    public UserDTO setRoles(Collection<? extends Role> roles) {
+    public UserDTO setRoles(Set<RoleDTO> roles) {
         this.roles = roles;
         return this;
     }

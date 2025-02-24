@@ -14,11 +14,11 @@ public class SongEntity implements Song {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 64, unique = true, nullable = false)
-    private String fileName;
-
     @Column(length = 64, nullable = false)
     private String name;
+
+    @Column(length = 64, unique = true)
+    private String fileName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploader_id", nullable = false)
@@ -32,22 +32,12 @@ public class SongEntity implements Song {
     @JoinColumn(name = "language_id")
     private LanguageEntity language;
 
+    @Column(length = 16)
+    private String mediaType;
+
     @Override
     public long getId() {
         return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getFileName() {
-        return this.fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
     }
 
     @Override
@@ -55,8 +45,9 @@ public class SongEntity implements Song {
         return this.name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public String getFileName() {
+        return this.fileName;
     }
 
     @Override
@@ -64,17 +55,9 @@ public class SongEntity implements Song {
         return this.uploader;
     }
 
-    public void setUploader(UserEntity uploader) {
-        this.uploader = uploader;
-    }
-
     @Override
     public GenreEntity getGenre() {
         return this.genre;
-    }
-
-    public void setGenre(GenreEntity genre) {
-        this.genre = genre;
     }
 
     @Override
@@ -82,8 +65,8 @@ public class SongEntity implements Song {
         return this.language;
     }
 
-    public void setLanguage(LanguageEntity language) {
-        this.language = language;
+    public String getMediaType() {
+        return this.mediaType;
     }
 
     @Override

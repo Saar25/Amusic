@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import org.saartako.common.user.User;
 import org.saartako.common.user.UserDTO;
+import org.saartako.common.user.UserUtils;
 
 import java.util.Base64;
 
@@ -15,11 +16,7 @@ public class UserJwtParser implements JwtParser<User> {
 
     @Override
     public String sign(Algorithm algorithm, User user) {
-        final UserDTO userDTO = new UserDTO()
-            .setId(user.getId())
-            .setUsername(user.getUsername())
-            .setDisplayName(user.getDisplayName())
-            .setRoles(user.getRoles());
+        final UserDTO userDTO = UserUtils.copySafe(user);
 
         final String payload = GSON.toJson(userDTO, UserDTO.class);
 

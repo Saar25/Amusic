@@ -1,5 +1,9 @@
 package org.saartako.common.user;
 
+import org.saartako.common.role.RoleUtils;
+
+import java.util.stream.Collectors;
+
 public class UserUtils {
 
     private UserUtils() {
@@ -12,6 +16,16 @@ public class UserUtils {
             : new UserDTO()
                 .setId(user.getId())
                 .setDisplayName(user.getDisplayName());
+    }
+
+    public static UserDTO copySafe(User user) {
+        return user == null
+            ? null
+            : new UserDTO()
+                .setId(user.getId())
+                .setUsername(user.getUsername())
+                .setDisplayName(user.getDisplayName())
+                .setRoles(user.getRoles().stream().map(RoleUtils::copy).collect(Collectors.toSet()));
     }
 
     public static String toString(User user) {
