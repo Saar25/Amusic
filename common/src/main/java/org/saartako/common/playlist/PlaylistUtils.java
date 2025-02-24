@@ -12,8 +12,8 @@ public class PlaylistUtils {
         throw new RuntimeException("Cannot create instance of class " + getClass().getName());
     }
 
-    public static List<PlaylistDTO> copyDisplay(List<? extends Playlist> songs) {
-        return songs.stream().map(PlaylistUtils::copyDisplay).toList();
+    public static List<PlaylistDTO> copyDisplay(List<? extends Playlist> playlists) {
+        return playlists.stream().map(PlaylistUtils::copyDisplay).toList();
     }
 
     public static PlaylistDTO copyDisplay(Playlist playlist) {
@@ -26,7 +26,6 @@ public class PlaylistUtils {
                 .setPrivate(playlist.isPrivate())
                 .setModifiable(playlist.isModifiable())
                 .setSongs(playlist.getSongs().stream().map(SongUtils::copyDisplay).collect(Collectors.toSet()));
-
     }
 
     public static String toString(Playlist playlist) {
