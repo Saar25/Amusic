@@ -16,4 +16,6 @@ public interface Song {
     Genre getGenre();
 
     Language getLanguage();
+
+    long getLengthMillis();
 }

@@ -23,7 +23,8 @@ public class SongUtils {
             .setFileName(song.getFileName())
             .setUploader(UserUtils.copyDisplay(song.getUploader()))
             .setGenre(GenreUtils.copy(song.getGenre()))
-            .setLanguage(LanguageUtils.copy(song.getLanguage()));
+            .setLanguage(LanguageUtils.copy(song.getLanguage()))
+            .setLengthMillis(song.getLengthMillis());
     }
 
     public static String toString(Song song) {

@@ -35,6 +35,9 @@ public class SongEntity implements Song {
     @Column(length = 16)
     private String mediaType;
 
+    @Column
+    private Long lengthMillis;
+
     @Override
     public long getId() {
         return this.id;
@@ -63,6 +66,11 @@ public class SongEntity implements Song {
     @Override
     public LanguageEntity getLanguage() {
         return this.language;
+    }
+
+    @Override
+    public long getLengthMillis() {
+        return this.lengthMillis == null ? 0 : this.lengthMillis;
     }
 
     public String getMediaType() {

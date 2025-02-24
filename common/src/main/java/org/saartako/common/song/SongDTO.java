@@ -15,6 +15,7 @@ public class SongDTO implements Song {
     private UserDTO uploader;
     private GenreDTO genre;
     private LanguageDTO language;
+    private long lengthMillis;
 
     @Override
     public long getId() {
@@ -73,6 +74,16 @@ public class SongDTO implements Song {
 
     public SongDTO setLanguage(LanguageDTO language) {
         this.language = language;
+        return this;
+    }
+
+    @Override
+    public long getLengthMillis() {
+        return this.lengthMillis;
+    }
+
+    public SongDTO setLengthMillis(long lengthMillis) {
+        this.lengthMillis = lengthMillis;
         return this;
     }
 

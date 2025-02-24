@@ -54,30 +54,35 @@ VALUES
     (1, 1);
 
 -- Insert songs
-INSERT INTO songs (file_name, name, uploader_id, genre_id, language_id)
+INSERT INTO songs (name, file_name, media_type, length_millis, uploader_id, genre_id, language_id)
 VALUES
-    ('tmp.wav', 'Bohemian Rhapsody', 1, 1, 1),  -- Rock, English
-    (NULL, 'Hotel California', 1, 1, 1),  -- Rock, English
-    (NULL, 'Stairway to Heaven', 1, 1, 1),  -- Rock, English
-    (NULL, 'Imagine', 1, 2, 1),  -- Pop, English
-    (NULL, 'Smells Like Teen Spirit', 1, 14, 1),  -- Alternative, English
-    (NULL, 'Billie Jean', 1, 2, 1),  -- Pop, English
-    (NULL, 'Hey Jude', 1, 1, 1),  -- Rock, English
-    (NULL, 'Like a Rolling Stone', 1, 1, 1),  -- Rock, English
-    (NULL, 'Sweet Child o’ Mine', 1, 1, 1),  -- Rock, English
-    (NULL, 'Thriller', 1, 2, 1),  -- Pop, English
-    (NULL, 'Rolling in the Deep', 1, 2, 1),  -- Pop, English
-    (NULL, 'Wonderwall', 1, 14, 1),  -- Alternative, English
-    (NULL, 'Bohemian Like You', 1, 14, 1),  -- Alternative, English
-    (NULL, 'Purple Rain', 1, 15, 1),  -- Soul, English
-    (NULL, 'Lose Yourself', 1, 4, 1);  -- Hip-Hop, English
-INSERT INTO songs (file_name, name, uploader_id, genre_id, language_id)
+    ('Bohemian Rhapsody', 'bohemian_rhapsody.mp3', 'audio/mpeg', 360000, 1, 1, 1),  -- Rock, English
+    ('Hotel California', 'temp01', 'audio/wav', 6000, 1, 1, 1),  -- Rock, English
+    ('Stairway to Heaven', NULL, NULL, NULL, 1, 1, 1),  -- Rock, English
+    ('Imagine', NULL, NULL, NULL, 1, 2, 1),  -- Pop, English
+    ('Smells Like Teen Spirit', NULL, NULL, NULL, 1, 14, 1),  -- Alternative, English
+    ('Billie Jean', NULL, NULL, NULL, 1, 2, 1),  -- Pop, English
+    ('Hey Jude', NULL, NULL, NULL, 1, 1, 1),  -- Rock, English
+    ('Like a Rolling Stone', NULL, NULL, NULL, 1, 1, 1),  -- Rock, English
+    ('Sweet Child o’ Mine', NULL, NULL, NULL, 1, 1, 1),  -- Rock, English
+    ('Thriller', NULL, NULL, NULL, 1, 2, 1),  -- Pop, English
+    ('Rolling in the Deep', NULL, NULL, NULL, 1, 2, 1),  -- Pop, English
+    ('Wonderwall', NULL, NULL, NULL, 1, 14, 1),  -- Alternative, English
+    ('Bohemian Like You', NULL, NULL, NULL, 1, 14, 1),  -- Alternative, English
+    ('Purple Rain', NULL, NULL, NULL, 1, 15, 1),  -- Soul, English
+    ('Lose Yourself', NULL, NULL, NULL, 1, 4, 1);  -- Hip-Hop, English
+INSERT INTO songs (name, file_name, media_type, length_millis, uploader_id, genre_id, language_id)
 VALUES
-    (NULL, 'הפרח בגני', 1, 7, 15),  -- Reggae, Hebrew (Zohar Argov)
-    (NULL, 'תן לי יד', 1, 13, 15),  -- R&B, Hebrew (Kobi Peretz)
-    (NULL, 'שירת הסטלבים', 1, 1, 15),  -- Reggae, Hebrew (Hatikva 6)
-    (NULL, 'עוד יבוא שלום עלינו', 1, 11, 15),  -- Folk, Hebrew (Popular Israeli song)
-    (NULL, 'ניצוץ', 1, 14, 15);  -- Alternative, Hebrew (Mashina)
+    ('הפרח בגני',
+    NULL, NULL, NULL, 1, 7, 15),  -- Reggae, Hebrew (Zohar Argov)
+    ('תן לי יד',
+    NULL, NULL, NULL, 1, 13, 15),  -- R&B, Hebrew (Kobi Peretz)
+    ('שירת הסטלבים',
+    NULL, NULL, NULL, 1, 1, 15),  -- Reggae, Hebrew (Hatikva 6)
+    ('עוד יבוא שלום עלינו',
+    NULL, NULL, NULL, 1, 11, 15),  -- Folk, Hebrew (Popular Israeli song)
+    ('ניצוץ',
+    NULL, NULL, NULL, 1, 14, 15);  -- Alternative, Hebrew (Mashina)
 
 -- Insert playlists
 INSERT INTO playlists (is_modifiable, is_private, owner_id, name)

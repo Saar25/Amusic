@@ -4,6 +4,7 @@ import javafx.scene.paint.Paint;
 import org.saartako.client.models.CardItem;
 import org.saartako.common.song.Song;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -22,6 +23,11 @@ public class SongUtils {
         }
         if (song.getLanguage() != null) {
             details.put("Language", song.getLanguage().getName());
+        }
+        if (song.getLengthMillis() != 0) {
+            final Duration duration = Duration.ofMillis(song.getLengthMillis());
+
+            details.put("Length", String.format("%02d:%02d", duration.toMinutes(), duration.toSecondsPart()));
         }
 
         final Paint songColor = ColorUtils.getSongColor(song);
