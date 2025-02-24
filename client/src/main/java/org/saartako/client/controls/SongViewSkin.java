@@ -4,6 +4,7 @@ import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -149,8 +150,11 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private ComboBox<Playlist> createPlaylistComboBox() {
         final ListProperty<Playlist> playlists = this.playlistService.playlistsProperty();
+        final User user = this.authService.getLoggedUser();
+        final FilteredList<Playlist> personal = playlists.filtered(
+            p -> p.getOwner().getId() == user.getId());
 
-        final ComboBox<Playlist> playlistComboBox = new ComboBox<>(playlists);
+        final ComboBox<Playlist> playlistComboBox = new ComboBox<>(personal);
         playlistComboBox.setPlaceholder(new Label("Loading..."));
         playlistComboBox.setConverter(new StringConverter<>() {
             @Override
