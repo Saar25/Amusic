@@ -94,6 +94,7 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
                 .toList();
 
             Platform.runLater(() -> {
+                this.songGrid.getChildren().clear();
                 GridUtils.addInColumns(this.songGrid, musicCards);
                 this.node.getChildren().set(1, this.contentPane);
             });
