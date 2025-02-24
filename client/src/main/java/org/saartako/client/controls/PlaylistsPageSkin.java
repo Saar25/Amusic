@@ -122,7 +122,6 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
     }
 
     private void updatePlaylists(ObservableList<Playlist> playlists, String search) {
-        System.out.println(playlists);
         if (playlists == null) {
             Platform.runLater(() -> {
                 this.playlistGrid.getChildren().clear();

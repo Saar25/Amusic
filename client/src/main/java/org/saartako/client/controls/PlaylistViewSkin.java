@@ -18,6 +18,7 @@ import org.saartako.client.constants.Route;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.models.MenuAction;
+import org.saartako.client.services.AuthService;
 import org.saartako.client.services.PlaylistService;
 import org.saartako.client.services.RouterService;
 import org.saartako.client.services.SongService;
@@ -26,6 +27,7 @@ import org.saartako.client.utils.PlaylistUtils;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
+import org.saartako.common.user.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,11 +36,14 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
     private final PlaylistService playlistService = PlaylistService.getInstance();
     private final SongService songService = SongService.getInstance();
+    private final AuthService authService = AuthService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
 
     private final MusicCard playlistCard = new MusicCard();
 
     private final VBox songList = new VBox(Config.GAP_MEDIUM);
+
+    private final Button deletePlaylistButton;
 
     public PlaylistViewSkin(PlaylistView control) {
         super(control);
@@ -48,8 +53,8 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         final ScrollPane songScrollPane = new ScrollPane(songList);
         songScrollPane.setFitToWidth(true);
 
-        final Button deletePlaylistButton = createDeletePlaylistButton();
-        final VBox vBox = new VBox(Config.GAP_LARGE, deletePlaylistButton);
+        this.deletePlaylistButton = createDeletePlaylistButton();
+        final VBox actionsVBox = new VBox(Config.GAP_LARGE, deletePlaylistButton);
 
         final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
         startButton.setOnAction(event -> startPlaying());
@@ -58,19 +63,26 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         GridUtils.initializeGrid(gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
 
         gridPane.add(this.playlistCard, 0, 2, 6, 6);
-        gridPane.add(vBox, 6, 2, 2, 6);
+        gridPane.add(actionsVBox, 6, 2, 2, 6);
         gridPane.add(songScrollPane, 8, 0, 4, 12);
         gridPane.add(startButton, 0, 10, 8, 2);
 
         getChildren().setAll(gridPane);
 
         registerChangeListener(this.playlistService.currentPlaylistProperty(), observable ->
-            updatePlaylist(this.playlistService.getCurrentPlaylist()));
+            updatePlaylist(this.authService.getLoggedUser(), this.playlistService.getCurrentPlaylist()));
 
-        updatePlaylist(this.playlistService.getCurrentPlaylist());
+        registerChangeListener(this.authService.loggedUserProperty(), observable ->
+            updatePlaylist(this.authService.getLoggedUser(), this.playlistService.getCurrentPlaylist()));
+
+        updatePlaylist(this.authService.getLoggedUser(), this.playlistService.getCurrentPlaylist());
     }
 
-    private void updatePlaylist(Playlist playlist) {
+    private void updatePlaylist(User user, Playlist playlist) {
+        final boolean isPlaylistPersonal = playlist.getOwner().getId() == user.getId();
+        this.deletePlaylistButton.setVisible(isPlaylistPersonal);
+        this.deletePlaylistButton.setManaged(isPlaylistPersonal);
+
         final Collection<? extends Song> songs = playlist.getSongs();
 
         final CardItem playlistCard = PlaylistUtils.playlistToCardItem(playlist);
@@ -79,10 +91,12 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
             final CardItem songCardItem = SongUtils.songToCardItem(song);
             final MusicCard songCard = new MusicCard(songCardItem);
             songCard.setExpandable(true);
-            songCard.getMenuActions().setAll(
-                new MenuAction("Delete from playlist",
-                    event -> deletePlaylistSong(playlist, song))
-            );
+            if (isPlaylistPersonal) {
+                songCard.getMenuActions().setAll(
+                    new MenuAction("Delete from playlist",
+                        event -> deletePlaylistSong(playlist, song))
+                );
+            }
             songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e -> {
                 this.songService.setCurrentSong(song);
                 this.routerService.push(Route.SONG_VIEW);
