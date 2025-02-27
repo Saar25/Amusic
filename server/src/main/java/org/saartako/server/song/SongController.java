@@ -1,5 +1,6 @@
 package org.saartako.server.song;
 
+import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongUtils;
 import org.saartako.common.user.User;
@@ -62,13 +63,11 @@ public class SongController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createSong(
-        @RequestParam(value = "name") String name,
-        @RequestParam(value = "genreId", required = false) Long genreId,
-        @RequestParam(value = "languageId", required = false) Long languageId) {
+    public ResponseEntity<?> createSong(@RequestBody CreateSongDTO songDTO) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        final SongEntity song = this.songService.createSong(user, name, genreId, languageId);
+        final SongEntity song = this.songService.createSong(
+            user, songDTO.name(), songDTO.genreId(), songDTO.languageId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(song);
     }
