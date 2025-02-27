@@ -3,6 +3,7 @@ package org.saartako.client.services;
 import com.google.gson.Gson;
 import org.saartako.client.Config;
 import org.saartako.client.utils.HttpUtils;
+import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongDTO;
 
@@ -68,6 +69,30 @@ public class SongApiService {
             .sendAsync(request, HttpResponse.BodyHandlers.ofString())
             .thenCompose(HttpUtils::validateResponse)
             .thenApply(response -> null);
+    }
+
+    public CompletableFuture<Song> createSong(CreateSongDTO createSong) {
+        if (!this.authService.isLoggedIn()) {
+            final Exception exception = new NullPointerException("User is not logged in");
+
+            return CompletableFuture.failedFuture(exception);
+        }
+
+        final String authorization = this.authService.getJwtToken();
+
+        final String payload = GSON.toJson(createSong);
+
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(Config.serverUrl + "/song"))
+            .POST(HttpRequest.BodyPublishers.ofString(payload))
+            .header("Authorization", "Bearer " + authorization)
+            .header("Content-Type", "application/json")
+            .build();
+
+        return this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenCompose(HttpUtils::validateResponse)
+            .thenApply(response -> GSON.fromJson(response.body(), SongDTO.class));
     }
 
     private static final class InstanceHolder {

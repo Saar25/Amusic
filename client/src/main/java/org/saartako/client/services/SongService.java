@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +97,21 @@ public class SongService {
                     LOGGER.info("Succeeded to delete song");
 
                     this.songs.remove(song);
+                }
+            });
+    }
+
+    public CompletableFuture<Song> createSong(CreateSongDTO createSong) {
+        LOGGER.info("Trying to create song");
+
+        return this.songApiService.createSong(createSong)
+            .whenComplete((song, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to create song - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to create song");
+
+                    this.songs.add(song);
                 }
             });
     }
