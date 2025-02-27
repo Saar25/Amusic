@@ -17,12 +17,15 @@ public class SongEntity implements Song {
     @Column(length = 64, nullable = false)
     private String name;
 
-    @Column(length = 64, unique = true)
+    @Column(length = 32, unique = true)
     private String fileName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uploader_id", nullable = false)
+    @JoinColumn(name = "uploader_id", nullable = false, insertable = false, updatable = false)
     private UserEntity uploader;
+
+    @Column(name = "uploader_id", nullable = false)
+    private Long uploaderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
@@ -48,9 +51,17 @@ public class SongEntity implements Song {
         return this.name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String getFileName() {
         return this.fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     @Override
@@ -58,9 +69,21 @@ public class SongEntity implements Song {
         return this.uploader;
     }
 
+    public Long getUploaderId() {
+        return this.uploaderId;
+    }
+
+    public void setUploaderId(Long uploaderId) {
+        this.uploaderId = uploaderId;
+    }
+
     @Override
     public GenreEntity getGenre() {
         return this.genre;
+    }
+
+    public void setGenre(GenreEntity genre) {
+        this.genre = genre;
     }
 
     @Override
@@ -68,13 +91,25 @@ public class SongEntity implements Song {
         return this.language;
     }
 
+    public void setLanguage(LanguageEntity language) {
+        this.language = language;
+    }
+
     @Override
     public long getLengthMillis() {
         return this.lengthMillis == null ? 0 : this.lengthMillis;
     }
 
+    public void setLengthMillis(Long lengthMillis) {
+        this.lengthMillis = lengthMillis;
+    }
+
     public String getMediaType() {
         return this.mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 
     @Override
