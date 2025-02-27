@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/song")
@@ -62,31 +61,32 @@ public class SongController {
         return ResponseEntity.ok().headers(headers).body(resource);
     }
 
-    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadSong(
-        @RequestParam("file") MultipartFile file,
+    @PostMapping("")
+    public ResponseEntity<?> createSong(
         @RequestParam(value = "name") String name,
         @RequestParam(value = "genreId", required = false) Long genreId,
         @RequestParam(value = "languageId", required = false) Long languageId) {
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        final SongEntity song = this.songService.createSong(user, name, genreId, languageId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(song);
+    }
+
+    @PostMapping(value = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadSong(@PathVariable("id") long id, @RequestParam("file") MultipartFile file) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File is empty");
         }
 
-        final String fileName = UUID.randomUUID().toString();
-
-        final File destination = new File("../data/audio/", fileName);
         try {
-            file.transferTo(destination);
+            this.songService.uploadSong(user, id, file);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Failed to save file");
         }
 
-        // Create SongEntity
-        final SongEntity song = this.songService.createSong(
-            user, name, fileName, genreId, languageId, file.getContentType());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(song);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
