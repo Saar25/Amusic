@@ -216,6 +216,21 @@ public class SongService {
             });
     }
 
+    public CompletableFuture<Void> unlikeSong(Song song) {
+        LOGGER.info("Trying to unlike song");
+
+        return this.songApiService.unlikeSong(song.getId())
+            .whenComplete((unlikedSongIds, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to unlike song - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to unlike song");
+
+                    this.likedSongIds.remove(song.getId());
+                }
+            });
+    }
+
     public List<? extends Song> filterSongs(List<? extends Song> songs, String filter) {
         final String lowercaseFilter = filter.toLowerCase();
 

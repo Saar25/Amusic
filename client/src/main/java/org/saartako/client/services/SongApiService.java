@@ -139,6 +139,28 @@ public class SongApiService {
             .thenApply(response -> null);
     }
 
+    public CompletableFuture<Void> unlikeSong(long songId) {
+        if (!this.authService.isLoggedIn()) {
+            final Exception exception = new NullPointerException("User is not logged in");
+
+            return CompletableFuture.failedFuture(exception);
+        }
+
+        final String authorization = this.authService.getJwtToken();
+
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(Config.serverUrl + "/song/" + songId + "/like"))
+            .DELETE()
+            .header("Authorization", "Bearer " + authorization)
+            .header("Content-Type", "application/json")
+            .build();
+
+        return this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenCompose(HttpUtils::validateResponse)
+            .thenApply(response -> null);
+    }
+
     private static final class InstanceHolder {
         private static final SongApiService INSTANCE = new SongApiService(
             HttpService.getInstance(),
