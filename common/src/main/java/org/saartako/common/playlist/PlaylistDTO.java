@@ -1,19 +1,26 @@
 package org.saartako.common.playlist;
 
+import com.google.gson.annotations.SerializedName;
 import org.saartako.common.song.SongDTO;
 import org.saartako.common.user.User;
 import org.saartako.common.user.UserDTO;
 
-import java.util.Collection;
 import java.util.Set;
 
 public class PlaylistDTO implements Playlist {
 
     private long id;
+
     private UserDTO owner;
+
     private String name;
+
+    @SerializedName("private")
     private boolean isPrivate;
+
+    @SerializedName("modifiable")
     private boolean isModifiable;
+
     private Set<SongDTO> songs;
 
     @Override
@@ -62,7 +69,7 @@ public class PlaylistDTO implements Playlist {
     }
 
     public PlaylistDTO setModifiable(boolean modifiable) {
-        isModifiable = modifiable;
+        this.isModifiable = modifiable;
         return this;
     }
 

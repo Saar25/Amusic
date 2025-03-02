@@ -86,8 +86,9 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
             });
         } else {
             final boolean isPlaylistPersonal = playlist.getOwner().getId() == user.getId();
-            this.deletePlaylistButton.setVisible(isPlaylistPersonal);
-            this.deletePlaylistButton.setManaged(isPlaylistPersonal);
+            final boolean isPlaylistModifiable = isPlaylistPersonal && playlist.isModifiable();
+            this.deletePlaylistButton.setVisible(isPlaylistModifiable);
+            this.deletePlaylistButton.setManaged(isPlaylistModifiable);
 
             final Collection<? extends Song> songs = playlist.getSongs();
 
@@ -97,7 +98,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
                 final CardItem songCardItem = SongUtils.songToCardItem(song);
                 final MusicCard songCard = new MusicCard(songCardItem);
                 songCard.setExpandable(true);
-                if (isPlaylistPersonal && playlist.isModifiable()) {
+                if (isPlaylistModifiable) {
                     songCard.getMenuActions().setAll(
                         new MenuAction("Delete from playlist",
                             event -> deletePlaylistSong(playlist, song))

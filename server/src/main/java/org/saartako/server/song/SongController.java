@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/song")
@@ -24,10 +25,10 @@ public class SongController {
     private SongService songService;
 
     @GetMapping("")
-    public ResponseEntity<List<? extends Song>> findAll() {
+    public ResponseEntity<?> findAll() {
         final List<SongEntity> songEntities = this.songService.findAll();
 
-        final List<? extends Song> body = SongUtils.copyDisplay(songEntities);
+        final Set<? extends Song> body = SongUtils.copyDisplay(songEntities);
 
         return ResponseEntity.status(HttpStatus.OK).body(body);
     }
