@@ -2,6 +2,7 @@ package org.saartako.client.services;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ListBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.LongProperty;
@@ -37,6 +38,32 @@ public class SongService {
         return optional.orElse(null);
     }, this.songs, this.currentSongId);
 
+    private final ListProperty<Long> likedSongIds = new SimpleListProperty<>(
+        this, "likedSongIds", FXCollections.observableArrayList());
+
+    private final ListBinding<Song> likedSongs = new ListBinding<>() {
+
+        {
+            bind(SongService.this.likedSongIds);
+        }
+
+        @Override
+        protected ObservableList<Song> computeValue() {
+            final List<Song> list = SongService.this.likedSongIds.stream().map(likedSongId -> {
+                final Optional<Song> songOpt = SongService.this.songs.stream()
+                    .filter(s -> s.getId() == likedSongId).findAny();
+                return songOpt.orElse(null);
+            }).toList();
+
+            return FXCollections.observableList(list);
+        }
+
+        @Override
+        public void dispose() {
+            unbind(SongService.this.likedSongIds);
+        }
+    };
+
     private SongService(SongApiService songApiService) {
         this.songApiService = songApiService;
         fetchData();
@@ -64,6 +91,14 @@ public class SongService {
 
     public void setCurrentSong(Song song) {
         this.currentSongId.set(song.getId());
+    }
+
+    public ListBinding<Song> likedSongsProperty() {
+        return this.likedSongs;
+    }
+
+    public ObservableList<Song> getLikedSongs() {
+        return this.likedSongs.get();
     }
 
     public void fetchData() {
