@@ -1,4 +1,10 @@
 package org.saartako.common.playlist;
 
-public record CreatePlaylistDTO(String name, boolean isPrivate, boolean isModifiable) {
+import com.google.gson.annotations.SerializedName;
+
+public record CreatePlaylistDTO(
+    String name,
+    @SerializedName("private") boolean isPrivate,
+    @SerializedName("private") boolean isModifiable
+) {
 }

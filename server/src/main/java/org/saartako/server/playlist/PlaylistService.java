@@ -25,11 +25,12 @@ public class PlaylistService {
         return this.playlistRepository.findPublicOrByOwnerId(user.getId());
     }
 
-    public PlaylistEntity create(long ownerId, CreatePlaylistDTO createPlaylist) {
+    public PlaylistEntity create(User owner, CreatePlaylistDTO createPlaylist) {
         final PlaylistEntity playlist = new PlaylistEntity();
         playlist.setName(createPlaylist.name());
         playlist.setPrivate(createPlaylist.isPrivate());
-        playlist.setOwnerId(ownerId);
+        playlist.setModifiable(createPlaylist.isModifiable());
+        playlist.setOwnerId(owner.getId());
         return this.playlistRepository.save(playlist);
     }
 

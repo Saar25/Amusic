@@ -37,7 +37,7 @@ public class PlaylistController {
     public ResponseEntity<Playlist> createPlaylist(@RequestBody CreatePlaylistDTO playlist) {
         final UserDTO user = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        final PlaylistEntity create = this.playlistService.create(user.getId(), playlist);
+        final PlaylistEntity create = this.playlistService.create(user, playlist);
 
         final Playlist body = new PlaylistDTO()
             .setId(create.getId())
