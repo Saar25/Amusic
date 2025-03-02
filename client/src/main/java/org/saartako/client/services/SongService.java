@@ -231,6 +231,10 @@ public class SongService {
         return CompletableFuture.supplyAsync(() -> filterSongs(songs, filter));
     }
 
+    public boolean isSongLiked(Song song) {
+        return this.likedSongIds.stream().anyMatch(id -> id == song.getId());
+    }
+
     private static final class InstanceHolder {
         private static final SongService INSTANCE = new SongService(
             SongApiService.getInstance(),

@@ -47,6 +47,8 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private final Slider slider = new Slider(0, 100, 20);
 
+    private final Button likeSongButton;
+
     private final Button deleteSongButton;
 
     private final GridPane gridPane = new GridPane();
@@ -54,9 +56,11 @@ public class SongViewSkin extends SkinBase<SongView> {
     public SongViewSkin(SongView control) {
         super(control);
 
+        this.likeSongButton = createLikeSongButton();
         this.deleteSongButton = createDeleteSongButton();
+
         final VBox vBox = new VBox(Config.GAP_LARGE,
-            createAddToFavoritesButton(),
+            this.likeSongButton,
             createAddToPlaylistButton(),
             this.deleteSongButton);
 
@@ -105,6 +109,14 @@ public class SongViewSkin extends SkinBase<SongView> {
                 getChildren().setAll(this.loader);
             });
         } else {
+            if (this.songService.isSongLiked(song)) {
+                this.likeSongButton.getStyleClass().addAll(Styles.DANGER);
+                this.likeSongButton.setGraphic(new FontIcon(Material2AL.FAVORITE));
+            } else {
+                this.likeSongButton.getStyleClass().removeAll(Styles.DANGER);
+                this.likeSongButton.setGraphic(new FontIcon(Material2AL.FAVORITE_BORDER));
+            }
+
             final boolean isSongPersonal = song.getUploader().getId() == user.getId();
             this.deleteSongButton.setVisible(isSongPersonal);
             this.deleteSongButton.setManaged(isSongPersonal);
@@ -172,9 +184,11 @@ public class SongViewSkin extends SkinBase<SongView> {
         return playlistComboBox;
     }
 
-    private Button createAddToFavoritesButton() {
-        final Button button = new Button("", new FontIcon(Material2AL.FAVORITE_BORDER));
-        button.getStyleClass().add(Styles.BUTTON_ICON);
+    private Button createLikeSongButton() {
+        final Button button = new Button("Like");
+
+        button.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.ROUNDED);
+        button.setGraphic(new FontIcon(Material2AL.FAVORITE_BORDER));
 
         button.setOnAction(event -> {
             final Song song = this.songService.getCurrentSong();
