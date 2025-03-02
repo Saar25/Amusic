@@ -97,7 +97,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
                 final CardItem songCardItem = SongUtils.songToCardItem(song);
                 final MusicCard songCard = new MusicCard(songCardItem);
                 songCard.setExpandable(true);
-                if (isPlaylistPersonal) {
+                if (isPlaylistPersonal && playlist.isModifiable()) {
                     songCard.getMenuActions().setAll(
                         new MenuAction("Delete from playlist",
                             event -> deletePlaylistSong(playlist, song))

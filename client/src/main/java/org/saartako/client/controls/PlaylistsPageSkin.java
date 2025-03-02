@@ -108,7 +108,7 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
                 return new CreatePlaylistDTO(
                     playlistNameTextField.getText(),
                     isPrivateCheckBox.isSelected(),
-                    false
+                    true
                 );
             }
             return null;
