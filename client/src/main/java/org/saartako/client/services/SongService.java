@@ -70,11 +70,44 @@ public class SongService {
     private SongService(SongApiService songApiService, AuthService authService) {
         this.songApiService = songApiService;
         this.authService = authService;
+
+        this.authService.loggedUserProperty().addListener(observable -> fetchDataOnUserChange());
         fetchData();
     }
 
     public static SongService getInstance() {
         return InstanceHolder.INSTANCE;
+    }
+
+    public void fetchData() {
+        fetchSongs().whenComplete((songs, error) -> {
+            if (error != null) {
+                Platform.runLater(() -> {
+                    final Alert alert = new Alert(
+                        Alert.AlertType.INFORMATION,
+                        "Failed to fetch songs\n" + error.getMessage());
+                    alert.show();
+                });
+            }
+        });
+        fetchDataOnUserChange();
+    }
+
+    public void fetchDataOnUserChange() {
+        if (!this.authService.isLoggedIn()) {
+            this.likedSongIds.setValue(FXCollections.observableArrayList());
+        } else {
+            fetchLikedSongIds().whenComplete((likedSongIds, error) -> {
+                if (error != null) {
+                    Platform.runLater(() -> {
+                        final Alert alert = new Alert(
+                            Alert.AlertType.INFORMATION,
+                            "Failed to fetch liked song ids\n" + error.getMessage());
+                        alert.show();
+                    });
+                }
+            });
+        }
     }
 
     public ListProperty<Song> songsProperty() {
@@ -103,37 +136,6 @@ public class SongService {
 
     public ObservableList<Song> getLikedSongs() {
         return this.likedSongs.get();
-    }
-
-    public void fetchData() {
-        fetchSongs().whenComplete((songs, error) -> {
-            if (error != null) {
-                Platform.runLater(() -> {
-                    final Alert alert = new Alert(
-                        Alert.AlertType.INFORMATION,
-                        "Failed to fetch songs\n" + error.getMessage());
-                    alert.show();
-                });
-            }
-        });
-
-        this.authService.loggedUserProperty().addListener(observable -> {
-            if (!this.authService.isLoggedIn()) {
-                this.likedSongIds.setValue(FXCollections.observableArrayList());
-            } else {
-                fetchLikedSongIds().whenComplete((likedSongIds, error) -> {
-                    System.out.println(Arrays.toString(likedSongIds));
-                    if (error != null) {
-                        Platform.runLater(() -> {
-                            final Alert alert = new Alert(
-                                Alert.AlertType.INFORMATION,
-                                "Failed to fetch liked song ids\n" + error.getMessage());
-                            alert.show();
-                        });
-                    }
-                });
-            }
-        });
     }
 
     public CompletableFuture<Song[]> fetchSongs() {
