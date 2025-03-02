@@ -97,4 +97,8 @@ public class SongService {
         likeEntity.setSongId(songId);
         this.likeRepository.save(likeEntity);
     }
+
+    public void unlikeSong(User user, long songId) {
+        this.likeRepository.unlikeSong(user.getId(), songId);
+    }
 }
