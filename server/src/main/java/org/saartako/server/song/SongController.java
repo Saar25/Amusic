@@ -88,4 +88,17 @@ public class SongController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> likeSong(@PathVariable("id") long id) {
+        try {
+            final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            this.songService.likeSong(user, id);
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }

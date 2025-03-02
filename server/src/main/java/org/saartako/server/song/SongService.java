@@ -5,6 +5,8 @@ import org.saartako.server.genre.GenreEntity;
 import org.saartako.server.genre.GenreRepository;
 import org.saartako.server.language.LanguageEntity;
 import org.saartako.server.language.LanguageRepository;
+import org.saartako.server.like.LikeEntity;
+import org.saartako.server.like.LikeRepository;
 import org.saartako.server.playlist.PlaylistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,9 @@ public class SongService {
 
     @Autowired
     private LanguageRepository languageRepository;
+
+    @Autowired
+    private LikeRepository likeRepository;
 
     public List<SongEntity> findAll() {
         return this.songRepository.findAllWithGenreAndLanguage();
@@ -84,5 +89,12 @@ public class SongService {
         final File destination = new File("../data/audio/", fileName);
 
         file.transferTo(destination);
+    }
+
+    public void likeSong(User user, long songId) {
+        final LikeEntity likeEntity = new LikeEntity();
+        likeEntity.setUserId(user.getId());
+        likeEntity.setSongId(songId);
+        this.likeRepository.save(likeEntity);
     }
 }
