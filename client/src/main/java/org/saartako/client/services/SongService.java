@@ -235,6 +235,10 @@ public class SongService {
             });
     }
 
+    public CompletableFuture<Void> toggleLikeSong(Song song) {
+        return isSongLiked(song) ? unlikeSong(song) : likeSong(song);
+    }
+
     public List<? extends Song> filterSongs(List<? extends Song> songs, String filter) {
         final String lowercaseFilter = filter.toLowerCase();
 

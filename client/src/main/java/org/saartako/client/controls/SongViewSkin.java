@@ -187,31 +187,14 @@ public class SongViewSkin extends SkinBase<SongView> {
     }
 
     private Button createLikeSongButton() {
-        final Button button = new Button("Like");
+        final Button button = new Button();
 
         button.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.ROUNDED);
 
         button.setOnAction(event -> {
             final Song song = this.songService.getCurrentSong();
-            if (this.songService.isSongLiked(song)) {
-                this.songService.unlikeSong(song).whenComplete((response, error) -> {
-                    Platform.runLater(() -> {
-                        final Alert alert = error != null
-                            ? new Alert(Alert.AlertType.ERROR, "Failed to unlike song\n" + error.getMessage())
-                            : new Alert(Alert.AlertType.INFORMATION, "Succeeded to unlike song");
-                        alert.show();
-                    });
-                });
-            } else {
-                this.songService.likeSong(song).whenComplete((response, error) -> {
-                    Platform.runLater(() -> {
-                        final Alert alert = error != null
-                            ? new Alert(Alert.AlertType.ERROR, "Failed to like song\n" + error.getMessage())
-                            : new Alert(Alert.AlertType.INFORMATION, "Succeeded to like song");
-                        alert.show();
-                    });
-                });
-            }
+
+            this.songService.toggleLikeSong(song);
         });
         return button;
     }
