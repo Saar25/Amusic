@@ -2,6 +2,7 @@ package org.saartako.client.services;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ListBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.LongProperty;
@@ -34,18 +35,15 @@ public class PlaylistService {
     private final SongService songService;
     private final AuthService authService;
 
-    private final ListProperty<Playlist> playlists = new SimpleListProperty<>(this, "playlists");
+    private final ListProperty<Playlist> fetchedPlaylists = new SimpleListProperty<>(this, "playlists");
+
+    private final ObjectBinding<Playlist> likedSongsPlaylist;
+
+    private final ListBinding<Playlist> allPlaylists;
 
     private final LongProperty currentPlaylistId = new SimpleLongProperty(this, "currentPlaylistId");
 
-    private final ObjectBinding<Playlist> currentPlaylist = Bindings.createObjectBinding(() -> {
-        final long playlistId = this.currentPlaylistId.get();
-        final Optional<Playlist> optional = this.playlists.stream()
-            .filter(p -> p.getId() == playlistId).findAny();
-        return optional.orElse(null);
-    }, this.playlists, this.currentPlaylistId);
-
-    private final ObjectBinding<Playlist> likedSongsPlaylist;
+    private final ObjectBinding<Playlist> currentPlaylist;
 
     private PlaylistService(PlaylistApiService playlistApiService, SongService songService, AuthService authService) {
         this.playlistApiService = playlistApiService;
@@ -61,6 +59,36 @@ public class PlaylistService {
                 .setSongs(SongUtils.copyDisplay(this.songService.getLikedSongs()));
         }, this.songService.likedSongsProperty());
 
+        this.allPlaylists = new ListBinding<>() {
+
+            {
+                bind(PlaylistService.this.fetchedPlaylists, PlaylistService.this.likedSongsPlaylist);
+            }
+
+            @Override
+            protected ObservableList<Playlist> computeValue() {
+                final ObservableList<Playlist> fetchedPlaylists = PlaylistService.this.fetchedPlaylists.get();
+                final Playlist likedSongsPlaylist = PlaylistService.this.likedSongsPlaylist.get();
+
+                final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+                if (likedSongsPlaylist != null) playlists.addAll(likedSongsPlaylist);
+                if (fetchedPlaylists != null) playlists.addAll(fetchedPlaylists);
+                return playlists;
+            }
+
+            @Override
+            public void dispose() {
+                unbind(PlaylistService.this.fetchedPlaylists, PlaylistService.this.likedSongsPlaylist);
+            }
+        };
+
+        this.currentPlaylist = Bindings.createObjectBinding(() -> {
+            final long playlistId = this.currentPlaylistId.get();
+            final Optional<Playlist> optional = this.allPlaylists.stream()
+                .filter(p -> p.getId() == playlistId).findAny();
+            return optional.orElse(null);
+        }, this.allPlaylists, this.currentPlaylistId);
+
         // TODO: do it lazily
         authService.loggedUserProperty().addListener(observable -> fetchData());
         fetchData();
@@ -70,12 +98,12 @@ public class PlaylistService {
         return InstanceHolder.INSTANCE;
     }
 
-    public ListProperty<Playlist> playlistsProperty() {
-        return this.playlists;
+    public ListBinding<Playlist> playlistsProperty() {
+        return this.allPlaylists;
     }
 
     public ObservableList<Playlist> getPlaylists() {
-        return this.playlists.get();
+        return this.allPlaylists.get();
     }
 
     public ObjectBinding<Playlist> currentPlaylistProperty() {
@@ -92,7 +120,7 @@ public class PlaylistService {
 
     public void fetchData() {
         if (!this.authService.isLoggedIn()) {
-            this.playlists.setValue(FXCollections.observableArrayList());
+            this.fetchedPlaylists.setValue(FXCollections.observableArrayList());
         } else {
             fetchPlaylists().whenComplete((playlists, error) -> {
                 if (error != null) {
@@ -115,11 +143,11 @@ public class PlaylistService {
                 if (throwable != null) {
                     LOGGER.error("Failed to fetch playlists - {}", throwable.getMessage());
 
-                    this.playlists.setValue(FXCollections.observableArrayList());
+                    this.fetchedPlaylists.setValue(FXCollections.observableArrayList());
                 } else {
                     LOGGER.info("Fetch playlists successfully");
 
-                    this.playlists.setValue(FXCollections.observableArrayList(playlists));
+                    this.fetchedPlaylists.setValue(FXCollections.observableArrayList(playlists));
                 }
             });
     }
@@ -134,7 +162,7 @@ public class PlaylistService {
                 } else {
                     LOGGER.info("Succeeded to create playlist");
 
-                    this.playlists.add(playlist);
+                    this.fetchedPlaylists.add(playlist);
                 }
             });
     }
@@ -149,7 +177,7 @@ public class PlaylistService {
                 } else {
                     LOGGER.info("Succeeded to delete playlist");
 
-                    this.playlists.remove(playlist);
+                    this.fetchedPlaylists.remove(playlist);
                 }
             });
     }
@@ -164,14 +192,14 @@ public class PlaylistService {
                 } else {
                     LOGGER.info("Succeeded to add song to playlist");
 
-                    int index = this.playlists.indexOf(playlist);
+                    int index = this.fetchedPlaylists.indexOf(playlist);
                     if (index == -1) {
                         LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
                     }
 
                     final PlaylistDTO newPlaylist = PlaylistUtils.copyDisplay(playlist);
                     newPlaylist.getSongs().add((SongDTO) song);
-                    this.playlists.set(index, newPlaylist);
+                    this.fetchedPlaylists.set(index, newPlaylist);
                 }
             });
     }
@@ -186,14 +214,14 @@ public class PlaylistService {
                 } else {
                     LOGGER.info("Succeeded to delete song from playlist");
 
-                    int index = this.playlists.indexOf(playlist);
+                    int index = this.fetchedPlaylists.indexOf(playlist);
                     if (index == -1) {
                         LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
                     }
 
                     final PlaylistDTO newPlaylist = PlaylistUtils.copyDisplay(playlist);
                     newPlaylist.getSongs().removeIf(s -> s.getId() == song.getId());
-                    this.playlists.set(index, newPlaylist);
+                    this.fetchedPlaylists.set(index, newPlaylist);
                 }
             });
     }

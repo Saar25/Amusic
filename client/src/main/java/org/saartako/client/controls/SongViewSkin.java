@@ -3,7 +3,7 @@ package org.saartako.client.controls;
 import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
-import javafx.beans.property.ListProperty;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -163,7 +163,7 @@ public class SongViewSkin extends SkinBase<SongView> {
     }
 
     private ComboBox<Playlist> createPlaylistComboBox() {
-        final ListProperty<Playlist> playlists = this.playlistService.playlistsProperty();
+        final ObservableList<Playlist> playlists = this.playlistService.playlistsProperty();
         final User user = this.authService.getLoggedUser();
         final FilteredList<Playlist> personal = playlists.filtered(
             p -> p.getOwner().getId() == user.getId());
