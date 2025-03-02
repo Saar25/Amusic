@@ -100,7 +100,7 @@ public class SongViewSkin extends SkinBase<SongView> {
         final Song song = this.songService.getCurrentSong();
         final User user = this.authService.getLoggedUser();
 
-        if (song == null) {
+        if (song == null || user == null) {
             Platform.runLater(() -> {
                 getChildren().setAll(this.loader);
             });

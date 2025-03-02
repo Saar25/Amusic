@@ -39,6 +39,8 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
     private final AuthService authService = AuthService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
 
+    private final Loader loader = new Loader();
+
     private final MusicCard playlistCard = new MusicCard();
 
     private final VBox songList = new VBox(Config.GAP_MEDIUM);
@@ -69,46 +71,50 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
         getChildren().setAll(gridPane);
 
-        registerChangeListener(this.playlistService.currentPlaylistProperty(), observable ->
-            updatePlaylist(this.authService.getLoggedUser(), this.playlistService.getCurrentPlaylist()));
-
-        registerChangeListener(this.authService.loggedUserProperty(), observable ->
-            updatePlaylist(this.authService.getLoggedUser(), this.playlistService.getCurrentPlaylist()));
-
-        updatePlaylist(this.authService.getLoggedUser(), this.playlistService.getCurrentPlaylist());
+        registerChangeListener(this.playlistService.currentPlaylistProperty(), observable -> updatePlaylist());
+        registerChangeListener(this.authService.loggedUserProperty(), observable -> updatePlaylist());
+        updatePlaylist();
     }
 
-    private void updatePlaylist(User user, Playlist playlist) {
-        // TODO: handle null values
-        final boolean isPlaylistPersonal = playlist.getOwner().getId() == user.getId();
-        this.deletePlaylistButton.setVisible(isPlaylistPersonal);
-        this.deletePlaylistButton.setManaged(isPlaylistPersonal);
+    private void updatePlaylist() {
+        final User user = this.authService.getLoggedUser();
+        final Playlist playlist = this.playlistService.getCurrentPlaylist();
 
-        final Collection<? extends Song> songs = playlist.getSongs();
-
-        final CardItem playlistCard = PlaylistUtils.playlistToCardItem(playlist);
-
-        final List<? extends Node> cards = songs.stream().map(song -> {
-            final CardItem songCardItem = SongUtils.songToCardItem(song);
-            final MusicCard songCard = new MusicCard(songCardItem);
-            songCard.setExpandable(true);
-            if (isPlaylistPersonal) {
-                songCard.getMenuActions().setAll(
-                    new MenuAction("Delete from playlist",
-                        event -> deletePlaylistSong(playlist, song))
-                );
-            }
-            songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e -> {
-                this.songService.setCurrentSong(song);
-                this.routerService.push(Route.SONG_VIEW);
+        if (user == null || playlist == null) {
+            Platform.runLater(() -> {
+                getChildren().setAll(this.loader);
             });
-            return songCard;
-        }).toList();
+        } else {
+            final boolean isPlaylistPersonal = playlist.getOwner().getId() == user.getId();
+            this.deletePlaylistButton.setVisible(isPlaylistPersonal);
+            this.deletePlaylistButton.setManaged(isPlaylistPersonal);
 
-        Platform.runLater(() -> {
-            this.playlistCard.setCardItem(playlistCard);
-            this.songList.getChildren().setAll(cards);
-        });
+            final Collection<? extends Song> songs = playlist.getSongs();
+
+            final CardItem playlistCard = PlaylistUtils.playlistToCardItem(playlist);
+
+            final List<? extends Node> cards = songs.stream().map(song -> {
+                final CardItem songCardItem = SongUtils.songToCardItem(song);
+                final MusicCard songCard = new MusicCard(songCardItem);
+                songCard.setExpandable(true);
+                if (isPlaylistPersonal) {
+                    songCard.getMenuActions().setAll(
+                        new MenuAction("Delete from playlist",
+                            event -> deletePlaylistSong(playlist, song))
+                    );
+                }
+                songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e -> {
+                    this.songService.setCurrentSong(song);
+                    this.routerService.push(Route.SONG_VIEW);
+                });
+                return songCard;
+            }).toList();
+
+            Platform.runLater(() -> {
+                this.playlistCard.setCardItem(playlistCard);
+                this.songList.getChildren().setAll(cards);
+            });
+        }
     }
 
     public void startPlaying() {
