@@ -97,6 +97,7 @@ public class SongViewSkin extends SkinBase<SongView> {
 
         registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
         registerChangeListener(this.authService.loggedUserProperty(), observable -> updateSong());
+        registerListChangeListener(this.songService.likedSongIdsProperty(), observable -> updateSong());
         updateSong();
     }
 
@@ -188,18 +189,28 @@ public class SongViewSkin extends SkinBase<SongView> {
         final Button button = new Button("Like");
 
         button.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.ROUNDED);
-        button.setGraphic(new FontIcon(Material2AL.FAVORITE_BORDER));
 
         button.setOnAction(event -> {
             final Song song = this.songService.getCurrentSong();
-            this.songService.likeSong(song).whenComplete((response, error) -> {
-                Platform.runLater(() -> {
-                    final Alert alert = error != null
-                        ? new Alert(Alert.AlertType.ERROR, "Failed to like song\n" + error.getMessage())
-                        : new Alert(Alert.AlertType.INFORMATION, "Succeeded to like song");
-                    alert.show();
+            if (this.songService.isSongLiked(song)) {
+                this.songService.unlikeSong(song).whenComplete((response, error) -> {
+                    Platform.runLater(() -> {
+                        final Alert alert = error != null
+                            ? new Alert(Alert.AlertType.ERROR, "Failed to unlike song\n" + error.getMessage())
+                            : new Alert(Alert.AlertType.INFORMATION, "Succeeded to unlike song");
+                        alert.show();
+                    });
                 });
-            });
+            } else {
+                this.songService.likeSong(song).whenComplete((response, error) -> {
+                    Platform.runLater(() -> {
+                        final Alert alert = error != null
+                            ? new Alert(Alert.AlertType.ERROR, "Failed to like song\n" + error.getMessage())
+                            : new Alert(Alert.AlertType.INFORMATION, "Succeeded to like song");
+                        alert.show();
+                    });
+                });
+            }
         });
         return button;
     }

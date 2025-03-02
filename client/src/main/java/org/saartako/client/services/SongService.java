@@ -129,6 +129,10 @@ public class SongService {
         this.currentSongId.set(song.getId());
     }
 
+    public ListProperty<Long> likedSongIdsProperty() {
+        return this.likedSongIds;
+    }
+
     public ListBinding<Song> likedSongsProperty() {
         return this.likedSongs;
     }
