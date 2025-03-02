@@ -71,8 +71,8 @@ public class PlaylistDTO implements Playlist {
         return this.songs;
     }
 
-    public PlaylistDTO setSongs(Collection<SongDTO> songs) {
-        this.songs = Set.copyOf(songs);
+    public PlaylistDTO setSongs(Set<SongDTO> songs) {
+        this.songs = songs;
         return this;
     }
 

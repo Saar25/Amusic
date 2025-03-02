@@ -4,7 +4,6 @@ import org.saartako.common.song.SongUtils;
 import org.saartako.common.user.UserUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PlaylistUtils {
 
@@ -25,7 +24,7 @@ public class PlaylistUtils {
                 .setName(playlist.getName())
                 .setPrivate(playlist.isPrivate())
                 .setModifiable(playlist.isModifiable())
-                .setSongs(playlist.getSongs().stream().map(SongUtils::copyDisplay).collect(Collectors.toSet()));
+                .setSongs(SongUtils.copyDisplay(playlist.getSongs()));
     }
 
     public static String toString(Playlist playlist) {

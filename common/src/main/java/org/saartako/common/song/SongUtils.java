@@ -4,7 +4,9 @@ import org.saartako.common.genre.GenreUtils;
 import org.saartako.common.language.LanguageUtils;
 import org.saartako.common.user.UserUtils;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SongUtils {
 
@@ -12,8 +14,8 @@ public class SongUtils {
         throw new RuntimeException("Cannot create instance of class " + getClass().getName());
     }
 
-    public static List<SongDTO> copyDisplay(List<? extends Song> songs) {
-        return songs.stream().map(SongUtils::copyDisplay).toList();
+    public static Set<SongDTO> copyDisplay(Collection<? extends Song> songs) {
+        return new HashSet<>(songs.stream().map(SongUtils::copyDisplay).toList());
     }
 
     public static SongDTO copyDisplay(Song song) {
