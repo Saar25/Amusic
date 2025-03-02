@@ -110,21 +110,22 @@ public class SongViewSkin extends SkinBase<SongView> {
                 getChildren().setAll(this.loader);
             });
         } else {
-            if (this.songService.isSongLiked(song)) {
-                this.likeSongButton.getStyleClass().addAll(Styles.DANGER);
-                this.likeSongButton.setGraphic(new FontIcon(Material2AL.FAVORITE));
-            } else {
-                this.likeSongButton.getStyleClass().removeAll(Styles.DANGER);
-                this.likeSongButton.setGraphic(new FontIcon(Material2AL.FAVORITE_BORDER));
-            }
-
             final boolean isSongPersonal = song.getUploader().getId() == user.getId();
-            this.deleteSongButton.setVisible(isSongPersonal);
-            this.deleteSongButton.setManaged(isSongPersonal);
 
             final CardItem cardItem = SongUtils.songToCardItem(song);
 
             Platform.runLater(() -> {
+                this.deleteSongButton.setVisible(isSongPersonal);
+                this.deleteSongButton.setManaged(isSongPersonal);
+
+                if (this.songService.isSongLiked(song)) {
+                    this.likeSongButton.getStyleClass().addAll(Styles.DANGER);
+                    this.likeSongButton.setGraphic(new FontIcon(Material2AL.FAVORITE));
+                } else {
+                    this.likeSongButton.getStyleClass().removeAll(Styles.DANGER);
+                    this.likeSongButton.setGraphic(new FontIcon(Material2AL.FAVORITE_BORDER));
+                }
+
                 this.songCard.setCardItem(cardItem);
 
                 getChildren().setAll(this.gridPane);
