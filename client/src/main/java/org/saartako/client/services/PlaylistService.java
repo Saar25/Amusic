@@ -16,6 +16,8 @@ import org.saartako.common.playlist.PlaylistDTO;
 import org.saartako.common.playlist.PlaylistUtils;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongDTO;
+import org.saartako.common.song.SongUtils;
+import org.saartako.common.user.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ public class PlaylistService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final PlaylistApiService playlistApiService;
+    private final SongService songService;
     private final AuthService authService;
 
     private final ListProperty<Playlist> playlists = new SimpleListProperty<>(this, "playlists");
@@ -42,9 +45,21 @@ public class PlaylistService {
         return optional.orElse(null);
     }, this.playlists, this.currentPlaylistId);
 
-    private PlaylistService(PlaylistApiService playlistApiService, AuthService authService) {
+    private final ObjectBinding<Playlist> likedSongsPlaylist;
+
+    private PlaylistService(PlaylistApiService playlistApiService, SongService songService, AuthService authService) {
         this.playlistApiService = playlistApiService;
+        this.songService = songService;
         this.authService = authService;
+
+        this.likedSongsPlaylist = Bindings.createObjectBinding(() -> {
+            return new PlaylistDTO()
+                .setName("Liked Songs")
+                .setModifiable(false)
+                .setPrivate(true)
+                .setOwner(UserUtils.copyDisplay(this.authService.getLoggedUser()))
+                .setSongs(SongUtils.copyDisplay(this.songService.getLikedSongs()));
+        }, this.songService.likedSongsProperty());
 
         // TODO: do it lazily
         authService.loggedUserProperty().addListener(observable -> fetchData());
@@ -199,7 +214,7 @@ public class PlaylistService {
     private static final class InstanceHolder {
         private static final PlaylistService INSTANCE = new PlaylistService(
             PlaylistApiService.getInstance(),
-            AuthService.getInstance()
-        );
+            SongService.getInstance(),
+            AuthService.getInstance());
     }
 }

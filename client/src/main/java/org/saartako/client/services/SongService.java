@@ -26,7 +26,6 @@ public class SongService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final SongApiService songApiService;
-
     private final AuthService authService;
 
     private final ListProperty<Song> songs = new SimpleListProperty<>(this, "songs");

@@ -4,6 +4,7 @@ import org.saartako.common.song.SongDTO;
 import org.saartako.common.user.User;
 import org.saartako.common.user.UserDTO;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class PlaylistDTO implements Playlist {
@@ -70,8 +71,8 @@ public class PlaylistDTO implements Playlist {
         return this.songs;
     }
 
-    public PlaylistDTO setSongs(Set<SongDTO> songs) {
-        this.songs = songs;
+    public PlaylistDTO setSongs(Collection<SongDTO> songs) {
+        this.songs = Set.copyOf(songs);
         return this;
     }
 
