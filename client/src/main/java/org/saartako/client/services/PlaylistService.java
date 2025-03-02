@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import org.saartako.client.utils.BindingsUtils;
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.playlist.PlaylistDTO;
@@ -59,28 +60,15 @@ public class PlaylistService {
                 .setSongs(SongUtils.copyDisplay(this.songService.getLikedSongs()));
         }, this.songService.likedSongsProperty());
 
-        this.allPlaylists = new ListBinding<>() {
+        this.allPlaylists = BindingsUtils.createListBinding(() -> {
+            final ObservableList<Playlist> fetchedPlaylists = PlaylistService.this.fetchedPlaylists.get();
+            final Playlist likedSongsPlaylist = PlaylistService.this.likedSongsPlaylist.get();
 
-            {
-                bind(PlaylistService.this.fetchedPlaylists, PlaylistService.this.likedSongsPlaylist);
-            }
-
-            @Override
-            protected ObservableList<Playlist> computeValue() {
-                final ObservableList<Playlist> fetchedPlaylists = PlaylistService.this.fetchedPlaylists.get();
-                final Playlist likedSongsPlaylist = PlaylistService.this.likedSongsPlaylist.get();
-
-                final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
-                if (likedSongsPlaylist != null) playlists.addAll(likedSongsPlaylist);
-                if (fetchedPlaylists != null) playlists.addAll(fetchedPlaylists);
-                return playlists;
-            }
-
-            @Override
-            public void dispose() {
-                unbind(PlaylistService.this.fetchedPlaylists, PlaylistService.this.likedSongsPlaylist);
-            }
-        };
+            final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+            if (likedSongsPlaylist != null) playlists.addAll(likedSongsPlaylist);
+            if (fetchedPlaylists != null) playlists.addAll(fetchedPlaylists);
+            return playlists;
+        }, this.fetchedPlaylists, this.likedSongsPlaylist);
 
         this.currentPlaylist = Bindings.createObjectBinding(() -> {
             final long playlistId = this.currentPlaylistId.get();

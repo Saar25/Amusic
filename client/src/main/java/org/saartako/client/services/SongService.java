@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import org.saartako.client.utils.BindingsUtils;
 import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
 import org.slf4j.Logger;
@@ -42,28 +43,15 @@ public class SongService {
     private final ListProperty<Long> likedSongIds = new SimpleListProperty<>(
         this, "likedSongIds", FXCollections.observableArrayList());
 
-    private final ListBinding<Song> likedSongs = new ListBinding<>() {
+    private final ListBinding<Song> likedSongs = BindingsUtils.createListBinding(() -> {
+        final List<Song> list = SongService.this.likedSongIds.stream().map(likedSongId -> {
+            final Optional<Song> songOpt = SongService.this.songs.stream()
+                .filter(s -> s.getId() == likedSongId).findAny();
+            return songOpt.orElse(null);
+        }).toList();
 
-        {
-            bind(SongService.this.likedSongIds);
-        }
-
-        @Override
-        protected ObservableList<Song> computeValue() {
-            final List<Song> list = SongService.this.likedSongIds.stream().map(likedSongId -> {
-                final Optional<Song> songOpt = SongService.this.songs.stream()
-                    .filter(s -> s.getId() == likedSongId).findAny();
-                return songOpt.orElse(null);
-            }).toList();
-
-            return FXCollections.observableList(list);
-        }
-
-        @Override
-        public void dispose() {
-            unbind(SongService.this.likedSongIds);
-        }
-    };
+        return FXCollections.observableList(list);
+    }, this.likedSongIds);
 
     private SongService(SongApiService songApiService, AuthService authService) {
         this.songApiService = songApiService;
