@@ -47,6 +47,8 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
     private final Button deletePlaylistButton;
 
+    private final GridPane gridPane = new GridPane();
+
     public PlaylistViewSkin(PlaylistView control) {
         super(control);
 
@@ -61,15 +63,14 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
         startButton.setOnAction(event -> startPlaying());
 
-        final GridPane gridPane = new GridPane();
-        GridUtils.initializeGrid(gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
+        GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
 
-        gridPane.add(this.playlistCard, 0, 2, 6, 6);
-        gridPane.add(actionsVBox, 6, 2, 2, 6);
-        gridPane.add(songScrollPane, 8, 0, 4, 12);
-        gridPane.add(startButton, 0, 10, 8, 2);
+        this.gridPane.add(this.playlistCard, 0, 2, 6, 6);
+        this.gridPane.add(actionsVBox, 6, 2, 2, 6);
+        this.gridPane.add(songScrollPane, 8, 0, 4, 12);
+        this.gridPane.add(startButton, 0, 10, 8, 2);
 
-        getChildren().setAll(gridPane);
+        getChildren().setAll(this.gridPane);
 
         registerChangeListener(this.playlistService.currentPlaylistProperty(), observable -> updatePlaylist());
         registerChangeListener(this.authService.loggedUserProperty(), observable -> updatePlaylist());
@@ -114,6 +115,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
             Platform.runLater(() -> {
                 this.playlistCard.setCardItem(playlistCard);
                 this.songList.getChildren().setAll(cards);
+                getChildren().setAll(this.gridPane);
             });
         }
     }
