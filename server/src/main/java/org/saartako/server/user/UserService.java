@@ -1,10 +1,11 @@
 package org.saartako.server.user;
 
+import org.saartako.common.user.User;
+import org.saartako.server.like.LikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -12,11 +13,10 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<UserEntity> findAll() {
-        return this.userRepository.findAll();
-    }
+    @Autowired
+    private LikeRepository likeRepository;
 
-    public Optional<UserEntity> findById(long id) {
-        return this.userRepository.findById(id);
+    public List<Long> findLikedSongIds(User user) {
+        return this.likeRepository.findLikedSongIdsByUserId(user.getId());
     }
 }
