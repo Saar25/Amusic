@@ -1,10 +1,12 @@
 package org.saartako.client.services;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class SongService {
@@ -25,7 +28,14 @@ public class SongService {
 
     private final ListProperty<Song> songs = new SimpleListProperty<>(this, "songs");
 
-    private final ObjectProperty<Song> currentSong = new SimpleObjectProperty<>(this, "currentSong");
+    private final LongProperty currentSongId = new SimpleLongProperty(this, "currentSongId");
+
+    private final ObjectBinding<Song> currentSong = Bindings.createObjectBinding(() -> {
+        final long songId = this.currentSongId.get();
+        final Optional<Song> optional = this.songs.stream()
+            .filter(p -> p.getId() == songId).findAny();
+        return optional.orElse(null);
+    }, this.songs, this.currentSongId);
 
     private SongService(SongApiService songApiService) {
         this.songApiService = songApiService;
@@ -44,7 +54,7 @@ public class SongService {
         return this.songs.get();
     }
 
-    public ObjectProperty<Song> currentSongProperty() {
+    public ObjectBinding<Song> currentSongProperty() {
         return this.currentSong;
     }
 
@@ -53,7 +63,7 @@ public class SongService {
     }
 
     public void setCurrentSong(Song song) {
-        this.currentSong.set(song);
+        this.currentSongId.set(song.getId());
     }
 
     public void fetchData() {
