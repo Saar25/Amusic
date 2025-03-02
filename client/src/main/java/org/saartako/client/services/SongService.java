@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -198,6 +197,21 @@ public class SongService {
                     final ObservableList<Long> list =
                         FXCollections.observableArrayList(likedSongIds);
                     this.likedSongIds.setValue(list);
+                }
+            });
+    }
+
+    public CompletableFuture<Void> likeSong(Song song) {
+        LOGGER.info("Trying to like song");
+
+        return this.songApiService.likeSong(song.getId())
+            .whenComplete((likedSongIds, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to like song - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to like song");
+
+                    this.likedSongIds.add(song.getId());
                 }
             });
     }

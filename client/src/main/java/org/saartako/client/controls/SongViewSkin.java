@@ -177,9 +177,14 @@ public class SongViewSkin extends SkinBase<SongView> {
         button.getStyleClass().add(Styles.BUTTON_ICON);
 
         button.setOnAction(event -> {
-            Platform.runLater(() -> {
-                final Alert alert = new Alert(Alert.AlertType.WARNING, "Behaviour not implemented!");
-                alert.show();
+            final Song song = this.songService.getCurrentSong();
+            this.songService.likeSong(song).whenComplete((response, error) -> {
+                Platform.runLater(() -> {
+                    final Alert alert = error != null
+                        ? new Alert(Alert.AlertType.ERROR, "Failed to like song\n" + error.getMessage())
+                        : new Alert(Alert.AlertType.INFORMATION, "Succeeded to like song");
+                    alert.show();
+                });
             });
         });
         return button;
