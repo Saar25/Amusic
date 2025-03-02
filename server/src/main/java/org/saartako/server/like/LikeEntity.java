@@ -7,6 +7,7 @@ import org.saartako.server.song.SongEntity;
 import org.saartako.server.user.UserEntity;
 
 @Entity(name = "likes")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "song_id"}))
 public class LikeEntity implements Like {
 
     @Id
