@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -26,6 +27,8 @@ public class SongService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final SongApiService songApiService;
+
+    private final AuthService authService;
 
     private final ListProperty<Song> songs = new SimpleListProperty<>(this, "songs");
 
@@ -64,8 +67,9 @@ public class SongService {
         }
     };
 
-    private SongService(SongApiService songApiService) {
+    private SongService(SongApiService songApiService, AuthService authService) {
         this.songApiService = songApiService;
+        this.authService = authService;
         fetchData();
     }
 
@@ -109,6 +113,24 @@ public class SongService {
                         Alert.AlertType.INFORMATION,
                         "Failed to fetch songs\n" + error.getMessage());
                     alert.show();
+                });
+            }
+        });
+
+        this.authService.loggedUserProperty().addListener(observable -> {
+            if (!this.authService.isLoggedIn()) {
+                this.likedSongIds.setValue(FXCollections.observableArrayList());
+            } else {
+                fetchLikedSongIds().whenComplete((likedSongIds, error) -> {
+                    System.out.println(Arrays.toString(likedSongIds));
+                    if (error != null) {
+                        Platform.runLater(() -> {
+                            final Alert alert = new Alert(
+                                Alert.AlertType.INFORMATION,
+                                "Failed to fetch liked song ids\n" + error.getMessage());
+                            alert.show();
+                        });
+                    }
                 });
             }
         });
@@ -161,6 +183,23 @@ public class SongService {
             });
     }
 
+    public CompletableFuture<Long[]> fetchLikedSongIds() {
+        LOGGER.info("Trying to fetch liked song ids");
+
+        return this.songApiService.fetchLikedSongIds()
+            .whenComplete((likedSongIds, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to fetch liked song ids - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Fetch liked song ids successfully");
+
+                    final ObservableList<Long> list =
+                        FXCollections.observableArrayList(likedSongIds);
+                    this.likedSongIds.setValue(list);
+                }
+            });
+    }
+
     public List<? extends Song> filterSongs(List<? extends Song> songs, String filter) {
         final String lowercaseFilter = filter.toLowerCase();
 
@@ -178,7 +217,8 @@ public class SongService {
 
     private static final class InstanceHolder {
         private static final SongService INSTANCE = new SongService(
-            SongApiService.getInstance()
+            SongApiService.getInstance(),
+            AuthService.getInstance()
         );
     }
 }
