@@ -6,6 +6,7 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import org.saartako.client.constants.Route;
+import org.saartako.client.models.RouteNode;
 import org.saartako.client.services.RouterService;
 
 import java.util.Map;
@@ -31,6 +32,8 @@ public class RouterSkin extends SkinBase<Router> {
     }
 
     private void onRouteChange(Route route, Map<Route, Node> routes, Node defaultRoute) {
+        final Node oldChild = this.node.getChildren().isEmpty() ? null : this.node.getChildren().get(0);
+
         if (route == null) {
             this.node.getChildren().clear();
         } else {
@@ -39,6 +42,12 @@ public class RouterSkin extends SkinBase<Router> {
             Animations.fadeIn(routeNode, Duration.seconds(1)).playFromStart();
 
             this.node.getChildren().setAll(routeNode);
+            if (routeNode instanceof RouteNode routerNode) {
+                routerNode.onEnterView();
+            }
+        }
+        if (oldChild instanceof RouteNode routerNode) {
+            routerNode.onExistView();
         }
     }
 }

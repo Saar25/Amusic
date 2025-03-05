@@ -263,4 +263,12 @@ public class SongViewSkin extends SkinBase<SongView> {
         });
         return button;
     }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (this.mediaPlayer != null) {
+            this.mediaPlayer.dispose();
+        }
+    }
 }
