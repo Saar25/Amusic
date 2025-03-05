@@ -51,6 +51,8 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private final GridPane gridPane = new GridPane();
 
+    private MediaPlayer mediaPlayer;
+
     public SongViewSkin(SongView control) {
         super(control);
 
@@ -62,33 +64,19 @@ public class SongViewSkin extends SkinBase<SongView> {
             createAddToPlaylistButton(),
             this.deleteSongButton);
 
-        final Media media = new Media("http://localhost:8080/song/5/audio");
-
-//        final Media media = new Media("file:///home/saar/Me/university/tmp.wav");
-
-        // Create a MediaPlayer to control playback
-        final MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setOnError(() -> {
-            mediaPlayer.getError().printStackTrace();
-            System.err.println("error");
-        });
-
-        mediaPlayer.play();
-
-        // Update the Slider position as the media plays
-        mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-            this.slider.setValue(newValue.toMillis());
-        });
-
         this.slider.setSkin(new ProgressSliderSkin(this.slider));
         this.slider.getStyleClass().add(Styles.LARGE);
         this.slider.setMin(0);
         this.slider.setOnMousePressed(event -> {
-            mediaPlayer.pause();
+            if (this.mediaPlayer != null) {
+                this.mediaPlayer.pause();
+            }
         });
         this.slider.setOnMouseReleased(event -> {
-            mediaPlayer.seek(Duration.millis(this.slider.getValue()));
-            mediaPlayer.play();
+            if (this.mediaPlayer != null) {
+                this.mediaPlayer.seek(Duration.millis(this.slider.getValue()));
+                this.mediaPlayer.play();
+            }
         });
 
         GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
@@ -103,6 +91,24 @@ public class SongViewSkin extends SkinBase<SongView> {
         updateSong();
     }
 
+    private MediaPlayer createMediaPlayer(Song song) {
+        final String mediaUrl = String.format("http://localhost:8080/song/%d/audio", song.getId());
+
+        final Media media = new Media(mediaUrl);
+
+        final MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setOnError(() -> {
+            mediaPlayer.getError().printStackTrace();
+            System.err.println("error");
+        });
+
+        mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+            this.slider.setValue(newValue.toMillis());
+        });
+
+        return mediaPlayer;
+    }
+
     private void updateSong() {
         final Song song = this.songService.getCurrentSong();
         final User user = this.authService.getLoggedUser();
@@ -112,6 +118,8 @@ public class SongViewSkin extends SkinBase<SongView> {
                 getChildren().setAll(this.loader);
             });
         } else {
+            this.mediaPlayer = createMediaPlayer(song);
+
             final boolean isSongPersonal = song.getUploader().getId() == user.getId();
 
             final CardItem cardItem = SongUtils.songToCardItem(song);
@@ -130,7 +138,7 @@ public class SongViewSkin extends SkinBase<SongView> {
 
                 this.songCard.setCardItem(cardItem);
 
-                this.slider.setMax(song.getLengthMillis() == 0 ? 354810 : song.getLengthMillis());
+                this.slider.setMax(song.getLengthMillis() == 0 ? 1 : song.getLengthMillis());
 
                 getChildren().setAll(this.gridPane);
             });
