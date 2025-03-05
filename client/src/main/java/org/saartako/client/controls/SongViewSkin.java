@@ -76,7 +76,6 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.slider.setOnMouseReleased(event -> {
             if (this.mediaPlayer != null) {
                 this.mediaPlayer.seek(Duration.millis(this.slider.getValue()));
-                this.mediaPlayer.play();
             }
         });
 
@@ -106,7 +105,6 @@ public class SongViewSkin extends SkinBase<SongView> {
                     this.mediaPlayer.dispose();
                 }
                 this.mediaPlayer = mediaPlayer;
-                this.mediaPlayer.setAutoPlay(true);
             });
 
             final boolean isSongPersonal = song.getUploader().getId() == user.getId();
@@ -262,6 +260,18 @@ public class SongViewSkin extends SkinBase<SongView> {
             });
         });
         return button;
+    }
+
+    public void stopMediaPlayer() {
+        if (this.mediaPlayer != null) {
+            this.mediaPlayer.stop();
+        }
+    }
+
+    public void startMediaPlayer() {
+        if (this.mediaPlayer != null) {
+            this.mediaPlayer.play();
+        }
     }
 
     @Override

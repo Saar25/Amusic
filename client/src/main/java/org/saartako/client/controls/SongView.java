@@ -12,11 +12,15 @@ public class SongView extends Control implements RouteNode {
 
     @Override
     public void onExistView() {
-        System.out.println("exit");
+        if (getSkin() != null) {
+            ((SongViewSkin) getSkin()).stopMediaPlayer();
+        }
     }
 
     @Override
     public void onEnterView() {
-        System.out.println("yay");
+        if (getSkin() != null) {
+            ((SongViewSkin) getSkin()).startMediaPlayer();
+        }
     }
 }
