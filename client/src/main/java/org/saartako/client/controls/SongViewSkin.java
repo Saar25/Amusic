@@ -10,11 +10,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -64,10 +62,18 @@ public class SongViewSkin extends SkinBase<SongView> {
             createAddToPlaylistButton(),
             this.deleteSongButton);
 
-        final Media media = new Media("http://localhost:8080/song/1/audio");
+        final Media media = new Media("http://localhost:8080/song/5/audio");
+
+//        final Media media = new Media("file:///home/saar/Me/university/tmp.wav");
 
         // Create a MediaPlayer to control playback
         final MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setOnError(() -> {
+            mediaPlayer.getError().printStackTrace();
+            System.err.println("error");
+        });
+
+        mediaPlayer.play();
 
         // Update the Slider position as the media plays
         mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
@@ -77,7 +83,6 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.slider.setSkin(new ProgressSliderSkin(this.slider));
         this.slider.getStyleClass().add(Styles.LARGE);
         this.slider.setMin(0);
-        this.slider.setMax(6000);
         this.slider.setOnMousePressed(event -> {
             mediaPlayer.pause();
         });
@@ -88,12 +93,9 @@ public class SongViewSkin extends SkinBase<SongView> {
 
         GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
 
-        final MediaView thing = new MediaView(mediaPlayer);
-        mediaPlayer.play();
-
         this.gridPane.add(this.songCard, 1, 2, 6, 6);
         this.gridPane.add(vBox, 8, 2, 4, 6);
-        this.gridPane.add(new StackPane(this.slider, thing), 0, 11, 12, 1);
+        this.gridPane.add(this.slider, 0, 11, 12, 1);
 
         registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
         registerChangeListener(this.authService.loggedUserProperty(), observable -> updateSong());
@@ -127,6 +129,8 @@ public class SongViewSkin extends SkinBase<SongView> {
                 }
 
                 this.songCard.setCardItem(cardItem);
+
+                this.slider.setMax(song.getLengthMillis() == 0 ? 354810 : song.getLengthMillis());
 
                 getChildren().setAll(this.gridPane);
             });
