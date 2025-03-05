@@ -31,6 +31,7 @@ import org.saartako.common.user.User;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class SongViewSkin extends SkinBase<SongView> {
 
@@ -91,24 +92,6 @@ public class SongViewSkin extends SkinBase<SongView> {
         updateSong();
     }
 
-    private MediaPlayer createMediaPlayer(Song song) {
-        final String mediaUrl = String.format("http://localhost:8080/song/%d/audio", song.getId());
-
-        final Media media = new Media(mediaUrl);
-
-        final MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setOnError(() -> {
-            mediaPlayer.getError().printStackTrace();
-            System.err.println("error");
-        });
-
-        mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-            this.slider.setValue(newValue.toMillis());
-        });
-
-        return mediaPlayer;
-    }
-
     private void updateSong() {
         final Song song = this.songService.getCurrentSong();
         final User user = this.authService.getLoggedUser();
@@ -118,7 +101,13 @@ public class SongViewSkin extends SkinBase<SongView> {
                 getChildren().setAll(this.loader);
             });
         } else {
-            this.mediaPlayer = createMediaPlayer(song);
+            createMediaPlayer(song).thenAccept(mediaPlayer -> {
+                if (this.mediaPlayer != null) {
+                    this.mediaPlayer.dispose();
+                }
+                this.mediaPlayer = mediaPlayer;
+                this.mediaPlayer.setAutoPlay(true);
+            });
 
             final boolean isSongPersonal = song.getUploader().getId() == user.getId();
 
@@ -143,6 +132,24 @@ public class SongViewSkin extends SkinBase<SongView> {
                 getChildren().setAll(this.gridPane);
             });
         }
+    }
+
+    private CompletableFuture<MediaPlayer> createMediaPlayer(Song song) {
+        return this.songService.fetchSongAudioStreamUrl(song).thenApply(audioStreamUrl -> {
+            final Media media = new Media(audioStreamUrl);
+
+            final MediaPlayer mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnError(() -> {
+                mediaPlayer.getError().printStackTrace();
+                System.err.println("error");
+            });
+
+            mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+                this.slider.setValue(newValue.toMillis());
+            });
+
+            return mediaPlayer;
+        });
     }
 
     private Optional<Playlist> openAddToPlaylistDialog() {
