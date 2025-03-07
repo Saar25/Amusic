@@ -38,6 +38,10 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private static final Duration MIN_DIFF_TO_SEEK = Duration.seconds(1);
 
+    private static final FontIcon NOT_FAVORITE_FONT_ICON = new FontIcon(Material2AL.FAVORITE_BORDER);
+
+    private static final FontIcon FAVORITE_FONT_ICON = new FontIcon(Material2AL.FAVORITE);
+
     private final SongService songService = SongService.getInstance();
     private final PlaylistService playlistService = PlaylistService.getInstance();
     private final AuthService authService = AuthService.getInstance();
@@ -90,17 +94,10 @@ public class SongViewSkin extends SkinBase<SongView> {
             observable -> updateMediaPlayerStatus());
         updateMediaPlayerStatus();
 
-        registerChangeListener(getSkinnable().currentSongTimeProperty(), observable -> {
-            if (this.mediaPlayer != null) {
-                final Duration newTime = getSkinnable().currentSongTimeProperty().get();
-                final Duration currentTime = this.mediaPlayer.getCurrentTime();
-                final double diff = Math.abs(newTime.toMillis() - currentTime.toMillis());
-                if (diff > MIN_DIFF_TO_SEEK.toMillis()) {
-                    this.mediaPlayer.seek(newTime);
-                }
-                this.slider.setValue(newTime.toMillis());
-            }
-        });
+        registerChangeListener(
+            getSkinnable().currentSongTimeProperty(),
+            observable -> updateSongCurrentTime());
+        updateSongCurrentTime();
 
         registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
         registerChangeListener(this.authService.loggedUserProperty(), observable -> updateSong());
@@ -134,10 +131,10 @@ public class SongViewSkin extends SkinBase<SongView> {
 
                 if (this.songService.isSongLiked(song)) {
                     this.likeSongButton.getStyleClass().addAll(Styles.DANGER);
-                    this.likeSongButton.setGraphic(new FontIcon(Material2AL.FAVORITE));
+                    this.likeSongButton.setGraphic(FAVORITE_FONT_ICON);
                 } else {
                     this.likeSongButton.getStyleClass().removeAll(Styles.DANGER);
-                    this.likeSongButton.setGraphic(new FontIcon(Material2AL.FAVORITE_BORDER));
+                    this.likeSongButton.setGraphic(NOT_FAVORITE_FONT_ICON);
                 }
 
                 this.songCard.setCardItem(cardItem);
@@ -148,6 +145,18 @@ public class SongViewSkin extends SkinBase<SongView> {
                 updateMediaPlayerStatus();
             });
         }
+    }
+
+    private void updateSongCurrentTime() {
+        final Duration newTime = getSkinnable().currentSongTimeProperty().get();
+        if (this.mediaPlayer != null) {
+            final Duration currentTime = this.mediaPlayer.getCurrentTime();
+            final double diff = Math.abs(newTime.toMillis() - currentTime.toMillis());
+            if (diff > MIN_DIFF_TO_SEEK.toMillis()) {
+                this.mediaPlayer.seek(newTime);
+            }
+        }
+        this.slider.setValue(newTime.toMillis());
     }
 
     private void updateMediaPlayerStatus() {
