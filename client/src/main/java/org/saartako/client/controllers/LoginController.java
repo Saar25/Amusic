@@ -8,7 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import org.saartako.client.constants.Route;
+import org.saartako.client.enums.Route;
 import org.saartako.client.services.AuthService;
 import org.saartako.client.services.RouterService;
 

@@ -3,7 +3,7 @@ package org.saartako.client.controls;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
-import org.saartako.client.constants.Route;
+import org.saartako.client.enums.Route;
 
 import java.util.Map;
 

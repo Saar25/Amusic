@@ -5,7 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.SkinBase;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
-import org.saartako.client.constants.Route;
+import org.saartako.client.enums.Route;
 import org.saartako.client.models.RouteNode;
 import org.saartako.client.services.RouterService;
 

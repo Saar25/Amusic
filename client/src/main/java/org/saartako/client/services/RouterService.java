@@ -6,7 +6,7 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import org.saartako.client.constants.Route;
+import org.saartako.client.enums.Route;
 
 public class RouterService {
 

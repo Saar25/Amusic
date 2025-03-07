@@ -1,4 +1,4 @@
-package org.saartako.client.constants;
+package org.saartako.client.enums;
 
 public enum Route {
     LOGIN("Login"),

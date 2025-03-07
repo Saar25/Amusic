@@ -5,7 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.SkinBase;
 import javafx.scene.layout.BorderPane;
-import org.saartako.client.constants.Route;
+import org.saartako.client.enums.Route;
 
 import java.util.Map;
 
