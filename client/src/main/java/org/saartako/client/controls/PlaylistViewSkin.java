@@ -14,14 +14,11 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
-import org.saartako.client.enums.Route;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.models.MenuAction;
 import org.saartako.client.services.AuthService;
 import org.saartako.client.services.PlaylistService;
-import org.saartako.client.services.RouterService;
-import org.saartako.client.services.SongService;
 import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.PlaylistUtils;
 import org.saartako.client.utils.SongUtils;
@@ -34,10 +31,9 @@ import java.util.List;
 
 public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
+    // TODO: do not put services in skin, get data only from control
     private final PlaylistService playlistService = PlaylistService.getInstance();
-    private final SongService songService = SongService.getInstance();
     private final AuthService authService = AuthService.getInstance();
-    private final RouterService routerService = RouterService.getInstance();
 
     private final Loader loader = new Loader();
 
@@ -101,14 +97,13 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
                 songCard.setExpandable(true);
                 if (isPlaylistModifiable) {
                     songCard.getMenuActions().setAll(
-                        new MenuAction("Delete from playlist",
-                            event -> deletePlaylistSong(playlist, song))
+                        new MenuAction("Delete from playlist", event ->
+                            getSkinnable().deleteSongFromCurrentPlaylist(song))
                     );
                 }
-                songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e -> {
-                    this.songService.setCurrentSong(song);
-                    this.routerService.push(Route.SONG_VIEW);
-                });
+                songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e ->
+                    getSkinnable().onSongExpand(song)
+                );
                 return songCard;
             }).toList();
 
@@ -130,39 +125,9 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
     private Button createDeletePlaylistButton() {
         final Button button = new Button("Delete Playlist", new FontIcon(Material2AL.DELETE));
         button.getStyleClass().add(Styles.DANGER);
-
         button.setOnAction(event -> {
-            final Playlist playlist = this.playlistService.getCurrentPlaylist();
-
-            deletePlaylist(playlist);
+            getSkinnable().deleteCurrentPlaylist();
         });
-
         return button;
-    }
-
-    private void deletePlaylist(Playlist playlist) {
-        this.playlistService.deletePlaylist(playlist).whenComplete((response, error) -> {
-            Platform.runLater(() -> {
-                final Alert alert;
-                if (error != null) {
-                    alert = new Alert(Alert.AlertType.ERROR, "Failed too delete playlist\n" + error.getMessage());
-                } else {
-                    alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete playlist");
-                    alert.resultProperty().addListener(o -> this.routerService.previous());
-                }
-                alert.show();
-            });
-        });
-    }
-
-    private void deletePlaylistSong(Playlist playlist, Song song) {
-        this.playlistService.deletePlaylistSong(playlist, song).whenComplete((response, error) -> {
-            Platform.runLater(() -> {
-                final Alert alert = error != null
-                    ? new Alert(Alert.AlertType.ERROR, "Failed too delete song from playlist\n" + error.getMessage())
-                    : new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete song from playlist");
-                alert.show();
-            });
-        });
     }
 }

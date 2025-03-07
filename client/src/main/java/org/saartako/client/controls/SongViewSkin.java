@@ -41,6 +41,7 @@ public class SongViewSkin extends SkinBase<SongView> {
     private static final FontIcon FAVORITE_FONT_ICON = new FontIcon(Material2AL.FAVORITE);
     private static final FontIcon DELETE_FONT_ICON = new FontIcon(Material2AL.DELETE);
 
+    // TODO: do not put services in skin, get data only from control
     private final SongService songService = SongService.getInstance();
     private final PlaylistService playlistService = PlaylistService.getInstance();
     private final AuthService authService = AuthService.getInstance();
