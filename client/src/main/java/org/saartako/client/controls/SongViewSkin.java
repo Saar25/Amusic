@@ -18,6 +18,7 @@ import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.saartako.client.Config;
+import org.saartako.client.enums.SongPlayerStatus;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.AuthService;
 import org.saartako.client.services.PlaylistService;
@@ -34,6 +35,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class SongViewSkin extends SkinBase<SongView> {
+
+    private static final Duration MIN_DIFF_TO_SEEK = Duration.seconds(1);
 
     private final SongService songService = SongService.getInstance();
     private final PlaylistService playlistService = PlaylistService.getInstance();
@@ -68,15 +71,12 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.slider.setSkin(new ProgressSliderSkin(this.slider));
         this.slider.getStyleClass().add(Styles.LARGE);
         this.slider.setMin(0);
-        this.slider.setOnMousePressed(event -> {
-            if (this.mediaPlayer != null) {
-                this.mediaPlayer.pause();
-            }
-        });
+        this.slider.setOnMousePressed(event -> this.mediaPlayer.pause());
         this.slider.setOnMouseReleased(event -> {
-            if (this.mediaPlayer != null) {
-                this.mediaPlayer.seek(Duration.millis(this.slider.getValue()));
-            }
+            final double value = this.slider.getValue();
+            final Duration duration = Duration.millis(value);
+            getSkinnable().currentSongTimeProperty().set(duration);
+            updateMediaPlayerStatus();
         });
 
         GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
@@ -85,10 +85,38 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.gridPane.add(vBox, 8, 2, 4, 6);
         this.gridPane.add(this.slider, 0, 11, 12, 1);
 
+        registerChangeListener(getSkinnable().songPlayerStatusProperty(), observable -> {
+            updateMediaPlayerStatus();
+        });
+
+        registerChangeListener(getSkinnable().currentSongTimeProperty(), observable -> {
+            if (this.mediaPlayer != null) {
+                final Duration newTime = getSkinnable().currentSongTimeProperty().get();
+                final Duration currentTime = this.mediaPlayer.getCurrentTime();
+                final double diff = Math.abs(newTime.toMillis() - currentTime.toMillis());
+                if (diff > MIN_DIFF_TO_SEEK.toMillis()) {
+                    this.mediaPlayer.seek(newTime);
+                }
+                this.slider.setValue(newTime.toMillis());
+            }
+        });
+
         registerChangeListener(this.songService.currentSongProperty(), observable -> updateSong());
         registerChangeListener(this.authService.loggedUserProperty(), observable -> updateSong());
         registerListChangeListener(this.songService.likedSongIdsProperty(), observable -> updateSong());
         updateSong();
+    }
+
+    private void updateMediaPlayerStatus() {
+        if (this.mediaPlayer != null) {
+            final SongPlayerStatus status = getSkinnable().songPlayerStatusProperty().get();
+
+            switch (status) {
+                case PLAYING -> this.mediaPlayer.play();
+                case PAUSED -> this.mediaPlayer.pause();
+                case STOPPED -> this.mediaPlayer.stop();
+            }
+        }
     }
 
     private void updateSong() {
@@ -138,12 +166,13 @@ public class SongViewSkin extends SkinBase<SongView> {
 
             final MediaPlayer mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setOnError(() -> {
+                // TODO: show error in ui
                 mediaPlayer.getError().printStackTrace();
                 System.err.println("error");
             });
 
-            mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-                this.slider.setValue(newValue.toMillis());
+            mediaPlayer.currentTimeProperty().addListener((o, prev, currentTime) -> {
+                getSkinnable().currentSongTimeProperty().set(currentTime);
             });
 
             return mediaPlayer;
@@ -260,18 +289,6 @@ public class SongViewSkin extends SkinBase<SongView> {
             });
         });
         return button;
-    }
-
-    public void stopMediaPlayer() {
-        if (this.mediaPlayer != null) {
-            this.mediaPlayer.stop();
-        }
-    }
-
-    public void startMediaPlayer() {
-        if (this.mediaPlayer != null) {
-            this.mediaPlayer.play();
-        }
     }
 
     @Override
