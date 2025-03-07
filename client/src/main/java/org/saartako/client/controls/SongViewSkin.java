@@ -85,9 +85,10 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.gridPane.add(vBox, 8, 2, 4, 6);
         this.gridPane.add(this.slider, 0, 11, 12, 1);
 
-        registerChangeListener(getSkinnable().songPlayerStatusProperty(), observable -> {
-            updateMediaPlayerStatus();
-        });
+        registerChangeListener(
+            getSkinnable().songPlayerStatusProperty(),
+            observable -> updateMediaPlayerStatus());
+        updateMediaPlayerStatus();
 
         registerChangeListener(getSkinnable().currentSongTimeProperty(), observable -> {
             if (this.mediaPlayer != null) {
@@ -105,18 +106,6 @@ public class SongViewSkin extends SkinBase<SongView> {
         registerChangeListener(this.authService.loggedUserProperty(), observable -> updateSong());
         registerListChangeListener(this.songService.likedSongIdsProperty(), observable -> updateSong());
         updateSong();
-    }
-
-    private void updateMediaPlayerStatus() {
-        if (this.mediaPlayer != null) {
-            final SongPlayerStatus status = getSkinnable().songPlayerStatusProperty().get();
-
-            switch (status) {
-                case PLAYING -> this.mediaPlayer.play();
-                case PAUSED -> this.mediaPlayer.pause();
-                case STOPPED -> this.mediaPlayer.stop();
-            }
-        }
     }
 
     private void updateSong() {
@@ -156,7 +145,20 @@ public class SongViewSkin extends SkinBase<SongView> {
                 this.slider.setMax(song.getLengthMillis() == 0 ? 1 : song.getLengthMillis());
 
                 getChildren().setAll(this.gridPane);
+                updateMediaPlayerStatus();
             });
+        }
+    }
+
+    private void updateMediaPlayerStatus() {
+        if (this.mediaPlayer != null) {
+            final SongPlayerStatus status = getSkinnable().songPlayerStatusProperty().get();
+
+            switch (status) {
+                case PLAYING -> this.mediaPlayer.play();
+                case PAUSED -> this.mediaPlayer.pause();
+                case STOPPED -> this.mediaPlayer.stop();
+            }
         }
     }
 
