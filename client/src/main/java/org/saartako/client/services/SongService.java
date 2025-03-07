@@ -58,6 +58,7 @@ public class SongService {
         this.songApiService = songApiService;
         this.authService = authService;
 
+        // TODO: do not fetch data in constructor, implement lazy fetching correctly
         this.authService.loggedUserProperty().addListener(observable -> fetchDataOnUserChange());
         fetchData();
     }

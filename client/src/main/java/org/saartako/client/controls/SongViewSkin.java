@@ -22,7 +22,6 @@ import org.saartako.client.enums.SongPlayerStatus;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.services.AuthService;
 import org.saartako.client.services.PlaylistService;
-import org.saartako.client.services.RouterService;
 import org.saartako.client.services.SongService;
 import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.SongUtils;
@@ -39,13 +38,12 @@ public class SongViewSkin extends SkinBase<SongView> {
     private static final Duration MIN_DIFF_TO_SEEK = Duration.seconds(1);
 
     private static final FontIcon NOT_FAVORITE_FONT_ICON = new FontIcon(Material2AL.FAVORITE_BORDER);
-
     private static final FontIcon FAVORITE_FONT_ICON = new FontIcon(Material2AL.FAVORITE);
+    private static final FontIcon DELETE_FONT_ICON = new FontIcon(Material2AL.DELETE);
 
     private final SongService songService = SongService.getInstance();
     private final PlaylistService playlistService = PlaylistService.getInstance();
     private final AuthService authService = AuthService.getInstance();
-    private final RouterService routerService = RouterService.getInstance();
 
     private final Loader loader = new Loader();
 
@@ -259,45 +257,19 @@ public class SongViewSkin extends SkinBase<SongView> {
     private Button createAddToPlaylistButton() {
         final Button button = new Button("Add to Playlist", new FontIcon(Material2AL.FEATURED_PLAY_LIST));
         button.getStyleClass().add(Styles.ACCENT);
-
         button.setOnAction(event -> {
             final Optional<Playlist> result = openAddToPlaylistDialog();
 
-            result.ifPresent(playlist -> {
-                final Song song = this.songService.getCurrentSong();
-
-                this.playlistService.addPlaylistSong(playlist, song).whenComplete((response, error) -> {
-                    Platform.runLater(() -> {
-                        final Alert alert = error != null
-                            ? new Alert(Alert.AlertType.ERROR, "Failed too add song\n" + error.getMessage())
-                            : new Alert(Alert.AlertType.INFORMATION, "Added song to playlist successfully");
-                        alert.show();
-                    });
-                });
-            });
+            result.ifPresent(playlist -> getSkinnable().addCurrentSongToPlaylist(playlist));
         });
         return button;
     }
 
     private Button createDeleteSongButton() {
-        final Button button = new Button("Delete Song", new FontIcon(Material2AL.DELETE));
+        final Button button = new Button("Delete Song", DELETE_FONT_ICON);
         button.getStyleClass().add(Styles.DANGER);
-
         button.setOnAction(event -> {
-            final Song song = this.songService.getCurrentSong();
-
-            this.songService.deleteSong(song).whenComplete((response, error) -> {
-                Platform.runLater(() -> {
-                    final Alert alert;
-                    if (error != null) {
-                        alert = new Alert(Alert.AlertType.ERROR, "Failed too delete song\n" + error.getMessage());
-                    } else {
-                        alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete song");
-                        alert.resultProperty().addListener(o -> this.routerService.previous());
-                    }
-                    alert.show();
-                });
-            });
+            getSkinnable().deleteCurrentSong();
         });
         return button;
     }
