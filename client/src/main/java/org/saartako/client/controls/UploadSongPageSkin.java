@@ -32,14 +32,26 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
         final Label songNameLabel = new Label("Name:");
         final TextField songNameTextField = new TextField();
         songNameTextField.setPromptText("Enter song name...");
+        registerChangeListener(songNameTextField.textProperty(), observable -> {
+            final String songName = songNameTextField.textProperty().get();
+            getSkinnable().songNameProperty().set(songName);
+        });
         gridPane.addRow(1, songNameLabel, songNameTextField);
 
         final Label genreLabel = new Label("Genre:");
         final ComboBox<Genre> genreComboBox = createGenreComboBox();
+        registerChangeListener(genreComboBox.selectionModelProperty(), observable -> {
+            final Genre genre = genreComboBox.selectionModelProperty().getValue().getSelectedItem();
+            getSkinnable().genreProperty().set(genre);
+        });
         gridPane.addRow(2, genreLabel, genreComboBox);
 
         final Label languageLabel = new Label("Language:");
         final ComboBox<Language> languageComboBox = createLanguageComboBox();
+        registerChangeListener(languageComboBox.selectionModelProperty(), observable -> {
+            final Language language = languageComboBox.selectionModelProperty().getValue().getSelectedItem();
+            getSkinnable().languageProperty().set(language);
+        });
         gridPane.addRow(3, languageLabel, languageComboBox);
 
         final VBox vBox = new VBox(Config.GAP_MEDIUM, gridPane);
@@ -53,17 +65,17 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
         getChildren().setAll(hBox);
     }
 
-    private static Button createSaveSongButton() {
+    private Button createSaveSongButton() {
         final Button button = new Button("Save song");
         button.getStyleClass().addAll(Styles.LARGE, Styles.SUCCESS);
-        button.setOnAction(event -> System.out.println("click"));
+        button.setOnAction(event -> getSkinnable().onSaveSongButtonClick());
         return button;
     }
 
-    private static Button createUploadButton() {
+    private Button createUploadButton() {
         final Button button = new Button("Upload", new FontIcon(Material2AL.FILE_UPLOAD));
         button.getStyleClass().addAll(Styles.MEDIUM, Styles.ACCENT);
-        button.setOnAction(event -> System.out.println("click"));
+        button.setOnAction(event -> getSkinnable().onUploadButtonClick());
         button.setMaxWidth(Double.MAX_VALUE);
         return button;
     }
