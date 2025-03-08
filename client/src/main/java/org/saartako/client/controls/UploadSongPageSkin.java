@@ -1,15 +1,21 @@
 package org.saartako.client.controls;
 
 import atlantafx.base.theme.Styles;
-import javafx.collections.FXCollections;
+import javafx.beans.property.ListProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.saartako.client.Config;
+import org.saartako.common.genre.Genre;
+import org.saartako.common.language.Language;
+
+import java.util.Objects;
+import java.util.Optional;
 
 public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
 
@@ -29,17 +35,43 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
         gridPane.addRow(1, songNameLabel, songNameTextField);
 
         final Label genreLabel = new Label("Genre:");
-        final ComboBox<?> genreComboBox = new ComboBox<>(
-            FXCollections.observableArrayList(1, 2, 3, 4));
+        final ComboBox<Genre> genreComboBox = new ComboBox<>(getSkinnable().genresProperty());
         genreComboBox.setPlaceholder(new Label("Loading..."));
         genreComboBox.setMaxWidth(Double.MAX_VALUE);
+        genreComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Genre object) {
+                return object == null ? "Select genre..." : object.getName();
+            }
+
+            @Override
+            public Genre fromString(String string) {
+                final ListProperty<Genre> genres = getSkinnable().genresProperty();
+                final Optional<Genre> genreOpt = genres.stream()
+                    .filter(l -> Objects.equals(l.getName(), string)).findAny();
+                return genreOpt.orElse(null);
+            }
+        });
         gridPane.addRow(2, genreLabel, genreComboBox);
 
         final Label languageLabel = new Label("Language:");
-        final ComboBox<?> languageComboBox = new ComboBox<>(
-            FXCollections.observableArrayList(1, 2, 3, 4));
+        final ComboBox<Language> languageComboBox = new ComboBox<>(getSkinnable().languagesProperty());
         languageComboBox.setPlaceholder(new Label("Loading..."));
         languageComboBox.setMaxWidth(Double.MAX_VALUE);
+        languageComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Language object) {
+                return object == null ? "Select language..." : object.getName();
+            }
+
+            @Override
+            public Language fromString(String string) {
+                final ListProperty<Language> languages = getSkinnable().languagesProperty();
+                final Optional<Language> languageOpt = languages.stream()
+                    .filter(l -> Objects.equals(l.getName(), string)).findAny();
+                return languageOpt.orElse(null);
+            }
+        });
         gridPane.addRow(3, languageLabel, languageComboBox);
 
         final VBox vBox = new VBox(Config.GAP_MEDIUM, gridPane);

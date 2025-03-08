@@ -18,7 +18,7 @@ public class GenreController {
     @Autowired
     private GenreService genreService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<? extends Genre>> findAll() {
         final List<GenreEntity> genreEntities = this.genreService.findAll();
 

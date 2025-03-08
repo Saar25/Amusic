@@ -18,7 +18,7 @@ public class LanguageController {
     @Autowired
     private LanguageService languageService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<? extends Language>> findAll() {
         final List<LanguageEntity> languageEntities = this.languageService.findAll();
 
