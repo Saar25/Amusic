@@ -217,7 +217,7 @@ public class PlaylistService {
             });
     }
 
-    public List<? extends Playlist> filterPlaylists(List<? extends Playlist> playlists, String filter) {
+    public <T extends Playlist> List<T> filterPlaylists(List<T> playlists, String filter) {
         final String lowercaseFilter = filter.toLowerCase();
 
         return filter.isEmpty() ? playlists : playlists.stream().filter(playlist ->
@@ -226,7 +226,7 @@ public class PlaylistService {
         ).toList();
     }
 
-    public CompletableFuture<List<? extends Playlist>> filterPlaylistsAsync(List<? extends Playlist> playlists, String filter) {
+    public <T extends Playlist> CompletableFuture<List<T>> filterPlaylistsAsync(List<T> playlists, String filter) {
         return CompletableFuture.supplyAsync(() -> filterPlaylists(playlists, filter));
     }
 

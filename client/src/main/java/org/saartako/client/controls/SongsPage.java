@@ -1,9 +1,9 @@
 package org.saartako.client.controls;
 
 import javafx.beans.binding.ListBinding;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Control;
 import org.saartako.client.enums.Route;
 import org.saartako.client.models.RouteNode;
@@ -20,7 +20,7 @@ public class SongsPage extends Control implements RouteNode {
     private final ObjectProperty<String> songsFilter = new SimpleObjectProperty<>(this, "songsFilter", "");
 
     private final ListBinding<Song> filteredSongs = BindingsUtils.createJavaListBinding(() -> {
-        final ListProperty<Song> songs = this.songService.songsProperty();
+        final ObservableList<Song> songs = this.songService.songsProperty();
         if (songs == null) return null;
         final String filter = this.songsFilter.get();
         if (filter == null) return songs;
@@ -35,10 +35,6 @@ public class SongsPage extends Control implements RouteNode {
     @Override
     public void onEnterView() {
         this.songService.fetchData();
-    }
-
-    public ListProperty<Song> songsProperty() {
-        return this.songService.songsProperty();
     }
 
     public ObjectProperty<String> songsFilterProperty() {

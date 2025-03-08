@@ -249,7 +249,7 @@ public class SongService {
         ).toList();
     }
 
-    public CompletableFuture<List<? extends Song>> filterSongsAsync(List<? extends Song> songs, String filter) {
+    public <T extends Song> CompletableFuture<List<T>> filterSongsAsync(List<T> songs, String filter) {
         return CompletableFuture.supplyAsync(() -> filterSongs(songs, filter));
     }
 
