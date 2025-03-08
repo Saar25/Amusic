@@ -53,7 +53,7 @@ public class PlaylistsPage extends Control implements RouteNode {
 
     public void onExpandPlaylist(Playlist song) {
         this.playlistService.setCurrentPlaylist(song);
-        this.routerService.push(Route.SONG_VIEW);
+        this.routerService.push(Route.PLAYLIST_VIEW);
     }
 
     public void onCreatePlaylistButtonClick() {
