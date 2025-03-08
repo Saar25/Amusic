@@ -40,16 +40,16 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
 
         final Label genreLabel = new Label("Genre:");
         final ComboBox<Genre> genreComboBox = createGenreComboBox();
-        registerChangeListener(genreComboBox.selectionModelProperty(), observable -> {
-            final Genre genre = genreComboBox.selectionModelProperty().getValue().getSelectedItem();
+        registerChangeListener(genreComboBox.valueProperty(), observable -> {
+            final Genre genre = genreComboBox.valueProperty().getValue();
             getSkinnable().genreProperty().set(genre);
         });
         gridPane.addRow(2, genreLabel, genreComboBox);
 
         final Label languageLabel = new Label("Language:");
         final ComboBox<Language> languageComboBox = createLanguageComboBox();
-        registerChangeListener(languageComboBox.selectionModelProperty(), observable -> {
-            final Language language = languageComboBox.selectionModelProperty().getValue().getSelectedItem();
+        registerChangeListener(languageComboBox.valueProperty(), observable -> {
+            final Language language = languageComboBox.valueProperty().getValue();
             getSkinnable().languageProperty().set(language);
         });
         gridPane.addRow(3, languageLabel, languageComboBox);
