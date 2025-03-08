@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SongService {
 
@@ -29,6 +30,9 @@ public class SongService {
 
     private final SongApiService songApiService;
     private final AuthService authService;
+
+    private final AtomicBoolean isDataValid = new AtomicBoolean(false);
+    private final AtomicBoolean isUserDataValid = new AtomicBoolean(false);
 
     private final ListProperty<Song> songs = new SimpleListProperty<>(this, "songs");
 
@@ -58,9 +62,7 @@ public class SongService {
         this.songApiService = songApiService;
         this.authService = authService;
 
-        // TODO: do not fetch data in constructor, implement lazy fetching correctly
-        this.authService.loggedUserProperty().addListener(observable -> fetchDataOnUserChange());
-        fetchData();
+        this.authService.loggedUserProperty().addListener(observable -> this.isUserDataValid.set(false));
     }
 
     public static SongService getInstance() {
@@ -68,33 +70,33 @@ public class SongService {
     }
 
     public void fetchData() {
-        fetchSongs().whenComplete((songs, error) -> {
-            if (error != null) {
-                Platform.runLater(() -> {
-                    final Alert alert = new Alert(
-                        Alert.AlertType.INFORMATION,
-                        "Failed to fetch songs\n" + error.getMessage());
-                    alert.show();
-                });
-            }
-        });
-        fetchDataOnUserChange();
-    }
-
-    public void fetchDataOnUserChange() {
-        if (!this.authService.isLoggedIn()) {
-            this.likedSongIds.setValue(FXCollections.observableArrayList());
-        } else {
-            fetchLikedSongIds().whenComplete((likedSongIds, error) -> {
+        if (this.isDataValid.compareAndSet(false, true)) {
+            fetchSongs().whenComplete((songs, error) -> {
                 if (error != null) {
                     Platform.runLater(() -> {
                         final Alert alert = new Alert(
                             Alert.AlertType.INFORMATION,
-                            "Failed to fetch liked song ids\n" + error.getMessage());
+                            "Failed to fetch songs\n" + error.getMessage());
                         alert.show();
                     });
                 }
             });
+        }
+        if (this.isUserDataValid.compareAndSet(false, true)) {
+            if (!this.authService.isLoggedIn()) {
+                this.likedSongIds.setValue(FXCollections.observableArrayList());
+            } else {
+                fetchLikedSongIds().whenComplete((likedSongIds, error) -> {
+                    if (error != null) {
+                        Platform.runLater(() -> {
+                            final Alert alert = new Alert(
+                                Alert.AlertType.INFORMATION,
+                                "Failed to fetch liked song ids\n" + error.getMessage());
+                            alert.show();
+                        });
+                    }
+                });
+            }
         }
     }
 
