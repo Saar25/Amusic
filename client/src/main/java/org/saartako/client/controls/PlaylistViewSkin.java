@@ -17,23 +17,16 @@ import org.saartako.client.Config;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.models.MenuAction;
-import org.saartako.client.services.AuthService;
-import org.saartako.client.services.PlaylistService;
 import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.PlaylistUtils;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
-import org.saartako.common.user.User;
 
 import java.util.Collection;
 import java.util.List;
 
 public class PlaylistViewSkin extends SkinBase<PlaylistView> {
-
-    // TODO: do not put services in skin, get data only from control
-    private final PlaylistService playlistService = PlaylistService.getInstance();
-    private final AuthService authService = AuthService.getInstance();
 
     private final Loader loader = new Loader();
 
@@ -68,22 +61,20 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
         getChildren().setAll(this.gridPane);
 
-        registerChangeListener(this.playlistService.currentPlaylistProperty(), observable -> updatePlaylist());
-        registerChangeListener(this.authService.loggedUserProperty(), observable -> updatePlaylist());
+        registerChangeListener(getSkinnable().canModifyPlaylistProperty(), observable -> updatePlaylist());
+        registerChangeListener(getSkinnable().currentPlaylistProperty(), observable -> updatePlaylist());
         updatePlaylist();
     }
 
     private void updatePlaylist() {
-        final User user = this.authService.getLoggedUser();
-        final Playlist playlist = this.playlistService.getCurrentPlaylist();
+        final Playlist playlist = getSkinnable().currentPlaylistProperty().get();
 
-        if (user == null || playlist == null) {
+        if (playlist == null) {
             Platform.runLater(() -> {
                 getChildren().setAll(this.loader);
             });
         } else {
-            final boolean isPlaylistPersonal = playlist.getOwner().getId() == user.getId();
-            final boolean isPlaylistModifiable = isPlaylistPersonal && playlist.isModifiable();
+            final boolean isPlaylistModifiable = getSkinnable().canModifyPlaylistProperty().get();
             this.deletePlaylistButton.setVisible(isPlaylistModifiable);
             this.deletePlaylistButton.setManaged(isPlaylistModifiable);
 
@@ -98,7 +89,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
                 if (isPlaylistModifiable) {
                     songCard.getMenuActions().setAll(
                         new MenuAction("Delete from playlist", event ->
-                            getSkinnable().deleteSongFromCurrentPlaylist(song))
+                            getSkinnable().onDeleteSongFromPlaylistButtonClick(song))
                     );
                 }
                 songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e ->
@@ -125,9 +116,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
     private Button createDeletePlaylistButton() {
         final Button button = new Button("Delete Playlist", new FontIcon(Material2AL.DELETE));
         button.getStyleClass().add(Styles.DANGER);
-        button.setOnAction(event -> {
-            getSkinnable().deleteCurrentPlaylist();
-        });
+        button.setOnAction(event -> getSkinnable().onDeletePlaylistButtonClick());
         return button;
     }
 }
