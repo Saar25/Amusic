@@ -58,7 +58,7 @@ public class SongService {
         final LanguageEntity language = Optional.ofNullable(languageId)
             .flatMap(this.languageRepository::findById).orElse(null);
 
-        final String fileName = UUID.randomUUID().toString();
+        final String fileName = UUID.randomUUID().toString().replaceAll("-", "");
 
         final SongEntity song = new SongEntity();
         song.setName(name);
