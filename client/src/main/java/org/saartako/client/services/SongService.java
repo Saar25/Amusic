@@ -238,7 +238,7 @@ public class SongService {
         return CompletableFuture.completedFuture(audioStreamUrl);
     }
 
-    public List<? extends Song> filterSongs(List<? extends Song> songs, String filter) {
+    public <T extends Song> List<T> filterSongs(List<T> songs, String filter) {
         final String lowercaseFilter = filter.toLowerCase();
 
         return filter.isEmpty() ? songs : songs.stream().filter(song ->

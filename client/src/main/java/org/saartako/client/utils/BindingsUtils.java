@@ -2,8 +2,10 @@ package org.saartako.client.utils;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.ListBinding;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
 public class BindingsUtils {
@@ -33,5 +35,9 @@ public class BindingsUtils {
                 unbind(dependencies);
             }
         };
+    }
+
+    public static <T> ListBinding<T> createJavaListBinding(Callable<List<T>> func, Observable... dependencies) {
+        return createListBinding(() -> FXCollections.observableArrayList(func.call()), dependencies);
     }
 }
