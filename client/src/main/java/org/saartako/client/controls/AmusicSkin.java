@@ -11,8 +11,6 @@ import java.util.Map;
 
 public class AmusicSkin extends SkinBase<Amusic> {
 
-    private final BorderPane node = new BorderPane();
-
     public AmusicSkin(Amusic control) {
         super(control);
 
@@ -22,7 +20,8 @@ public class AmusicSkin extends SkinBase<Amusic> {
                 Map.entry(Route.SONGS, new SongsPage()),
                 Map.entry(Route.SONG_VIEW, new SongView()),
                 Map.entry(Route.PLAYLIST_VIEW, new PlaylistView()),
-                Map.entry(Route.MY_PLAYLISTS, new PlaylistsPage())
+                Map.entry(Route.MY_PLAYLISTS, new PlaylistsPage()),
+                Map.entry(Route.UPLOAD, new UploadSongPage())
             );
             final Node defaultRoute = new Label("Page not found");
             defaultRoute.getStyleClass().addAll("title-big-1", "danger");
@@ -30,10 +29,11 @@ public class AmusicSkin extends SkinBase<Amusic> {
             final Router center = new Router(routeObjectMap, defaultRoute);
             final Header top = new Header();
 
-            this.node.setCenter(center);
-            this.node.setTop(top);
+            final BorderPane node = new BorderPane();
+            node.setCenter(center);
+            node.setTop(top);
 
-            getChildren().setAll(this.node);
+            getChildren().setAll(node);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
