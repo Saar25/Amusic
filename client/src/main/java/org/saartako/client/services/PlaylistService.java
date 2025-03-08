@@ -27,10 +27,13 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PlaylistService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private final AtomicBoolean isUserDataValid = new AtomicBoolean(false);
 
     private final PlaylistApiService playlistApiService;
     private final SongService songService;
@@ -58,7 +61,7 @@ public class PlaylistService {
                 .setPrivate(true)
                 .setOwner(UserUtils.copyDisplay(this.authService.getLoggedUser()))
                 .setSongs(SongUtils.copyDisplay(this.songService.getLikedSongs()));
-        }, this.songService.likedSongsProperty());
+        }, this.authService.loggedUserProperty(), this.songService.likedSongsProperty());
 
         this.allPlaylists = BindingsUtils.createListBinding(() -> {
             final ObservableList<Playlist> fetchedPlaylists = PlaylistService.this.fetchedPlaylists.get();
@@ -77,13 +80,30 @@ public class PlaylistService {
             return optional.orElse(null);
         }, this.allPlaylists, this.currentPlaylistId);
 
-        // TODO: do it lazily
-        authService.loggedUserProperty().addListener(observable -> fetchData());
-        fetchData();
+        authService.loggedUserProperty().addListener(observable -> this.isUserDataValid.set(false));
     }
 
     public static PlaylistService getInstance() {
         return InstanceHolder.INSTANCE;
+    }
+
+    public void fetchData() {
+        if (this.isUserDataValid.compareAndSet(false, true)) {
+            if (!this.authService.isLoggedIn()) {
+                this.fetchedPlaylists.setValue(FXCollections.observableArrayList());
+            } else {
+                fetchPlaylists().whenComplete((playlists, error) -> {
+                    if (error != null) {
+                        Platform.runLater(() -> {
+                            final Alert alert = new Alert(
+                                Alert.AlertType.INFORMATION,
+                                "Failed to fetch playlists\n" + error.getMessage());
+                            alert.show();
+                        });
+                    }
+                });
+            }
+        }
     }
 
     public ListBinding<Playlist> playlistsProperty() {
@@ -104,23 +124,6 @@ public class PlaylistService {
 
     public void setCurrentPlaylist(Playlist playlist) {
         this.currentPlaylistId.set(playlist.getId());
-    }
-
-    public void fetchData() {
-        if (!this.authService.isLoggedIn()) {
-            this.fetchedPlaylists.setValue(FXCollections.observableArrayList());
-        } else {
-            fetchPlaylists().whenComplete((playlists, error) -> {
-                if (error != null) {
-                    Platform.runLater(() -> {
-                        final Alert alert = new Alert(
-                            Alert.AlertType.INFORMATION,
-                            "Failed to fetch playlists\n" + error.getMessage());
-                        alert.show();
-                    });
-                }
-            });
-        }
     }
 
     public CompletableFuture<Playlist[]> fetchPlaylists() {
