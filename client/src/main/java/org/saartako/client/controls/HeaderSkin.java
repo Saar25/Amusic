@@ -13,20 +13,12 @@ import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
 import org.saartako.client.components.RequiredToggleButton;
-import org.saartako.client.enums.Route;
 import org.saartako.client.enums.AppTheme;
-import org.saartako.client.services.AuthService;
-import org.saartako.client.services.RouterService;
-import org.saartako.client.services.ThemeService;
+import org.saartako.client.enums.Route;
 import org.saartako.client.utils.LayoutUtils;
+import org.saartako.common.user.User;
 
 public class HeaderSkin extends SkinBase<Header> {
-
-    private final AuthService authService = AuthService.getInstance();
-
-    private final ThemeService themeService = ThemeService.getInstance();
-
-    private final RouterService routerService = RouterService.getInstance();
 
     public HeaderSkin(Header control) {
         super(control);
@@ -56,23 +48,24 @@ public class HeaderSkin extends SkinBase<Header> {
         previousButton.getStyleClass().add(Styles.FLAT);
         VBox.setMargin(previousButton, new Insets(Config.GAP_MEDIUM, 0, 0, Config.GAP_LARGE));
 
-        previousButton.setOnAction(event -> this.routerService.previous());
-        previousButton.managedProperty().bind(this.routerService.hasHistoryProperty());
-        previousButton.visibleProperty().bind(this.routerService.hasHistoryProperty());
+        previousButton.setOnAction(event -> getSkinnable().onPreviousButtonClick());
+        previousButton.managedProperty().bind(getSkinnable().hasHistoryProperty());
+        previousButton.visibleProperty().bind(getSkinnable().hasHistoryProperty());
 
         getChildren().setAll(new VBox(toolBar, previousButton));
     }
 
     private Label createWelcomeLabel() {
         final Label welcomeLabel = new Label();
-        registerChangeListener(this.authService.loggedUserProperty(), observable -> {
-            final String welcomeMessage = this.authService.getLoggedUser() == null
+        registerChangeListener(getSkinnable().loggedUserProperty(), observable -> {
+            final User user = getSkinnable().loggedUserProperty().get();
+            final String welcomeMessage = user == null
                 ? "Unidentified user"
-                : "Welcome " + this.authService.getLoggedUser().getDisplayName();
+                : "Welcome " + user.getDisplayName();
             Platform.runLater(() -> welcomeLabel.textProperty().set(welcomeMessage));
         });
-        welcomeLabel.managedProperty().bind(this.authService.isLoggedInProperty());
-        welcomeLabel.visibleProperty().bind(this.authService.isLoggedInProperty());
+        welcomeLabel.managedProperty().bind(getSkinnable().isLoggedInProperty());
+        welcomeLabel.visibleProperty().bind(getSkinnable().isLoggedInProperty());
         return welcomeLabel;
     }
 
@@ -82,9 +75,9 @@ public class HeaderSkin extends SkinBase<Header> {
         final Button themeChangeButton = new Button(null, themeChangeButtonGraphic);
         themeChangeButton.getStyleClass().addAll("button-icon", "flat");
         themeChangeButton.setOnAction(event -> {
-            switch (this.themeService.getAppTheme()) {
-                case LIGHT -> this.themeService.setAppTheme(AppTheme.DARK);
-                case DARK -> this.themeService.setAppTheme(AppTheme.LIGHT);
+            switch (getSkinnable().appThemeProperty().get()) {
+                case LIGHT -> getSkinnable().appThemeProperty().set(AppTheme.DARK);
+                case DARK -> getSkinnable().appThemeProperty().set(AppTheme.LIGHT);
             }
         });
         return themeChangeButton;
@@ -92,13 +85,10 @@ public class HeaderSkin extends SkinBase<Header> {
 
     private Button createSignOutButton() {
         final Button signOutButton = new Button("Sign out");
-        signOutButton.getStyleClass().addAll("accent", "flat");
-        signOutButton.setOnAction(event -> {
-            this.authService.setJwtToken(null);
-            this.routerService.navigate(Route.LOGIN);
-        });
-        signOutButton.managedProperty().bind(this.authService.isLoggedInProperty());
-        signOutButton.visibleProperty().bind(this.authService.isLoggedInProperty());
+        signOutButton.getStyleClass().addAll(Styles.ACCENT, Styles.FLAT);
+        signOutButton.setOnAction(event -> getSkinnable().onSignOutButtonClick());
+        signOutButton.managedProperty().bind(getSkinnable().isLoggedInProperty());
+        signOutButton.visibleProperty().bind(getSkinnable().isLoggedInProperty());
         return signOutButton;
     }
 
@@ -110,16 +100,16 @@ public class HeaderSkin extends SkinBase<Header> {
         final RequiredToggleButton uploadToggleButton = createToggleButton(Route.UPLOAD, toggleGroup);
         final InputGroup tabsInputGroup = new InputGroup(
             songsToggleButton, myPlaylistsToggleButton, uploadToggleButton);
-        tabsInputGroup.managedProperty().bind(this.authService.isLoggedInProperty());
-        tabsInputGroup.visibleProperty().bind(this.authService.isLoggedInProperty());
+        tabsInputGroup.managedProperty().bind(getSkinnable().isLoggedInProperty());
+        tabsInputGroup.visibleProperty().bind(getSkinnable().isLoggedInProperty());
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             final Route newRoute = (Route) newValue.getUserData();
-            this.routerService.navigate(newRoute);
+            getSkinnable().onSelectedRouteChange(newRoute);
         });
 
-        registerChangeListener(this.routerService.currentRouteProperty(), observable -> {
-            switch (this.routerService.getCurrentRoute()) {
+        registerChangeListener(getSkinnable().currentRouteProperty(), observable -> {
+            switch (getSkinnable().currentRouteProperty().get()) {
                 case SONGS -> toggleGroup.selectToggle(songsToggleButton);
                 case MY_PLAYLISTS -> toggleGroup.selectToggle(myPlaylistsToggleButton);
                 case UPLOAD -> toggleGroup.selectToggle(uploadToggleButton);
