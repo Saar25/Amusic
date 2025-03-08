@@ -35,43 +35,11 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
         gridPane.addRow(1, songNameLabel, songNameTextField);
 
         final Label genreLabel = new Label("Genre:");
-        final ComboBox<Genre> genreComboBox = new ComboBox<>(getSkinnable().genresProperty());
-        genreComboBox.setPlaceholder(new Label("Loading..."));
-        genreComboBox.setMaxWidth(Double.MAX_VALUE);
-        genreComboBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Genre object) {
-                return object == null ? "Select genre..." : object.getName();
-            }
-
-            @Override
-            public Genre fromString(String string) {
-                final ListProperty<Genre> genres = getSkinnable().genresProperty();
-                final Optional<Genre> genreOpt = genres.stream()
-                    .filter(l -> Objects.equals(l.getName(), string)).findAny();
-                return genreOpt.orElse(null);
-            }
-        });
+        final ComboBox<Genre> genreComboBox = createGenreComboBox();
         gridPane.addRow(2, genreLabel, genreComboBox);
 
         final Label languageLabel = new Label("Language:");
-        final ComboBox<Language> languageComboBox = new ComboBox<>(getSkinnable().languagesProperty());
-        languageComboBox.setPlaceholder(new Label("Loading..."));
-        languageComboBox.setMaxWidth(Double.MAX_VALUE);
-        languageComboBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(Language object) {
-                return object == null ? "Select language..." : object.getName();
-            }
-
-            @Override
-            public Language fromString(String string) {
-                final ListProperty<Language> languages = getSkinnable().languagesProperty();
-                final Optional<Language> languageOpt = languages.stream()
-                    .filter(l -> Objects.equals(l.getName(), string)).findAny();
-                return languageOpt.orElse(null);
-            }
-        });
+        final ComboBox<Language> languageComboBox = createLanguageComboBox();
         gridPane.addRow(3, languageLabel, languageComboBox);
 
         final VBox vBox = new VBox(Config.GAP_MEDIUM, gridPane);
@@ -98,5 +66,47 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
         button.setOnAction(event -> System.out.println("click"));
         button.setMaxWidth(Double.MAX_VALUE);
         return button;
+    }
+
+    private ComboBox<Genre> createGenreComboBox() {
+        final ComboBox<Genre> genreComboBox = new ComboBox<>(getSkinnable().genresProperty());
+        genreComboBox.setPlaceholder(new Label("Loading..."));
+        genreComboBox.setMaxWidth(Double.MAX_VALUE);
+        genreComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Genre object) {
+                return object == null ? "Select genre..." : object.getName();
+            }
+
+            @Override
+            public Genre fromString(String string) {
+                final ListProperty<Genre> genres = getSkinnable().genresProperty();
+                final Optional<Genre> genreOpt = genres.stream()
+                    .filter(l -> Objects.equals(l.getName(), string)).findAny();
+                return genreOpt.orElse(null);
+            }
+        });
+        return genreComboBox;
+    }
+
+    private ComboBox<Language> createLanguageComboBox() {
+        final ComboBox<Language> languageComboBox = new ComboBox<>(getSkinnable().languagesProperty());
+        languageComboBox.setPlaceholder(new Label("Loading..."));
+        languageComboBox.setMaxWidth(Double.MAX_VALUE);
+        languageComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Language object) {
+                return object == null ? "Select language..." : object.getName();
+            }
+
+            @Override
+            public Language fromString(String string) {
+                final ListProperty<Language> languages = getSkinnable().languagesProperty();
+                final Optional<Language> languageOpt = languages.stream()
+                    .filter(l -> Objects.equals(l.getName(), string)).findAny();
+                return languageOpt.orElse(null);
+            }
+        });
+        return languageComboBox;
     }
 }

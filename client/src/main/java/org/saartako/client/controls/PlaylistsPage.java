@@ -88,8 +88,7 @@ public class PlaylistsPage extends Control implements RouteNode {
             if (button.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                 return new CreatePlaylistDTO(
                     playlistNameTextField.getText(),
-                    isPrivateCheckBox.isSelected(),
-                    true
+                    isPrivateCheckBox.isSelected()
                 );
             }
             return null;

@@ -29,7 +29,7 @@ public class PlaylistService {
         final PlaylistEntity playlist = new PlaylistEntity();
         playlist.setName(createPlaylist.name());
         playlist.setPrivate(createPlaylist.isPrivate());
-        playlist.setModifiable(createPlaylist.isModifiable());
+        playlist.setModifiable(true);
         playlist.setOwnerId(owner.getId());
         return this.playlistRepository.save(playlist);
     }

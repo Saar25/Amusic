@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 public record CreatePlaylistDTO(
     String name,
-    @SerializedName("private") boolean isPrivate,
-    @SerializedName("private") boolean isModifiable
+    @SerializedName("private") boolean isPrivate
 ) {
 }
