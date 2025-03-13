@@ -36,6 +36,10 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
             final String songName = songNameTextField.textProperty().get();
             getSkinnable().songNameProperty().set(songName);
         });
+        registerChangeListener(getSkinnable().songNameProperty(), observable -> {
+            final String songName = getSkinnable().songNameProperty().get();
+            songNameTextField.textProperty().set(songName);
+        });
         gridPane.addRow(1, songNameLabel, songNameTextField);
 
         final Label genreLabel = new Label("Genre:");
@@ -44,6 +48,10 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
             final Genre genre = genreComboBox.valueProperty().getValue();
             getSkinnable().genreProperty().set(genre);
         });
+        registerChangeListener(getSkinnable().genreProperty(), observable -> {
+            final Genre genre = getSkinnable().genreProperty().getValue();
+            genreComboBox.valueProperty().set(genre);
+        });
         gridPane.addRow(2, genreLabel, genreComboBox);
 
         final Label languageLabel = new Label("Language:");
@@ -51,6 +59,10 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
         registerChangeListener(languageComboBox.valueProperty(), observable -> {
             final Language language = languageComboBox.valueProperty().getValue();
             getSkinnable().languageProperty().set(language);
+        });
+        registerChangeListener(getSkinnable().languageProperty(), observable -> {
+            final Language language = getSkinnable().languageProperty().getValue();
+            languageComboBox.valueProperty().set(language);
         });
         gridPane.addRow(3, languageLabel, languageComboBox);
 

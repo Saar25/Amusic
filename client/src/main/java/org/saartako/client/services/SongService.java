@@ -15,6 +15,7 @@ import org.saartako.client.Config;
 import org.saartako.client.utils.BindingsUtils;
 import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
+import org.saartako.common.user.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,7 +165,7 @@ public class SongService {
             });
     }
 
-    public CompletableFuture<Song> createSong(CreateSongDTO createSong) {
+    public CompletableFuture<? extends Song> createSong(CreateSongDTO createSong) {
         LOGGER.info("Trying to create song");
 
         return this.songApiService.createSong(createSong)
@@ -173,6 +174,8 @@ public class SongService {
                     LOGGER.error("Failed to create song - {}", throwable.getMessage());
                 } else {
                     LOGGER.info("Succeeded to create song");
+
+                    song.setUploader(UserUtils.copyDisplay(this.authService.getLoggedUser()));
 
                     this.songs.add(song);
                 }

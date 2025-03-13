@@ -71,7 +71,7 @@ public class SongApiService {
             .thenApply(response -> null);
     }
 
-    public CompletableFuture<Song> createSong(CreateSongDTO createSong) {
+    public CompletableFuture<SongDTO> createSong(CreateSongDTO createSong) {
         if (!this.authService.isLoggedIn()) {
             final Exception exception = new NullPointerException("User is not logged in");
 

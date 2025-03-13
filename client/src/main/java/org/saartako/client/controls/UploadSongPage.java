@@ -1,8 +1,10 @@
 package org.saartako.client.controls;
 
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Control;
 import org.saartako.client.models.RouteNode;
 import org.saartako.client.services.GenreService;
@@ -60,9 +62,26 @@ public class UploadSongPage extends Control implements RouteNode {
             this.genre.get() == null ? null : this.genre.get().getId(),
             this.language.get() == null ? null : this.language.get().getId()
         );
-        this.songService.createSong(createSong);
+        this.songService.createSong(createSong).whenComplete((songDTO, throwable) -> {
+            Platform.runLater(() -> {
+                final Alert alert;
+                if (throwable != null) {
+                    alert = new Alert(Alert.AlertType.ERROR, "Failed to save song\n" + throwable.getMessage());
+                } else {
+                    alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to save song");
+                    clearForm();
+                }
+                alert.show();
+            });
+        });
     }
 
     public void onUploadButtonClick() {
+    }
+
+    private void clearForm() {
+        this.songName.set(null);
+        this.genre.set(null);
+        this.language.set(null);
     }
 }

@@ -75,7 +75,7 @@ public class PlaylistView extends Control {
             Platform.runLater(() -> {
                 final Alert alert;
                 if (error != null) {
-                    alert = new Alert(Alert.AlertType.ERROR, "Failed too delete playlist\n" + error.getMessage());
+                    alert = new Alert(Alert.AlertType.ERROR, "Failed to delete playlist\n" + error.getMessage());
                 } else {
                     alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete playlist");
                     alert.resultProperty().addListener(o -> this.routerService.previous());
@@ -91,7 +91,7 @@ public class PlaylistView extends Control {
         this.playlistService.deletePlaylistSong(playlist, song).whenComplete((response, error) -> {
             Platform.runLater(() -> {
                 final Alert alert = error != null
-                    ? new Alert(Alert.AlertType.ERROR, "Failed too delete song from playlist\n" + error.getMessage())
+                    ? new Alert(Alert.AlertType.ERROR, "Failed to delete song from playlist\n" + error.getMessage())
                     : new Alert(Alert.AlertType.INFORMATION, "Succeeded to delete song from playlist");
                 alert.show();
             });
