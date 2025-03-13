@@ -15,10 +15,13 @@ import org.saartako.client.Config;
 import org.saartako.client.utils.BindingsUtils;
 import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
+import org.saartako.common.song.SongDTO;
+import org.saartako.common.song.SongUtils;
 import org.saartako.common.user.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
@@ -178,6 +181,28 @@ public class SongService {
                     song.setUploader(UserUtils.copyDisplay(this.authService.getLoggedUser()));
 
                     this.songs.add(song);
+                }
+            });
+    }
+
+    public CompletableFuture<String> uploadSongAudioFile(Song song, File audioFile) {
+        LOGGER.info("Trying to upload audio file");
+
+        return this.songApiService.uploadSongAudioFile(song, audioFile)
+            .whenComplete((fileName, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to upload audio file - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to upload audio file");
+
+                    int index = this.songs.indexOf(song);
+                    if (index == -1) {
+                        LOGGER.warn("Song not found in local list, skipping update ({})", song.getId());
+                    }
+
+                    final SongDTO newSong = SongUtils.copyDisplay(song);
+                    newSong.setFileName(fileName);
+                    this.songs.set(index, newSong);
                 }
             });
     }

@@ -7,6 +7,7 @@ import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongDTO;
 
+import java.io.File;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -93,6 +94,18 @@ public class SongApiService {
             .sendAsync(request, HttpResponse.BodyHandlers.ofString())
             .thenCompose(HttpUtils::validateResponse)
             .thenApply(response -> GSON.fromJson(response.body(), SongDTO.class));
+    }
+
+    public CompletableFuture<String> uploadSongAudioFile(Song song, File audioFile) {
+        if (!this.authService.isLoggedIn()) {
+            final Exception exception = new NullPointerException("User is not logged in");
+
+            return CompletableFuture.failedFuture(exception);
+        }
+
+        final String authorization = this.authService.getJwtToken();
+
+        return CompletableFuture.failedFuture(new UnsupportedOperationException("TODO: implement this"));
     }
 
     public CompletableFuture<Long[]> fetchLikedSongIds() {
