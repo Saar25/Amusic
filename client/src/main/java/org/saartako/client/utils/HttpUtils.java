@@ -40,10 +40,10 @@ public class HttpUtils {
             + "Content-Type: audio/mpeg\r\n\r\n";
         final byte[] headerBytes = multipartHeader.getBytes();
 
-        String multipartFooter = "\r\n--" + boundary + "--\r\n";
-        byte[] footerBytes = multipartFooter.getBytes();
+        final String multipartFooter = "\r\n--" + boundary + "--\r\n";
+        final byte[] footerBytes = multipartFooter.getBytes();
 
-        HttpRequest.BodyPublisher filePublisher = HttpRequest.BodyPublishers.ofInputStream(() -> {
+        final HttpRequest.BodyPublisher filePublisher = HttpRequest.BodyPublishers.ofInputStream(() -> {
             try {
                 return Files.newInputStream(filePath);
             } catch (IOException e) {
