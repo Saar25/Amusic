@@ -1,6 +1,11 @@
 package org.saartako.client.utils;
 
+import java.io.IOException;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 public class HttpUtils {
@@ -24,5 +29,42 @@ public class HttpUtils {
             default -> CompletableFuture.failedFuture(
                 new Exception("Unexpected HTTP status: " + response.statusCode() + " - " + response.body()));
         };
+    }
+
+    public static HttpRequest.BodyPublisher bodyPublisherOfMultipartFormData(Path filePath, String boundary) {
+        final String fileName = filePath.getFileName().toString();
+
+        final String multipartHeader =
+            "--" + boundary + "\r\n"
+            + "Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"\r\n"
+            + "Content-Type: audio/mpeg\r\n\r\n";
+        final byte[] headerBytes = multipartHeader.getBytes();
+
+        String multipartFooter = "\r\n--" + boundary + "--\r\n";
+        byte[] footerBytes = multipartFooter.getBytes();
+
+        HttpRequest.BodyPublisher filePublisher = HttpRequest.BodyPublishers.ofInputStream(() -> {
+            try {
+                return Files.newInputStream(filePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return HttpRequest.BodyPublishers.concat(
+            HttpRequest.BodyPublishers.ofByteArray(headerBytes),
+            filePublisher,
+            HttpRequest.BodyPublishers.ofByteArray(footerBytes)
+        );
+    }
+
+    public static String generateBoundary() {
+        int length = 16;
+        final Random random = new Random();
+        final StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append((char) ('A' + random.nextInt(26)));
+        }
+        return sb.toString();
     }
 }

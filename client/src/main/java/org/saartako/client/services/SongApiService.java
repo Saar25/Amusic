@@ -2,12 +2,14 @@ package org.saartako.client.services;
 
 import com.google.gson.Gson;
 import org.saartako.client.Config;
+import org.saartako.client.utils.HTTPRequestMultipartBody;
 import org.saartako.client.utils.HttpUtils;
 import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongDTO;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -105,7 +107,26 @@ public class SongApiService {
 
         final String authorization = this.authService.getJwtToken();
 
-        return CompletableFuture.failedFuture(new UnsupportedOperationException("TODO: implement this"));
+        final HTTPRequestMultipartBody builder;
+        try {
+            builder = new HTTPRequestMultipartBody.Builder()
+                .addPart("file", audioFile, null, audioFile.getName())
+                .build();
+        } catch (IOException e) {
+            return CompletableFuture.failedFuture(e);
+        }
+
+        final HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(Config.serverUrl + "/song/" + song.getId() + "/upload"))
+            .POST(HttpRequest.BodyPublishers.ofByteArray(builder.getBody()))
+            .header("Authorization", "Bearer " + authorization)
+            .header("Content-Type", builder.getContentType() + "; boundary=" + builder.getBoundary())
+            .build();
+
+        return this.httpService.getHttpClient()
+            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenCompose(HttpUtils::validateResponse)
+            .thenApply(response -> GSON.fromJson(response.body(), String.class));
     }
 
     public CompletableFuture<Long[]> fetchLikedSongIds() {

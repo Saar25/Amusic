@@ -88,7 +88,7 @@ public class SongService {
 
         final File destination = new File("../data/audio/", fileName);
 
-        file.transferTo(destination);
+        file.transferTo(destination.toPath());
     }
 
     public void likeSong(User user, long songId) {
