@@ -3,11 +3,13 @@ package org.saartako.client.services;
 import com.google.gson.Gson;
 import org.saartako.client.Config;
 import org.saartako.client.utils.HttpUtils;
+import org.saartako.client.utils.MultipartFormData;
 import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
 import org.saartako.common.song.SongDTO;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -105,13 +107,20 @@ public class SongApiService {
 
         final String authorization = this.authService.getJwtToken();
 
-        final String boundary = HttpUtils.generateBoundary();
+        final MultipartFormData build;
+        try {
+            build = MultipartFormData.builder()
+                .filePart("file", audioFile)
+                .build();
+        } catch (IOException e) {
+            return CompletableFuture.failedFuture(e);
+        }
 
         final HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(Config.serverUrl + "/song/" + song.getId() + "/upload"))
-            .POST(HttpUtils.bodyPublisherOfMultipartFormData(audioFile.toPath(), boundary))
+            .POST(build.bodyPublisher())
             .header("Authorization", "Bearer " + authorization)
-            .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+            .header("Content-Type", build.contentType())
             .build();
 
         return this.httpService.getHttpClient()

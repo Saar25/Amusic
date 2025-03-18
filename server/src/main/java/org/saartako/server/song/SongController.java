@@ -73,9 +73,10 @@ public class SongController {
         return ResponseEntity.status(HttpStatus.CREATED).body(song);
     }
 
-    @PostMapping(value = "/{id}/upload")
-    public ResponseEntity<?> uploadSong(@PathVariable("id") long id, @RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/{id}/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> uploadSong(@PathVariable("id") long id, @RequestPart("file") MultipartFile file) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
 
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File is empty");
