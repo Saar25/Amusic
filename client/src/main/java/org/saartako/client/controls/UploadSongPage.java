@@ -60,31 +60,21 @@ public class UploadSongPage extends Control implements RouteNode {
     }
 
     public void onSaveSongButtonClick() {
-        // TODO: upload audio
         final CreateSongDTO createSong = new CreateSongDTO(
             this.songName.get(),
             this.genre.get() == null ? null : this.genre.get().getId(),
             this.language.get() == null ? null : this.language.get().getId()
         );
-        this.songService.createSong(createSong)
+        this.songService.uploadSong(createSong, this.audioFile.get())
             .whenComplete((songDTO, throwable) -> {
                 Platform.runLater(() -> {
                     final Alert alert;
                     if (throwable != null) {
-                        alert = new Alert(Alert.AlertType.ERROR, "Failed to save song\n" + throwable.getMessage());
+                        alert = new Alert(Alert.AlertType.ERROR, "Failed to upload song\n" + throwable.getMessage());
                     } else {
-                        alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to save song");
+                        alert = new Alert(Alert.AlertType.INFORMATION, "Succeeded to upload song");
                         clearForm();
                     }
-                    alert.show();
-                });
-            })
-            .thenCompose(song -> this.songService.uploadSongAudioFile(song, this.audioFile.get()))
-            .whenComplete((fileName, throwable) -> {
-                Platform.runLater(() -> {
-                    final Alert alert = throwable != null
-                        ? new Alert(Alert.AlertType.ERROR, "Failed to upload audio file\n" + throwable.getMessage())
-                        : new Alert(Alert.AlertType.INFORMATION, "Succeeded to upload audio file");
                     alert.show();
                 });
             });

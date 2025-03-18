@@ -67,28 +67,38 @@ public class SongController {
     public ResponseEntity<?> createSong(@RequestBody CreateSongDTO songDTO) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        final SongEntity song = this.songService.createSong(
-            user, songDTO.name(), songDTO.genreId(), songDTO.languageId());
+        try {
+            final SongEntity song = this.songService.createSong(
+                user, songDTO.name(), songDTO.genreId(), songDTO.languageId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(song);
+            return ResponseEntity.status(HttpStatus.CREATED).body(song);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Failed to save song");
+        }
     }
 
-    @PostMapping(value = "/{id}/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> uploadSong(@PathVariable("id") long id, @RequestPart("file") MultipartFile file) {
+    @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> createSong(@RequestPart("song") CreateSongDTO songDTO,
+                                        @RequestPart("file") MultipartFile file) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty");
+        final SongEntity song;
+        try {
+            song = this.songService.createSong(
+                user, songDTO.name(), songDTO.genreId(), songDTO.languageId());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Failed to save song");
         }
 
         try {
-            this.songService.uploadSong(user, id, file);
+            if (!file.isEmpty()) {
+                this.songService.uploadSong(user, song.getId(), file);
+            }
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Failed to save file");
+            return ResponseEntity.internalServerError().body("Failed to upload file");
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(song);
     }
 
     @PostMapping("/{songId}/like")

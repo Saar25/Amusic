@@ -15,9 +15,6 @@ import org.saartako.client.Config;
 import org.saartako.client.utils.BindingsUtils;
 import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
-import org.saartako.common.song.SongDTO;
-import org.saartako.common.song.SongUtils;
-import org.saartako.common.user.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,41 +165,17 @@ public class SongService {
             });
     }
 
-    public CompletableFuture<? extends Song> createSong(CreateSongDTO createSong) {
-        LOGGER.info("Trying to create song");
+    public CompletableFuture<? extends Song> uploadSong(CreateSongDTO createSong, File audioFile) {
+        LOGGER.info("Trying to upload song");
 
-        return this.songApiService.createSong(createSong)
+        return this.songApiService.uploadSong(createSong, audioFile)
             .whenComplete((song, throwable) -> {
                 if (throwable != null) {
-                    LOGGER.error("Failed to create song - {}", throwable.getMessage());
+                    LOGGER.error("Failed to upload song - {}", throwable.getMessage());
                 } else {
-                    LOGGER.info("Succeeded to create song");
-
-                    song.setUploader(UserUtils.copyDisplay(this.authService.getLoggedUser()));
+                    LOGGER.info("Succeeded to upload song");
 
                     this.songs.add(song);
-                }
-            });
-    }
-
-    public CompletableFuture<String> uploadSongAudioFile(Song song, File audioFile) {
-        LOGGER.info("Trying to upload audio file");
-
-        return this.songApiService.uploadSongAudioFile(song, audioFile)
-            .whenComplete((fileName, throwable) -> {
-                if (throwable != null) {
-                    LOGGER.error("Failed to upload audio file - {}", throwable.getMessage());
-                } else {
-                    LOGGER.info("Succeeded to upload audio file");
-
-                    int index = this.songs.indexOf(song);
-                    if (index == -1) {
-                        LOGGER.warn("Song not found in local list, skipping update ({})", song.getId());
-                    }
-
-                    final SongDTO newSong = SongUtils.copyDisplay(song);
-                    newSong.setFileName(fileName);
-                    this.songs.set(index, newSong);
                 }
             });
     }

@@ -74,7 +74,7 @@ public class SongApiService {
             .thenApply(response -> null);
     }
 
-    public CompletableFuture<SongDTO> createSong(CreateSongDTO createSong) {
+    public CompletableFuture<? extends Song> uploadSong(CreateSongDTO createSong, File audioFile) {
         if (!this.authService.isLoggedIn()) {
             final Exception exception = new NullPointerException("User is not logged in");
 
@@ -84,49 +84,27 @@ public class SongApiService {
         final String authorization = this.authService.getJwtToken();
 
         final String payload = GSON.toJson(createSong);
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(Config.serverUrl + "/song"))
-            .POST(HttpRequest.BodyPublishers.ofString(payload))
-            .header("Authorization", "Bearer " + authorization)
-            .header("Content-Type", "application/json")
-            .build();
-
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .thenApply(response -> GSON.fromJson(response.body(), SongDTO.class));
-    }
-
-    public CompletableFuture<String> uploadSongAudioFile(Song song, File audioFile) {
-        if (!this.authService.isLoggedIn()) {
-            final Exception exception = new NullPointerException("User is not logged in");
-
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final String authorization = this.authService.getJwtToken();
-
-        final MultipartFormData build;
+        final MultipartFormData multipartFormData;
         try {
-            build = MultipartFormData.builder()
-                .filePart("file", audioFile)
+            multipartFormData = MultipartFormData.builder()
+                .filePart("file", "application/octet-stream", audioFile)
+                .stringPart("song", "application/json", payload)
                 .build();
         } catch (IOException e) {
             return CompletableFuture.failedFuture(e);
         }
 
         final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(Config.serverUrl + "/song/" + song.getId() + "/upload"))
-            .POST(build.bodyPublisher())
+            .uri(URI.create(Config.serverUrl + "/song/upload"))
+            .POST(multipartFormData.bodyPublisher())
             .header("Authorization", "Bearer " + authorization)
-            .header("Content-Type", build.contentType())
+            .header("Content-Type", multipartFormData.contentType())
             .build();
 
         return this.httpService.getHttpClient()
             .sendAsync(request, HttpResponse.BodyHandlers.ofString())
             .thenCompose(HttpUtils::validateResponse)
-            .thenApply(response -> GSON.fromJson(response.body(), String.class));
+            .thenApply(response -> GSON.fromJson(response.body(), SongDTO.class));
     }
 
     public CompletableFuture<Long[]> fetchLikedSongIds() {

@@ -79,24 +79,20 @@ public record MultipartFormData(HttpRequest.BodyPublisher bodyPublisher, String 
 
         private final List<MultipartRecord> parts = new ArrayList<>();
 
-        public Builder stringPart(String name, String content) {
-            return stringPart(name, content, "text/plain");
-        }
-
-        public Builder stringPart(String name, String content, String contentType) {
+        public Builder stringPart(String name, String contentType, String content) {
             final MultipartRecord part = new MultipartStringRecord(name, contentType, content);
             this.parts.add(part);
             return this;
         }
 
-        public Builder bytesPart(String name, byte[] bytes) {
-            final MultipartRecord part = new MultipartBytesRecord(name, "text/plain", bytes);
+        public Builder bytesPart(String name, String contentType, byte[] bytes) {
+            final MultipartRecord part = new MultipartBytesRecord(name, contentType, bytes);
             this.parts.add(part);
             return this;
         }
 
-        public Builder filePart(String name, File file) {
-            final MultipartRecord part = new MultipartFileRecord(name, "text/plain", file);
+        public Builder filePart(String name, String contentType, File file) {
+            final MultipartRecord part = new MultipartFileRecord(name, contentType, file);
             this.parts.add(part);
             return this;
         }
