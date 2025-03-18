@@ -68,7 +68,7 @@ public class SongService {
         song.setGenre(genre);
         song.setLanguage(language);
         song.setMediaType(createSongDTO.mediaType());
-        song.setLengthMillis(null);
+        song.setLengthMillis(createSongDTO.lengthMillis());
 
         return this.songRepository.save(song);
     }
