@@ -16,6 +16,8 @@ import org.saartako.common.language.Language;
 import org.saartako.common.song.CreateSongDTO;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class UploadSongPage extends Control implements RouteNode {
 
@@ -60,10 +62,19 @@ public class UploadSongPage extends Control implements RouteNode {
     }
 
     public void onSaveSongButtonClick() {
+        final String mediaType;
+        try {
+            mediaType = Files.probeContentType(this.audioFile.get().toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(mediaType);
+
         final CreateSongDTO createSong = new CreateSongDTO(
             this.songName.get(),
             this.genre.get() == null ? null : this.genre.get().getId(),
-            this.language.get() == null ? null : this.language.get().getId()
+            this.language.get() == null ? null : this.language.get().getId(),
+            mediaType
         );
         this.songService.uploadSong(createSong, this.audioFile.get())
             .whenComplete((songDTO, throwable) -> {

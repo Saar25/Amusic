@@ -64,12 +64,11 @@ public class SongController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createSong(@RequestBody CreateSongDTO songDTO) {
+    public ResponseEntity<?> createSong(@RequestBody CreateSongDTO createSongDTO) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         try {
-            final SongEntity song = this.songService.createSong(
-                user, songDTO.name(), songDTO.genreId(), songDTO.languageId());
+            final SongEntity song = this.songService.createSong(user, createSongDTO);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(song);
         } catch (Exception e) {
@@ -78,14 +77,13 @@ public class SongController {
     }
 
     @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createSong(@RequestPart("song") CreateSongDTO songDTO,
+    public ResponseEntity<?> createSong(@RequestPart("song") CreateSongDTO createSongDTO,
                                         @RequestPart("file") MultipartFile file) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         final SongEntity song;
         try {
-            song = this.songService.createSong(
-                user, songDTO.name(), songDTO.genreId(), songDTO.languageId());
+            song = this.songService.createSong(user, createSongDTO);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Failed to save song");
         }

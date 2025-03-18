@@ -1,5 +1,6 @@
 package org.saartako.server.song;
 
+import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.user.User;
 import org.saartako.server.genre.GenreEntity;
 import org.saartako.server.genre.GenreRepository;
@@ -51,22 +52,23 @@ public class SongService {
         this.songRepository.deleteById(id);
     }
 
-    public SongEntity createSong(User uploader, String name, Long genreId, Long languageId) {
-        final GenreEntity genre = Optional.ofNullable(genreId)
+    public SongEntity createSong(User uploader, CreateSongDTO createSongDTO) {
+        final GenreEntity genre = Optional.ofNullable(createSongDTO.genreId())
             .flatMap(this.genreRepository::findById).orElse(null);
 
-        final LanguageEntity language = Optional.ofNullable(languageId)
+        final LanguageEntity language = Optional.ofNullable(createSongDTO.languageId())
             .flatMap(this.languageRepository::findById).orElse(null);
 
         final String fileName = UUID.randomUUID().toString().replaceAll("-", "");
 
         final SongEntity song = new SongEntity();
-        song.setName(name);
+        song.setName(createSongDTO.name());
         song.setFileName(fileName);
         song.setUploaderId(uploader.getId());
         song.setGenre(genre);
         song.setLanguage(language);
-        song.setMediaType(null);
+        song.setMediaType(createSongDTO.mediaType());
+        song.setLengthMillis(null);
 
         return this.songRepository.save(song);
     }
