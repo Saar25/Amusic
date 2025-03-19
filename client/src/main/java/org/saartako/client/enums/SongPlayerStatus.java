@@ -4,4 +4,6 @@ public enum SongPlayerStatus {
     PLAYING,
     PAUSED,
     STOPPED,
+    ERROR,
+    READY,
 }

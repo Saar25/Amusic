@@ -3,16 +3,20 @@ package org.saartako.client.controls;
 import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
 import org.saartako.client.enums.SongPlayerStatus;
 import org.saartako.client.models.CardItem;
@@ -34,7 +38,9 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private final MusicCard songCard = new MusicCard();
 
-    private final Slider slider = new Slider(0, 100, 20);
+    private final Slider slider = new Slider();
+
+    private final Button playButton;
 
     private final Button likeSongButton;
 
@@ -65,12 +71,17 @@ public class SongViewSkin extends SkinBase<SongView> {
             getSkinnable().currentSongTimeProperty().set(duration);
             updateMediaPlayerStatus();
         });
+        HBox.setHgrow(this.slider, Priority.ALWAYS);
+
+        this.playButton = createPlayButton();
+        final HBox controlBox = new HBox(Config.GAP_MEDIUM, this.playButton, this.slider);
+        controlBox.setAlignment(Pos.CENTER);
 
         GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
 
         this.gridPane.add(this.songCard, 1, 2, 6, 6);
         this.gridPane.add(vBox, 8, 2, 4, 6);
-        this.gridPane.add(this.slider, 0, 11, 12, 1);
+        this.gridPane.add(controlBox, 0, 11, 12, 1);
 
         registerChangeListener(getSkinnable().songPlayerStatusProperty(), observable -> updateMediaPlayerStatus());
         updateMediaPlayerStatus();
@@ -78,7 +89,6 @@ public class SongViewSkin extends SkinBase<SongView> {
         registerChangeListener(getSkinnable().currentSongTimeProperty(), observable -> updateSongCurrentTime());
         updateSongCurrentTime();
 
-        this.slider.setDisable(true);
         registerChangeListener(getSkinnable().currentSongProperty(), observable -> updateCurrentSong());
         updateCurrentSong();
 
@@ -94,9 +104,28 @@ public class SongViewSkin extends SkinBase<SongView> {
             final SongPlayerStatus status = getSkinnable().songPlayerStatusProperty().get();
 
             switch (status) {
-                case PLAYING -> this.mediaPlayer.play();
-                case PAUSED -> this.mediaPlayer.pause();
-                case STOPPED -> this.mediaPlayer.stop();
+                case PLAYING -> {
+                    this.playButton.setGraphic(new FontIcon(Material2MZ.PAUSE));
+                    this.mediaPlayer.play();
+                }
+                case PAUSED -> {
+                    this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
+                    this.mediaPlayer.pause();
+                }
+                case STOPPED -> {
+                    this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
+                    this.mediaPlayer.stop();
+                }
+                case ERROR -> {
+                    this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
+                    this.playButton.setDisable(true);
+                    this.slider.setDisable(true);
+                }
+                case READY -> {
+                    this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
+                    this.playButton.setDisable(false);
+                    this.slider.setDisable(false);
+                }
             }
         }
     }
@@ -123,15 +152,19 @@ public class SongViewSkin extends SkinBase<SongView> {
             });
         } else {
             this.slider.setDisable(true);
+            this.playButton.setDisable(true);
             createMediaPlayer(song).thenAccept(mediaPlayer -> {
                 if (this.mediaPlayer != null) {
                     this.mediaPlayer.dispose();
                 }
                 this.mediaPlayer = mediaPlayer;
 
-                mediaPlayer.setOnError(() -> this.slider.setDisable(true));
-                mediaPlayer.setOnReady(() -> this.slider.setDisable(false));
-
+                mediaPlayer.setOnError(() -> {
+                    getSkinnable().songPlayerStatusProperty().set(SongPlayerStatus.ERROR);
+                });
+                mediaPlayer.setOnReady(() -> {
+                    getSkinnable().songPlayerStatusProperty().set(SongPlayerStatus.READY);
+                });
                 mediaPlayer.currentTimeProperty().addListener((o, prev, currentTime) -> {
                     getSkinnable().currentSongTimeProperty().set(currentTime);
                 });
@@ -171,6 +204,19 @@ public class SongViewSkin extends SkinBase<SongView> {
             this.deleteSongButton.setVisible(isSongPersonal);
             this.deleteSongButton.setManaged(isSongPersonal);
         });
+    }
+
+    private Button createPlayButton() {
+        final Button playButton = new Button(null, new FontIcon(Material2MZ.PAUSE));
+        playButton.getStyleClass().addAll(Styles.FLAT, Styles.LARGE);
+        playButton.setOnAction(event -> {
+            if (getSkinnable().songPlayerStatusProperty().get() == SongPlayerStatus.PLAYING) {
+                getSkinnable().songPlayerStatusProperty().set(SongPlayerStatus.PAUSED);
+            } else {
+                getSkinnable().songPlayerStatusProperty().set(SongPlayerStatus.PLAYING);
+            }
+        });
+        return playButton;
     }
 
     private CompletableFuture<MediaPlayer> createMediaPlayer(Song song) {

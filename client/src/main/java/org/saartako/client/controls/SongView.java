@@ -83,7 +83,6 @@ public class SongView extends Control implements RouteNode {
     @Override
     public void onEnterView() {
         currentSongTimeProperty().set(Duration.ZERO);
-        songPlayerStatusProperty().set(SongPlayerStatus.PLAYING);
         this.songAudioStreamUrl.set(null);
     }
 
