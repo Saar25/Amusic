@@ -32,148 +32,112 @@ public class SongApiService {
     }
 
     public CompletableFuture<Song[]> fetchSongs() {
-        if (!this.authService.isLoggedIn()) {
-            final Exception exception = new NullPointerException("User is not logged in");
+        return this.authService.requireJwtToken().thenCompose(authorization -> {
+            final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(Config.serverUrl + "/song"))
+                .GET()
+                .header("Authorization", "Bearer " + authorization)
+                .build();
 
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final String authorization = this.authService.getJwtToken();
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(Config.serverUrl + "/song"))
-            .GET()
-            .header("Authorization", "Bearer " + authorization)
-            .build();
-
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .thenApply(response -> GSON.fromJson(response.body(), SongDTO[].class));
+            return this.httpService.getHttpClient()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(HttpUtils::validateResponse)
+                .thenApply(response -> GSON.fromJson(response.body(), SongDTO[].class));
+        });
     }
 
     public CompletableFuture<Void> deleteSong(long songId) {
-        if (!this.authService.isLoggedIn()) {
-            final Exception exception = new NullPointerException("User is not logged in");
+        return this.authService.requireJwtToken().thenCompose(authorization -> {
+            final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(Config.serverUrl + "/song/" + songId))
+                .DELETE()
+                .header("Authorization", "Bearer " + authorization)
+                .header("Content-Type", "application/json")
+                .build();
 
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final String authorization = this.authService.getJwtToken();
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(Config.serverUrl + "/song/" + songId))
-            .DELETE()
-            .header("Authorization", "Bearer " + authorization)
-            .header("Content-Type", "application/json")
-            .build();
-
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .thenApply(response -> null);
+            return this.httpService.getHttpClient()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(HttpUtils::validateResponse)
+                .thenApply(response -> null);
+        });
     }
 
     public CompletableFuture<SongDTO> uploadSong(CreateSongDTO createSong, File audioFile) {
-        if (!this.authService.isLoggedIn()) {
-            final Exception exception = new NullPointerException("User is not logged in");
-
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final String authorization = this.authService.getJwtToken();
-
-        final String payload = GSON.toJson(createSong);
-        final MultipartFormData multipartFormData;
-        try {
-            final MultipartFormData.Builder builder = MultipartFormData.builder();
-            if (audioFile != null) {
-                builder.filePart("file", "application/octet-stream", audioFile);
+        return this.authService.requireJwtToken().thenCompose(authorization -> {
+            final String payload = GSON.toJson(createSong);
+            final MultipartFormData multipartFormData;
+            try {
+                final MultipartFormData.Builder builder = MultipartFormData.builder();
+                if (audioFile != null) {
+                    builder.filePart("file", "application/octet-stream", audioFile);
+                }
+                multipartFormData = builder
+                    .stringPart("song", "application/json", payload)
+                    .build();
+            } catch (IOException e) {
+                return CompletableFuture.failedFuture(e);
             }
-            multipartFormData = builder
-                .stringPart("song", "application/json", payload)
+
+            final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(Config.serverUrl + "/song/upload"))
+                .POST(multipartFormData.bodyPublisher())
+                .header("Authorization", "Bearer " + authorization)
+                .header("Content-Type", multipartFormData.contentType())
                 .build();
-        } catch (IOException e) {
-            return CompletableFuture.failedFuture(e);
-        }
 
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(Config.serverUrl + "/song/upload"))
-            .POST(multipartFormData.bodyPublisher())
-            .header("Authorization", "Bearer " + authorization)
-            .header("Content-Type", multipartFormData.contentType())
-            .build();
-
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .thenApply(response -> GSON.fromJson(response.body(), SongDTO.class));
+            return this.httpService.getHttpClient()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(HttpUtils::validateResponse)
+                .thenApply(response -> GSON.fromJson(response.body(), SongDTO.class));
+        });
     }
 
     public CompletableFuture<Long[]> fetchLikedSongIds() {
-        if (!this.authService.isLoggedIn()) {
-            final Exception exception = new NullPointerException("User is not logged in");
+        return this.authService.requireJwtToken().thenCompose(authorization -> {
+            final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(Config.serverUrl + "/user/likes"))
+                .GET()
+                .header("Authorization", "Bearer " + authorization)
+                .header("Content-Type", "application/json")
+                .build();
 
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final String authorization = this.authService.getJwtToken();
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(Config.serverUrl + "/user/likes"))
-            .GET()
-            .header("Authorization", "Bearer " + authorization)
-            .header("Content-Type", "application/json")
-            .build();
-
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .thenApply(response -> GSON.fromJson(response.body(), Long[].class));
+            return this.httpService.getHttpClient()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(HttpUtils::validateResponse)
+                .thenApply(response -> GSON.fromJson(response.body(), Long[].class));
+        });
     }
 
     public CompletableFuture<Void> likeSong(long songId) {
-        if (!this.authService.isLoggedIn()) {
-            final Exception exception = new NullPointerException("User is not logged in");
+        return this.authService.requireJwtToken().thenCompose(authorization -> {
+            final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(Config.serverUrl + "/song/" + songId + "/like"))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .header("Authorization", "Bearer " + authorization)
+                .header("Content-Type", "application/json")
+                .build();
 
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final String authorization = this.authService.getJwtToken();
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(Config.serverUrl + "/song/" + songId + "/like"))
-            .POST(HttpRequest.BodyPublishers.noBody())
-            .header("Authorization", "Bearer " + authorization)
-            .header("Content-Type", "application/json")
-            .build();
-
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .thenApply(response -> null);
+            return this.httpService.getHttpClient()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(HttpUtils::validateResponse)
+                .thenApply(response -> null);
+        });
     }
 
     public CompletableFuture<Void> unlikeSong(long songId) {
-        if (!this.authService.isLoggedIn()) {
-            final Exception exception = new NullPointerException("User is not logged in");
+        return this.authService.requireJwtToken().thenCompose(authorization -> {
+            final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(Config.serverUrl + "/song/" + songId + "/like"))
+                .DELETE()
+                .header("Authorization", "Bearer " + authorization)
+                .header("Content-Type", "application/json")
+                .build();
 
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final String authorization = this.authService.getJwtToken();
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(Config.serverUrl + "/song/" + songId + "/like"))
-            .DELETE()
-            .header("Authorization", "Bearer " + authorization)
-            .header("Content-Type", "application/json")
-            .build();
-
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .thenApply(response -> null);
+            return this.httpService.getHttpClient()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(HttpUtils::validateResponse)
+                .thenApply(response -> null);
+        });
     }
 
     private static final class InstanceHolder {

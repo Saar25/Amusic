@@ -28,24 +28,18 @@ public class GenreApiService {
     }
 
     public CompletableFuture<Genre[]> fetchGenres() {
-        if (!this.authService.isLoggedIn()) {
-            final Exception exception = new NullPointerException("User is not logged in");
+        return this.authService.requireJwtToken().thenCompose(authorization -> {
+            final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(Config.serverUrl + "/genre"))
+                .GET()
+                .header("Authorization", "Bearer " + authorization)
+                .build();
 
-            return CompletableFuture.failedFuture(exception);
-        }
-
-        final String authorization = this.authService.getJwtToken();
-
-        final HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(Config.serverUrl + "/genre"))
-            .GET()
-            .header("Authorization", "Bearer " + authorization)
-            .build();
-
-        return this.httpService.getHttpClient()
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenCompose(HttpUtils::validateResponse)
-            .thenApply(response -> GSON.fromJson(response.body(), GenreDTO[].class));
+            return this.httpService.getHttpClient()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(HttpUtils::validateResponse)
+                .thenApply(response -> GSON.fromJson(response.body(), GenreDTO[].class));
+        });
     }
 
     private static final class InstanceHolder {

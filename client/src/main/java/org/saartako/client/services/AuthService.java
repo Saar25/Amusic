@@ -97,6 +97,12 @@ public class AuthService {
             });
     }
 
+    public CompletableFuture<String> requireJwtToken() {
+        return isLoggedIn()
+            ? CompletableFuture.completedFuture(getJwtToken())
+            : CompletableFuture.failedFuture(new NullPointerException("User is not logged in"));
+    }
+
     private static final class InstanceHolder {
         private static final AuthService INSTANCE = new AuthService(
             AuthApiService.getInstance()
