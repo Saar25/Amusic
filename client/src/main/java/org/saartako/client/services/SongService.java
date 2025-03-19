@@ -11,7 +11,6 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
-import org.saartako.client.Config;
 import org.saartako.client.utils.BindingsUtils;
 import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
@@ -231,14 +230,6 @@ public class SongService {
 
     public CompletableFuture<Void> toggleLikeSong(Song song) {
         return isSongLiked(song) ? unlikeSong(song) : likeSong(song);
-    }
-
-    public CompletableFuture<String> fetchSongAudioStreamUrl(Song song) {
-        // TODO: ask server for token to make streaming more secure
-        final String audioStreamUrl = String.format(
-            "%s/song/%d/audio", Config.serverUrl, song.getId());
-
-        return CompletableFuture.completedFuture(audioStreamUrl);
     }
 
     public <T extends Song> List<T> filterSongs(List<T> songs, String filter) {

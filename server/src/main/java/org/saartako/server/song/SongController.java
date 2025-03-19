@@ -53,7 +53,7 @@ public class SongController {
             return ResponseEntity.notFound().build();
         }
 
-        final String mediaType = songEntityOpt.get().getMediaType();
+        final String mediaType = songEntityOpt.map(SongEntity::getMediaType).orElse("audio/wav");
 
         final Resource resource = new FileSystemResource(file);
         final HttpHeaders headers = new HttpHeaders();

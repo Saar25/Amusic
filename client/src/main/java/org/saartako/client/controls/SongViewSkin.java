@@ -11,20 +11,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
-import org.saartako.client.enums.SongPlayerStatus;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.SongUtils;
 import org.saartako.common.song.Song;
-
-import java.util.concurrent.CompletableFuture;
 
 public class SongViewSkin extends SkinBase<SongView> {
 
@@ -48,8 +44,6 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private final GridPane gridPane = new GridPane();
 
-    private MediaPlayer mediaPlayer;
-
     public SongViewSkin(SongView control) {
         super(control);
 
@@ -64,12 +58,16 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.slider.setSkin(new ProgressSliderSkin(this.slider));
         this.slider.getStyleClass().add(Styles.LARGE);
         this.slider.setMin(0);
-        this.slider.setOnMousePressed(event -> this.mediaPlayer.pause());
+        this.slider.setOnMousePressed(event -> {
+            final MediaPlayer mediaPlayer = getSkinnable().mediaPlayerProperty().get();
+
+            mediaPlayer.pause();
+        });
         this.slider.setOnMouseReleased(event -> {
             final double value = this.slider.getValue();
             final Duration duration = Duration.millis(value);
-            getSkinnable().currentSongTimeProperty().set(duration);
-            updateMediaPlayerStatus();
+            final MediaPlayer mediaPlayer = getSkinnable().mediaPlayerProperty().get();
+            mediaPlayer.seek(duration);
         });
         HBox.setHgrow(this.slider, Priority.ALWAYS);
 
@@ -83,11 +81,11 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.gridPane.add(vBox, 8, 2, 4, 6);
         this.gridPane.add(controlBox, 0, 11, 12, 1);
 
-        registerChangeListener(getSkinnable().songPlayerStatusProperty(), observable -> updateMediaPlayerStatus());
-        updateMediaPlayerStatus();
+        registerChangeListener(getSkinnable().mediaPlayerStatusProperty(), observable -> updatePlayerStatus());
+        updatePlayerStatus();
 
-        registerChangeListener(getSkinnable().currentSongTimeProperty(), observable -> updateSongCurrentTime());
-        updateSongCurrentTime();
+        registerChangeListener(getSkinnable().mediaPlayerCurrentTimeProperty(), observable -> updatePlayerCurrentTime());
+        updatePlayerCurrentTime();
 
         registerChangeListener(getSkinnable().currentSongProperty(), observable -> updateCurrentSong());
         updateCurrentSong();
@@ -99,24 +97,21 @@ public class SongViewSkin extends SkinBase<SongView> {
         updateIsSongPersonal();
     }
 
-    private void updateMediaPlayerStatus() {
-        if (this.mediaPlayer != null) {
-            final SongPlayerStatus status = getSkinnable().songPlayerStatusProperty().get();
-
-            switch (status) {
+    private void updatePlayerStatus() {
+        final MediaPlayer mediaPlayer = getSkinnable().mediaPlayerProperty().get();
+        if (mediaPlayer == null || mediaPlayer.getStatus() == null) {
+            this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
+            this.playButton.setDisable(true);
+            this.slider.setDisable(true);
+        } else {
+            switch (mediaPlayer.getStatus()) {
                 case PLAYING -> {
                     this.playButton.setGraphic(new FontIcon(Material2MZ.PAUSE));
-                    this.mediaPlayer.play();
                 }
-                case PAUSED -> {
+                case PAUSED, STOPPED -> {
                     this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
-                    this.mediaPlayer.pause();
                 }
-                case STOPPED -> {
-                    this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
-                    this.mediaPlayer.stop();
-                }
-                case ERROR -> {
+                case UNKNOWN, HALTED, DISPOSED -> {
                     this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
                     this.playButton.setDisable(true);
                     this.slider.setDisable(true);
@@ -130,14 +125,15 @@ public class SongViewSkin extends SkinBase<SongView> {
         }
     }
 
-    private void updateSongCurrentTime() {
-        final Duration newTime = getSkinnable().currentSongTimeProperty().get();
+    private void updatePlayerCurrentTime() {
+        final Duration newTime = getSkinnable().mediaPlayerCurrentTimeProperty().get();
+        final MediaPlayer mediaPlayer = getSkinnable().mediaPlayerProperty().get();
 
-        if (this.mediaPlayer != null) {
-            final Duration currentTime = this.mediaPlayer.getCurrentTime();
+        if (mediaPlayer != null) {
+            final Duration currentTime = mediaPlayer.getCurrentTime();
             final double diff = Math.abs(newTime.toMillis() - currentTime.toMillis());
             if (diff > MIN_DIFF_TO_SEEK.toMillis()) {
-                this.mediaPlayer.seek(newTime);
+                mediaPlayer.seek(newTime);
             }
         }
         this.slider.setValue(newTime.toMillis());
@@ -151,25 +147,6 @@ public class SongViewSkin extends SkinBase<SongView> {
                 getChildren().setAll(this.loader);
             });
         } else {
-            this.slider.setDisable(true);
-            this.playButton.setDisable(true);
-            createMediaPlayer(song).thenAccept(mediaPlayer -> {
-                if (this.mediaPlayer != null) {
-                    this.mediaPlayer.dispose();
-                }
-                this.mediaPlayer = mediaPlayer;
-
-                mediaPlayer.setOnError(() -> {
-                    getSkinnable().songPlayerStatusProperty().set(SongPlayerStatus.ERROR);
-                });
-                mediaPlayer.setOnReady(() -> {
-                    getSkinnable().songPlayerStatusProperty().set(SongPlayerStatus.READY);
-                });
-                mediaPlayer.currentTimeProperty().addListener((o, prev, currentTime) -> {
-                    getSkinnable().currentSongTimeProperty().set(currentTime);
-                });
-            });
-
             final CardItem cardItem = SongUtils.songToCardItem(song);
 
             Platform.runLater(() -> {
@@ -178,7 +155,7 @@ public class SongViewSkin extends SkinBase<SongView> {
                 this.slider.setMax(song.getLengthMillis() == 0 ? 1 : song.getLengthMillis());
 
                 getChildren().setAll(this.gridPane);
-                updateMediaPlayerStatus();
+                updatePlayerStatus();
             });
         }
     }
@@ -210,21 +187,16 @@ public class SongViewSkin extends SkinBase<SongView> {
         final Button playButton = new Button(null, new FontIcon(Material2MZ.PAUSE));
         playButton.getStyleClass().addAll(Styles.FLAT, Styles.LARGE);
         playButton.setOnAction(event -> {
-            if (getSkinnable().songPlayerStatusProperty().get() == SongPlayerStatus.PLAYING) {
-                getSkinnable().songPlayerStatusProperty().set(SongPlayerStatus.PAUSED);
-            } else {
-                getSkinnable().songPlayerStatusProperty().set(SongPlayerStatus.PLAYING);
+            final MediaPlayer mediaPlayer = getSkinnable().mediaPlayerProperty().get();
+            if (mediaPlayer != null) {
+                if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                    mediaPlayer.pause();
+                } else {
+                    mediaPlayer.play();
+                }
             }
         });
         return playButton;
-    }
-
-    private CompletableFuture<MediaPlayer> createMediaPlayer(Song song) {
-        return getSkinnable().fetchSongAudioStreamUrl(song).thenApply(audioStreamUrl -> {
-            final Media media = new Media(audioStreamUrl);
-
-            return new MediaPlayer(media);
-        });
     }
 
     private Button createLikeSongButton() {
@@ -246,13 +218,5 @@ public class SongViewSkin extends SkinBase<SongView> {
         button.getStyleClass().add(Styles.DANGER);
         button.setOnAction(event -> getSkinnable().onDeleteSongButtonClick());
         return button;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        if (this.mediaPlayer != null) {
-            this.mediaPlayer.dispose();
-        }
     }
 }

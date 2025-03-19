@@ -6,21 +6,17 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ListBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.saartako.client.Config;
-import org.saartako.client.enums.SongPlayerStatus;
 import org.saartako.client.models.RouteNode;
-import org.saartako.client.services.AuthService;
-import org.saartako.client.services.PlaylistService;
-import org.saartako.client.services.RouterService;
-import org.saartako.client.services.SongService;
+import org.saartako.client.services.*;
 import org.saartako.client.utils.BindingsUtils;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
@@ -28,7 +24,6 @@ import org.saartako.common.user.User;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 public class SongView extends Control implements RouteNode {
 
@@ -36,12 +31,7 @@ public class SongView extends Control implements RouteNode {
     private final PlaylistService playlistService = PlaylistService.getInstance();
     private final AuthService authService = AuthService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
-
-    private final ObjectProperty<Duration> currentSongTime =
-        new SimpleObjectProperty<>(this, "currentSongTime", Duration.ZERO);
-
-    private final ObjectProperty<SongPlayerStatus> songPlayerStatus =
-        new SimpleObjectProperty<>(this, "songPlayerStatus", SongPlayerStatus.STOPPED);
+    private final AudioService audioService = AudioService.getInstance();
 
     private final BooleanBinding isSongLiked = Bindings.createBooleanBinding(() -> {
         final Song song = this.songService.currentSongProperty().get();
@@ -67,9 +57,6 @@ public class SongView extends Control implements RouteNode {
         return playlists.stream().filter(playlist -> playlist.getOwner().getId() == user.getId()).toList();
     }, this.songService.currentSongProperty(), this.authService.loggedUserProperty());
 
-    private final ObjectProperty<String> songAudioStreamUrl =
-        new SimpleObjectProperty<>(this, "songAudioStreamUrl", null);
-
     @Override
     protected SongViewSkin createDefaultSkin() {
         return new SongViewSkin(this);
@@ -77,13 +64,14 @@ public class SongView extends Control implements RouteNode {
 
     @Override
     public void onExistView() {
-        songPlayerStatusProperty().set(SongPlayerStatus.STOPPED);
+        final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
+        mediaPlayer.stop();
     }
 
     @Override
     public void onEnterView() {
-        currentSongTimeProperty().set(Duration.ZERO);
-        this.songAudioStreamUrl.set(null);
+        final MediaPlayer mediaPlayer = mediaPlayerProperty().get();
+        mediaPlayer.seek(Duration.ZERO);
     }
 
     public ObjectBinding<Song> currentSongProperty() {
@@ -98,22 +86,22 @@ public class SongView extends Control implements RouteNode {
         return this.isSongPersonal;
     }
 
-    public ObjectProperty<Duration> currentSongTimeProperty() {
-        return this.currentSongTime;
+    public ReadOnlyObjectProperty<Duration> mediaPlayerCurrentTimeProperty() {
+        return this.audioService.mediaPlayerCurrentTimeProperty();
     }
 
-    public ObjectProperty<SongPlayerStatus> songPlayerStatusProperty() {
-        return this.songPlayerStatus;
+    public ReadOnlyObjectProperty<MediaPlayer.Status> mediaPlayerStatusProperty() {
+        return this.audioService.mediaPlayerStatusProperty();
+    }
+
+    public ObjectBinding<MediaPlayer> mediaPlayerProperty() {
+        return this.audioService.mediaPlayerProperty();
     }
 
     public void onLikeSongButtonClick() {
         final Song song = this.songService.getCurrentSong();
 
         this.songService.toggleLikeSong(song);
-    }
-
-    public CompletableFuture<String> fetchSongAudioStreamUrl(Song song) {
-        return this.songService.fetchSongAudioStreamUrl(song);
     }
 
     public void onAddToPlaylistButtonClick() {
