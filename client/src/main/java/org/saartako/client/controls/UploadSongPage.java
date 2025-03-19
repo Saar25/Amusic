@@ -16,6 +16,7 @@ import org.saartako.client.services.SongService;
 import org.saartako.common.genre.Genre;
 import org.saartako.common.language.Language;
 import org.saartako.common.song.CreateSongDTO;
+import org.saartako.common.song.Song;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,12 +68,15 @@ public class UploadSongPage extends Control implements RouteNode {
         return this.genreService.genresProperty();
     }
 
-    public void onSaveSongButtonClick() {
+    public CompletableFuture<? extends Song> onSaveSongButtonClick() {
         final String mediaType;
         try {
             mediaType = Files.probeContentType(this.audioFile.get().toPath());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return CompletableFuture.failedFuture(e);
+        }
+        if (mediaType == null) {
+            return CompletableFuture.failedFuture(new Exception("Cannot find media type of audio file"));
         }
 
         final String audioFilePath = this.audioFile.get().toPath().toUri().toString();
@@ -82,7 +86,7 @@ public class UploadSongPage extends Control implements RouteNode {
         final CompletableFuture<Void> mediaIsReadyFuture = new CompletableFuture<>();
         mediaPlayer.setOnReady(() -> mediaIsReadyFuture.complete(null));
 
-        mediaIsReadyFuture.thenCompose(unused -> {
+        return mediaIsReadyFuture.thenCompose(unused -> {
             final double millis = media.getDuration().toMillis();
 
             final CreateSongDTO createSong = new CreateSongDTO(

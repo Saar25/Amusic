@@ -7,7 +7,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -81,7 +80,15 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
     private Button createSaveSongButton() {
         final Button button = new Button("Save song");
         button.getStyleClass().addAll(Styles.LARGE, Styles.SUCCESS);
-        button.setOnAction(event -> getSkinnable().onSaveSongButtonClick());
+        button.setOnAction(event -> {
+            getSkinnable().onSaveSongButtonClick().whenComplete((song, throwable) -> {
+                if (throwable != null) {
+                    final Alert alert = new Alert(Alert.AlertType.ERROR,
+                        "Failed uploading song,\n" + throwable.getMessage());
+                    alert.show();
+                }
+            });
+        });
         return button;
     }
 
