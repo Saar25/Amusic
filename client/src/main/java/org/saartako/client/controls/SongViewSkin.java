@@ -78,6 +78,7 @@ public class SongViewSkin extends SkinBase<SongView> {
         registerChangeListener(getSkinnable().currentSongTimeProperty(), observable -> updateSongCurrentTime());
         updateSongCurrentTime();
 
+        this.slider.setDisable(true);
         registerChangeListener(getSkinnable().currentSongProperty(), observable -> updateCurrentSong());
         updateCurrentSong();
 
@@ -121,11 +122,19 @@ public class SongViewSkin extends SkinBase<SongView> {
                 getChildren().setAll(this.loader);
             });
         } else {
+            this.slider.setDisable(true);
             createMediaPlayer(song).thenAccept(mediaPlayer -> {
                 if (this.mediaPlayer != null) {
                     this.mediaPlayer.dispose();
                 }
                 this.mediaPlayer = mediaPlayer;
+
+                mediaPlayer.setOnError(() -> this.slider.setDisable(true));
+                mediaPlayer.setOnReady(() -> this.slider.setDisable(false));
+
+                mediaPlayer.currentTimeProperty().addListener((o, prev, currentTime) -> {
+                    getSkinnable().currentSongTimeProperty().set(currentTime);
+                });
             });
 
             final CardItem cardItem = SongUtils.songToCardItem(song);
@@ -168,18 +177,7 @@ public class SongViewSkin extends SkinBase<SongView> {
         return getSkinnable().fetchSongAudioStreamUrl(song).thenApply(audioStreamUrl -> {
             final Media media = new Media(audioStreamUrl);
 
-            final MediaPlayer mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnError(() -> {
-                // TODO: show error in ui
-                mediaPlayer.getError().printStackTrace();
-                System.err.println("error");
-            });
-
-            mediaPlayer.currentTimeProperty().addListener((o, prev, currentTime) -> {
-                getSkinnable().currentSongTimeProperty().set(currentTime);
-            });
-
-            return mediaPlayer;
+            return new MediaPlayer(media);
         });
     }
 
