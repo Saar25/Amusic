@@ -14,10 +14,13 @@ import org.saartako.client.Config;
 import org.saartako.common.genre.Genre;
 import org.saartako.common.language.Language;
 
+import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
 
 public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
+
+    private final Button uploadButton;
 
     public UploadSongPageSkin(UploadSongPage control) {
         super(control);
@@ -26,8 +29,12 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
         gridPane.setHgap(Config.GAP_MEDIUM);
         gridPane.setVgap(Config.GAP_MEDIUM);
 
-        final Button uploadButton = createUploadButton();
-        gridPane.add(uploadButton, 0, 0, 2, 1);
+        this.uploadButton = createUploadButton();
+        registerChangeListener(getSkinnable().audioFileProperty(), observable -> {
+            onAudioFileChanged();
+        });
+        onAudioFileChanged();
+        gridPane.add(this.uploadButton, 0, 0, 2, 1);
 
         final Label songNameLabel = new Label("Name:");
         final TextField songNameTextField = new TextField();
@@ -80,24 +87,30 @@ public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
     private Button createSaveSongButton() {
         final Button button = new Button("Save song");
         button.getStyleClass().addAll(Styles.LARGE, Styles.SUCCESS);
-        button.setOnAction(event -> {
-            getSkinnable().onSaveSongButtonClick().whenComplete((song, throwable) -> {
-                if (throwable != null) {
-                    final Alert alert = new Alert(Alert.AlertType.ERROR,
-                        "Failed uploading song,\n" + throwable.getMessage());
-                    alert.show();
-                }
-            });
-        });
+        button.setOnAction(event -> getSkinnable().onSaveSongButtonClick());
         return button;
     }
 
     private Button createUploadButton() {
-        final Button button = new Button("Upload", new FontIcon(Material2AL.FILE_UPLOAD));
-        button.getStyleClass().addAll(Styles.MEDIUM, Styles.ACCENT);
+        final Button button = new Button("Upload");
+        button.getStyleClass().addAll(Styles.MEDIUM);
         button.setOnAction(event -> getSkinnable().onUploadButtonClick());
         button.setMaxWidth(Double.MAX_VALUE);
         return button;
+    }
+
+    private void onAudioFileChanged() {
+        final File audioFile = getSkinnable().audioFileProperty().get();
+
+        if (audioFile == null) {
+            this.uploadButton.setGraphic(new FontIcon(Material2AL.CLOUD));
+            this.uploadButton.getStyleClass().remove(Styles.SUCCESS);
+            this.uploadButton.getStyleClass().add(Styles.ACCENT);
+        } else {
+            this.uploadButton.setGraphic(new FontIcon(Material2AL.CLOUD_DONE));
+            this.uploadButton.getStyleClass().remove(Styles.ACCENT);
+            this.uploadButton.getStyleClass().add(Styles.SUCCESS);
+        }
     }
 
     private ComboBox<Genre> createGenreComboBox() {

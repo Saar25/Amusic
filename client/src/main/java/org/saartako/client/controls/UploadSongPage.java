@@ -16,9 +16,6 @@ import org.saartako.client.services.SongService;
 import org.saartako.common.genre.Genre;
 import org.saartako.common.language.Language;
 import org.saartako.common.song.CreateSongDTO;
-import org.saartako.common.song.Song;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,11 +24,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class UploadSongPage extends Control implements RouteNode {
 
-    private static final Logger log = LoggerFactory.getLogger(UploadSongPage.class);
     private final SongService songService = SongService.getInstance();
     private final LanguageService languageService = LanguageService.getInstance();
     private final GenreService genreService = GenreService.getInstance();
 
+    private final ObjectProperty<String> mediaType = new SimpleObjectProperty<>(this, "mediaType", null);
     private final ObjectProperty<File> audioFile = new SimpleObjectProperty<>(this, "audioFile", null);
     private final ObjectProperty<String> songName = new SimpleObjectProperty<>(this, "songName", null);
     private final ObjectProperty<Genre> genre = new SimpleObjectProperty<>(this, "genre", null);
@@ -48,6 +45,10 @@ public class UploadSongPage extends Control implements RouteNode {
         this.genreService.fetchData();
     }
 
+    public ObjectProperty<File> audioFileProperty() {
+        return this.audioFile;
+    }
+
     public ObjectProperty<String> songNameProperty() {
         return this.songName;
     }
@@ -60,25 +61,15 @@ public class UploadSongPage extends Control implements RouteNode {
         return this.language;
     }
 
-    public ListProperty<Language> languagesProperty() {
-        return this.languageService.languagesProperty();
-    }
-
     public ListProperty<Genre> genresProperty() {
         return this.genreService.genresProperty();
     }
 
-    public CompletableFuture<? extends Song> onSaveSongButtonClick() {
-        final String mediaType;
-        try {
-            mediaType = Files.probeContentType(this.audioFile.get().toPath());
-        } catch (IOException e) {
-            return CompletableFuture.failedFuture(e);
-        }
-        if (mediaType == null) {
-            return CompletableFuture.failedFuture(new Exception("Cannot find media type of audio file"));
-        }
+    public ListProperty<Language> languagesProperty() {
+        return this.languageService.languagesProperty();
+    }
 
+    public void onSaveSongButtonClick() {
         final String audioFilePath = this.audioFile.get().toPath().toUri().toString();
         final Media media = new Media(audioFilePath);
         final MediaPlayer mediaPlayer = new MediaPlayer(media);
@@ -86,14 +77,14 @@ public class UploadSongPage extends Control implements RouteNode {
         final CompletableFuture<Void> mediaIsReadyFuture = new CompletableFuture<>();
         mediaPlayer.setOnReady(() -> mediaIsReadyFuture.complete(null));
 
-        return mediaIsReadyFuture.thenCompose(unused -> {
+        mediaIsReadyFuture.thenCompose(unused -> {
             final double millis = media.getDuration().toMillis();
 
             final CreateSongDTO createSong = new CreateSongDTO(
                 this.songName.get(),
                 this.genre.get() == null ? null : this.genre.get().getId(),
                 this.language.get() == null ? null : this.language.get().getId(),
-                mediaType,
+                this.mediaType.get(),
                 (long) millis
             );
 
@@ -115,7 +106,23 @@ public class UploadSongPage extends Control implements RouteNode {
     public void onUploadButtonClick() {
         final FileChooser fileChooser = new FileChooser();
         final File file = fileChooser.showOpenDialog(getScene().getWindow());
-        this.audioFile.set(file);
+
+        String mediaType = null;
+        try {
+            mediaType = Files.probeContentType(file.toPath());
+        } catch (IOException ignored) {
+        }
+
+        if (mediaType == null) {
+            final Alert alert = new Alert(Alert.AlertType.ERROR,
+                "Failed uploading song,\nCannot find media type of audio file");
+            alert.show();
+            this.mediaType.set(null);
+            this.audioFile.set(null);
+        } else {
+            this.mediaType.set(mediaType);
+            this.audioFile.set(file);
+        }
     }
 
     private void clearForm() {
