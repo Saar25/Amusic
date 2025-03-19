@@ -70,22 +70,33 @@ public class UploadSongPage extends Control implements RouteNode {
     }
 
     public void onSaveSongButtonClick() {
-        final String audioFilePath = this.audioFile.get().toPath().toUri().toString();
-        final Media media = new Media(audioFilePath);
-        final MediaPlayer mediaPlayer = new MediaPlayer(media);
+        if (this.songName.get() == null) {
+            final Alert alert = new Alert(Alert.AlertType.ERROR,
+                "Please fill the file name");
+            alert.show();
+            return;
+        }
 
-        final CompletableFuture<Void> mediaIsReadyFuture = new CompletableFuture<>();
-        mediaPlayer.setOnReady(() -> mediaIsReadyFuture.complete(null));
+        final CompletableFuture<Media> mediaIsReadyFuture = new CompletableFuture<>();
 
-        mediaIsReadyFuture.thenCompose(unused -> {
-            final double millis = media.getDuration().toMillis();
+        if (this.audioFile.get() != null) {
+            final String audioFilePath = this.audioFile.get().toPath().toUri().toString();
+            final Media media = new Media(audioFilePath);
+            final MediaPlayer mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnReady(() -> mediaIsReadyFuture.complete(media));
+        } else {
+            mediaIsReadyFuture.complete(null);
+        }
+
+        mediaIsReadyFuture.thenCompose(media -> {
+            final Long millis = media == null ? null : (long) media.getDuration().toMillis();
 
             final CreateSongDTO createSong = new CreateSongDTO(
                 this.songName.get(),
                 this.genre.get() == null ? null : this.genre.get().getId(),
                 this.language.get() == null ? null : this.language.get().getId(),
                 this.mediaType.get(),
-                (long) millis
+                millis
             );
 
             return this.songService.uploadSong(createSong, this.audioFile.get());

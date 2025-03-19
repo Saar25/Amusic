@@ -78,7 +78,7 @@ public class SongController {
 
     @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createSong(@RequestPart("song") CreateSongDTO createSongDTO,
-                                        @RequestPart("file") MultipartFile file) {
+                                        @RequestPart(value = "file", required = false) MultipartFile file) {
         final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         final SongEntity song;
@@ -89,7 +89,7 @@ public class SongController {
         }
 
         try {
-            if (!file.isEmpty()) {
+            if (file != null && !file.isEmpty()) {
                 this.songService.uploadSong(user, song.getId(), file);
             }
         } catch (Exception e) {

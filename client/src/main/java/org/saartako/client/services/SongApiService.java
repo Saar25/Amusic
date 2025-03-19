@@ -86,8 +86,11 @@ public class SongApiService {
         final String payload = GSON.toJson(createSong);
         final MultipartFormData multipartFormData;
         try {
-            multipartFormData = MultipartFormData.builder()
-                .filePart("file", "application/octet-stream", audioFile)
+            final MultipartFormData.Builder builder = MultipartFormData.builder();
+            if (audioFile != null) {
+                builder.filePart("file", "application/octet-stream", audioFile);
+            }
+            multipartFormData = builder
                 .stringPart("song", "application/json", payload)
                 .build();
         } catch (IOException e) {
