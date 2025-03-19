@@ -110,10 +110,6 @@ public class PlaylistService {
         return this.allPlaylists;
     }
 
-    public ObservableList<Playlist> getPlaylists() {
-        return this.allPlaylists.get();
-    }
-
     public ObjectBinding<Playlist> currentPlaylistProperty() {
         return this.currentPlaylist;
     }

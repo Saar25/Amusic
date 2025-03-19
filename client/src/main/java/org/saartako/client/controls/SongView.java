@@ -49,12 +49,14 @@ public class SongView extends Control implements RouteNode {
         return song.getUploader().getId() == user.getId();
     }, this.songService.currentSongProperty(), this.authService.loggedUserProperty());
 
-    private final ListBinding<Playlist> personalPlaylists = BindingsUtils.createJavaListBinding(() -> {
+    private final ListBinding<Playlist> modifiablePlaylists = BindingsUtils.createJavaListBinding(() -> {
         final ListBinding<Playlist> playlists = this.playlistService.playlistsProperty();
         if (playlists == null) return null;
         final User user = this.authService.loggedUserProperty().get();
         if (user == null) return null;
-        return playlists.stream().filter(playlist -> playlist.getOwner().getId() == user.getId()).toList();
+        return playlists.stream().filter(playlist ->
+            playlist.isModifiable() && playlist.getOwner().getId() == user.getId()
+        ).toList();
     }, this.songService.currentSongProperty(), this.authService.loggedUserProperty());
 
     @Override
@@ -70,6 +72,8 @@ public class SongView extends Control implements RouteNode {
 
     @Override
     public void onEnterView() {
+        this.playlistService.fetchData();
+
         final MediaPlayer mediaPlayer = mediaPlayerProperty().get();
         if (mediaPlayer != null) mediaPlayer.seek(Duration.ZERO);
     }
@@ -144,7 +148,7 @@ public class SongView extends Control implements RouteNode {
     }
 
     private ComboBox<Playlist> createPlaylistComboBox() {
-        final ComboBox<Playlist> playlistComboBox = new ComboBox<>(this.personalPlaylists);
+        final ComboBox<Playlist> playlistComboBox = new ComboBox<>(this.modifiablePlaylists);
         playlistComboBox.setPlaceholder(new Label("Loading..."));
         playlistComboBox.setConverter(new StringConverter<>() {
             @Override
