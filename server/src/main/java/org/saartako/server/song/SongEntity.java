@@ -5,7 +5,10 @@ import org.saartako.common.song.Song;
 import org.saartako.common.song.SongUtils;
 import org.saartako.server.genre.GenreEntity;
 import org.saartako.server.language.LanguageEntity;
+import org.saartako.server.like.LikeEntity;
 import org.saartako.server.user.UserEntity;
+
+import java.util.List;
 
 @Entity(name = "songs")
 public class SongEntity implements Song {
@@ -40,6 +43,9 @@ public class SongEntity implements Song {
 
     @Column
     private Long lengthMillis;
+
+    @OneToMany(mappedBy = "song", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<LikeEntity> likes;
 
     @Override
     public long getId() {

@@ -65,13 +65,13 @@ public class SongView extends Control implements RouteNode {
     @Override
     public void onExistView() {
         final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
-        mediaPlayer.stop();
+        if (mediaPlayer != null) mediaPlayer.stop();
     }
 
     @Override
     public void onEnterView() {
         final MediaPlayer mediaPlayer = mediaPlayerProperty().get();
-        mediaPlayer.seek(Duration.ZERO);
+        if (mediaPlayer != null) mediaPlayer.seek(Duration.ZERO);
     }
 
     public ObjectBinding<Song> currentSongProperty() {

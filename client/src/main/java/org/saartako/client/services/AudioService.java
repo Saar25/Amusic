@@ -48,8 +48,13 @@ public class AudioService {
         }, this.media);
 
         this.mediaPlayer.addListener((observable, oldValue, newValue) -> {
-            this.mediaPlayerStatus.bind(newValue.statusProperty());
-            this.mediaPlayerCurrentTime.bind(newValue.currentTimeProperty());
+            if (newValue != null) {
+                this.mediaPlayerStatus.bind(newValue.statusProperty());
+                this.mediaPlayerCurrentTime.bind(newValue.currentTimeProperty());
+            } else {
+                this.mediaPlayerStatus.unbind();
+                this.mediaPlayerCurrentTime.unbind();
+            }
         });
     }
 
