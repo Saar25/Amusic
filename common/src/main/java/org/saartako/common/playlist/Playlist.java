@@ -16,5 +16,7 @@ public interface Playlist {
 
     boolean isModifiable();
 
+    Collection<Long> getSongIds();
+
     Collection<? extends Song> getSongs();
 }

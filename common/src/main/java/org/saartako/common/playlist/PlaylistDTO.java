@@ -21,6 +21,8 @@ public class PlaylistDTO implements Playlist {
     @SerializedName("modifiable")
     private boolean isModifiable;
 
+    private Set<Long> songIds;
+
     private Set<SongDTO> songs;
 
     @Override
@@ -71,6 +73,16 @@ public class PlaylistDTO implements Playlist {
     public PlaylistDTO setModifiable(boolean modifiable) {
         this.isModifiable = modifiable;
         return this;
+    }
+
+    public PlaylistDTO setSongIds(Set<Long> songIds) {
+        this.songIds = songIds;
+        return this;
+    }
+
+    @Override
+    public Set<Long> getSongIds() {
+        return this.songIds;
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.saartako.common.playlist.PlaylistUtils;
 import org.saartako.server.song.SongEntity;
 import org.saartako.server.user.UserEntity;
 
+import java.util.Collection;
 import java.util.Set;
 
 @Entity(name = "playlists")
@@ -38,6 +39,11 @@ public class PlaylistEntity implements Playlist {
         inverseJoinColumns = @JoinColumn(name = "song_id")
     )
     private Set<SongEntity> songs;
+
+    @ElementCollection
+    @CollectionTable(name = "playlist_songs", joinColumns = @JoinColumn(name = "playlist_id"))
+    @Column(name = "song_id")
+    private Set<Long> songIds;
 
     @Override
     public long getId() {
@@ -82,6 +88,11 @@ public class PlaylistEntity implements Playlist {
 
     public void setModifiable(boolean isModifiable) {
         this.isModifiable = isModifiable;
+    }
+
+    @Override
+    public Collection<Long> getSongIds() {
+        return this.songIds;
     }
 
     @Override

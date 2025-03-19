@@ -1,9 +1,9 @@
 package org.saartako.common.playlist;
 
-import org.saartako.common.song.SongUtils;
 import org.saartako.common.user.UserUtils;
 
 import java.util.List;
+import java.util.Set;
 
 public class PlaylistUtils {
 
@@ -24,7 +24,7 @@ public class PlaylistUtils {
                 .setName(playlist.getName())
                 .setPrivate(playlist.isPrivate())
                 .setModifiable(playlist.isModifiable())
-                .setSongs(SongUtils.copyDisplay(playlist.getSongs()));
+                .setSongIds(Set.copyOf(playlist.getSongIds()));
     }
 
     public static String toString(Playlist playlist) {
