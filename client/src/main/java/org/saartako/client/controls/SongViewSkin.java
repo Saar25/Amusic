@@ -58,11 +58,6 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.slider.setSkin(new ProgressSliderSkin(this.slider));
         this.slider.getStyleClass().add(Styles.LARGE);
         this.slider.setMin(0);
-        this.slider.setOnMousePressed(event -> {
-            final MediaPlayer mediaPlayer = getSkinnable().mediaPlayerProperty().get();
-
-            mediaPlayer.pause();
-        });
         this.slider.setOnMouseReleased(event -> {
             final double value = this.slider.getValue();
             final Duration duration = Duration.millis(value);
@@ -136,7 +131,9 @@ public class SongViewSkin extends SkinBase<SongView> {
                 mediaPlayer.seek(newTime);
             }
         }
-        this.slider.setValue(newTime.toMillis());
+        if (!this.slider.isValueChanging()) {
+            this.slider.setValue(newTime.toMillis());
+        }
     }
 
     private void updateCurrentSong() {
