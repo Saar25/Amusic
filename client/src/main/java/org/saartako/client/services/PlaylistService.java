@@ -143,7 +143,7 @@ public class PlaylistService {
             });
     }
 
-    public CompletableFuture<Playlist> createPlaylist(CreatePlaylistDTO createPlaylist) {
+    public CompletableFuture<? extends Playlist> createPlaylist(CreatePlaylistDTO createPlaylist) {
         LOGGER.info("Trying to create playlist");
 
         return this.playlistApiService.createPlaylist(createPlaylist)
@@ -153,6 +153,7 @@ public class PlaylistService {
                 } else {
                     LOGGER.info("Succeeded to create playlist");
 
+                    playlist.setOwner(UserUtils.copyDisplay(this.authService.getLoggedUser()));
                     this.fetchedPlaylists.add(playlist);
                 }
             });

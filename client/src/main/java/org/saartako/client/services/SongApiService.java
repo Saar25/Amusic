@@ -74,7 +74,7 @@ public class SongApiService {
             .thenApply(response -> null);
     }
 
-    public CompletableFuture<? extends Song> uploadSong(CreateSongDTO createSong, File audioFile) {
+    public CompletableFuture<SongDTO> uploadSong(CreateSongDTO createSong, File audioFile) {
         if (!this.authService.isLoggedIn()) {
             final Exception exception = new NullPointerException("User is not logged in");
 

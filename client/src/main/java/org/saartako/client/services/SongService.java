@@ -15,6 +15,7 @@ import org.saartako.client.Config;
 import org.saartako.client.utils.BindingsUtils;
 import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.song.Song;
+import org.saartako.common.user.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,6 +176,7 @@ public class SongService {
                 } else {
                     LOGGER.info("Succeeded to upload song");
 
+                    song.setUploader(UserUtils.copyDisplay(this.authService.getLoggedUser()));
                     this.songs.add(song);
                 }
             });

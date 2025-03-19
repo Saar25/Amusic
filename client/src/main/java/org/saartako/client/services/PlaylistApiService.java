@@ -50,7 +50,7 @@ public class PlaylistApiService {
             .thenApply(response -> GSON.fromJson(response.body(), PlaylistDTO[].class));
     }
 
-    public CompletableFuture<Playlist> createPlaylist(CreatePlaylistDTO createPlaylist) {
+    public CompletableFuture<PlaylistDTO> createPlaylist(CreatePlaylistDTO createPlaylist) {
         if (!this.authService.isLoggedIn()) {
             final Exception exception = new NullPointerException("User is not logged in");
 
