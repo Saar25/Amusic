@@ -88,8 +88,8 @@ public class SongViewSkin extends SkinBase<SongView> {
         registerChangeListener(getSkinnable().isSongLikedProperty(), observable -> updateIsSongLiked());
         updateIsSongLiked();
 
-        registerChangeListener(getSkinnable().isSongPersonalProperty(), observable -> updateIsSongPersonal());
-        updateIsSongPersonal();
+        registerChangeListener(getSkinnable().canDeleteSongProperty(), observable -> updateCanDeleteSong());
+        updateCanDeleteSong();
     }
 
     private void updatePlayerStatus() {
@@ -171,12 +171,12 @@ public class SongViewSkin extends SkinBase<SongView> {
         });
     }
 
-    private void updateIsSongPersonal() {
-        final boolean isSongPersonal = getSkinnable().isSongPersonalProperty().get();
+    private void updateCanDeleteSong() {
+        final boolean canDeleteSong = getSkinnable().canDeleteSongProperty().get();
 
         Platform.runLater(() -> {
-            this.deleteSongButton.setVisible(isSongPersonal);
-            this.deleteSongButton.setManaged(isSongPersonal);
+            this.deleteSongButton.setVisible(canDeleteSong);
+            this.deleteSongButton.setManaged(canDeleteSong);
         });
     }
 

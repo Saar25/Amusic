@@ -7,6 +7,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.saartako.common.encrypt.JwtParser;
 import org.saartako.common.encrypt.UserJwtParser;
+import org.saartako.common.role.Role;
+import org.saartako.common.role.RoleUtils;
 import org.saartako.common.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,11 @@ public class AuthService {
     private final ObjectBinding<User> loggedUser = Bindings.createObjectBinding(
         () -> this.jwtToken.getValue() == null ? null : this.userJwtParser.parse(this.jwtToken.getValue()),
         this.jwtToken
+    );
+
+    private final BooleanBinding isAdmin = Bindings.createBooleanBinding(
+        () -> this.loggedUser.get() != null && RoleUtils.hasRoleOfType(this.loggedUser.get().getRoles(), Role.ADMIN_TYPE),
+        this.loggedUser
     );
 
     private final BooleanBinding isLoggedIn = this.loggedUser.isNotNull();
@@ -57,6 +64,14 @@ public class AuthService {
 
     public User getLoggedUser() {
         return this.loggedUser.getValue();
+    }
+
+    public BooleanBinding isAdminProperty() {
+        return this.isAdmin;
+    }
+
+    public boolean isAdmin() {
+        return this.isAdmin.get();
     }
 
     public BooleanBinding isLoggedInProperty() {

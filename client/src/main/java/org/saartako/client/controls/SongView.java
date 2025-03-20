@@ -59,6 +59,9 @@ public class SongView extends Control implements RouteNode {
         ).toList();
     }, this.songService.currentSongProperty(), this.authService.loggedUserProperty());
 
+    private final BooleanBinding canDeleteSong = Bindings.or(
+        this.isSongPersonal, this.authService.isAdminProperty());
+
     @Override
     protected SongViewSkin createDefaultSkin() {
         return new SongViewSkin(this);
@@ -86,8 +89,8 @@ public class SongView extends Control implements RouteNode {
         return this.isSongLiked;
     }
 
-    public BooleanBinding isSongPersonalProperty() {
-        return this.isSongPersonal;
+    public BooleanBinding canDeleteSongProperty() {
+        return this.canDeleteSong;
     }
 
     public ReadOnlyObjectProperty<Duration> mediaPlayerCurrentTimeProperty() {
