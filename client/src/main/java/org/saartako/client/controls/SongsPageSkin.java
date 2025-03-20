@@ -16,8 +16,8 @@ import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
+import org.saartako.client.utils.CardItemUtils;
 import org.saartako.client.utils.GridUtils;
-import org.saartako.client.utils.SongUtils;
 import org.saartako.common.song.Song;
 
 import java.util.List;
@@ -75,7 +75,7 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
         } else {
             final List<MusicCard> musicCards = songs.stream()
                 .map(song -> {
-                    final CardItem cardItem = SongUtils.songToCardItem(song);
+                    final CardItem cardItem = CardItemUtils.songToCardItem(song);
                     final MusicCard musicCard = new MusicCard();
                     musicCard.setCardItem(cardItem);
                     musicCard.setExpandable(true);

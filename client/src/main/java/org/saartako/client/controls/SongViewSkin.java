@@ -18,8 +18,8 @@ import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
 import org.saartako.client.models.CardItem;
+import org.saartako.client.utils.CardItemUtils;
 import org.saartako.client.utils.GridUtils;
-import org.saartako.client.utils.SongUtils;
 import org.saartako.common.song.Song;
 
 public class SongViewSkin extends SkinBase<SongView> {
@@ -144,7 +144,7 @@ public class SongViewSkin extends SkinBase<SongView> {
                 getChildren().setAll(this.loader);
             });
         } else {
-            final CardItem cardItem = SongUtils.songToCardItem(song);
+            final CardItem cardItem = CardItemUtils.songToCardItem(song);
 
             Platform.runLater(() -> {
                 this.songCard.setCardItem(cardItem);

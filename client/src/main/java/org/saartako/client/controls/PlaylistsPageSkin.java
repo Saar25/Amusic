@@ -19,7 +19,7 @@ import org.saartako.client.Config;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.utils.GridUtils;
-import org.saartako.client.utils.PlaylistUtils;
+import org.saartako.client.utils.CardItemUtils;
 import org.saartako.common.playlist.Playlist;
 
 import java.util.List;
@@ -87,7 +87,7 @@ public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
         } else {
             final List<MusicCard> musicCards = playlists.stream()
                 .map(playlist -> {
-                    final CardItem cardItem = PlaylistUtils.playlistToCardItem(playlist);
+                    final CardItem cardItem = CardItemUtils.playlistToCardItem(playlist);
                     final MusicCard musicCard = new MusicCard();
                     musicCard.setCardItem(cardItem);
                     musicCard.setExpandable(true);

@@ -17,9 +17,8 @@ import org.saartako.client.Config;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.models.MenuAction;
+import org.saartako.client.utils.CardItemUtils;
 import org.saartako.client.utils.GridUtils;
-import org.saartako.client.utils.PlaylistUtils;
-import org.saartako.client.utils.SongUtils;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
 
@@ -80,10 +79,10 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
             final Collection<? extends Song> songs = playlist.getSongs();
 
-            final CardItem playlistCard = PlaylistUtils.playlistToCardItem(playlist);
+            final CardItem playlistCard = CardItemUtils.playlistToCardItem(playlist);
 
             final List<? extends Node> cards = songs.stream().map(song -> {
-                final CardItem songCardItem = SongUtils.songToCardItem(song);
+                final CardItem songCardItem = CardItemUtils.songToCardItem(song);
                 final MusicCard songCard = new MusicCard(songCardItem);
                 songCard.setExpandable(true);
                 if (isPlaylistModifiable) {
