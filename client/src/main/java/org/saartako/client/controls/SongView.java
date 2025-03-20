@@ -9,15 +9,19 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
 import org.saartako.client.Config;
 import org.saartako.client.models.RouteNode;
 import org.saartako.client.services.*;
 import org.saartako.client.utils.BindingsUtils;
+import org.saartako.client.utils.Toast;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
 import org.saartako.common.user.User;
@@ -59,6 +63,23 @@ public class SongView extends Control implements RouteNode {
         ).toList();
     }, this.songService.currentSongProperty(), this.authService.loggedUserProperty());
 
+    private final Toast.Provider toastProvider = new Toast.Provider() {
+        @Override
+        public void addChild(Node child) {
+            SongView.this.getChildren().add(child);
+        }
+
+        @Override
+        public void removeChild(Node child) {
+            SongView.this.getChildren().remove(child);
+        }
+    };
+
+    private final Toast errorPlayingSongNotification = this.toastProvider.provide(
+        "Error occurred while trying to play song!",
+        new FontIcon(Material2OutlinedAL.ERROR_OUTLINE)
+    );
+
     private final BooleanBinding canDeleteSong = Bindings.or(
         this.isSongPersonal, this.authService.isAdminProperty());
 
@@ -78,7 +99,10 @@ public class SongView extends Control implements RouteNode {
         this.playlistService.fetchData();
 
         final MediaPlayer mediaPlayer = mediaPlayerProperty().get();
-        if (mediaPlayer != null) mediaPlayer.seek(Duration.ZERO);
+        if (mediaPlayer != null) {
+            mediaPlayer.seek(Duration.ZERO);
+            mediaPlayer.setOnError(this.errorPlayingSongNotification::show);
+        }
     }
 
     public ObjectBinding<Song> currentSongProperty() {
