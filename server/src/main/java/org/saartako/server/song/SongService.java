@@ -61,6 +61,7 @@ public class SongService {
         }
 
         this.playlistRepository.deleteSongFromPlaylists(id);
+        this.likeRepository.deleteSongFromLikes(id);
         this.songRepository.deleteById(id);
     }
 
