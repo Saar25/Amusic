@@ -23,7 +23,7 @@ public class AudioService {
         new SimpleObjectProperty<>(this, "mediaPlayerStatus");
 
     private final ObjectProperty<Duration> mediaPlayerCurrentTime =
-        new SimpleObjectProperty<>(this, "mediaPlayerCurrentTime");
+        new SimpleObjectProperty<>(this, "mediaPlayerCurrentTime", Duration.ZERO);
 
     private AudioService(SongService songService) {
         this.songService = songService;
@@ -32,7 +32,8 @@ public class AudioService {
             final Song currentSong = this.songService.currentSongProperty().get();
 
             // TODO: ask server for token to make streaming more secure
-            return currentSong == null ? null : String.format("%s/song/%d/audio", Config.serverUrl, currentSong.getId());
+            return currentSong == null || currentSong.getFileName() == null ? null
+                : String.format("%s/song/%d/audio", Config.serverUrl, currentSong.getId());
         }, this.songService.currentSongProperty());
 
         this.media = Bindings.createObjectBinding(() -> {
