@@ -25,7 +25,7 @@ public class BindingsUtils {
                 try {
                     return func.call();
                 } catch (Exception e) {
-                    System.err.println(e);
+                    e.printStackTrace();
                     return null;
                 }
             }
@@ -38,6 +38,10 @@ public class BindingsUtils {
     }
 
     public static <T> ListBinding<T> createJavaListBinding(Callable<List<T>> func, Observable... dependencies) {
-        return createListBinding(() -> FXCollections.observableArrayList(func.call()), dependencies);
+        return createListBinding(() -> {
+            final List<T> list = func.call();
+
+            return list == null ? null : FXCollections.observableArrayList(list);
+        }, dependencies);
     }
 }
