@@ -7,9 +7,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.saartako.common.encrypt.JwtParser;
 import org.saartako.common.encrypt.UserJwtParser;
-import org.saartako.common.role.Role;
-import org.saartako.common.role.RoleUtils;
 import org.saartako.common.user.User;
+import org.saartako.common.user.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +31,7 @@ public class AuthService {
     );
 
     private final BooleanBinding isAdmin = Bindings.createBooleanBinding(
-        () -> this.loggedUser.get() != null && RoleUtils.hasRoleOfType(this.loggedUser.get().getRoles(), Role.ADMIN_TYPE),
+        () -> this.loggedUser.get() != null && UserUtils.isAdmin(this.loggedUser.get()),
         this.loggedUser
     );
 

@@ -1,5 +1,6 @@
 package org.saartako.common.user;
 
+import org.saartako.common.role.Role;
 import org.saartako.common.role.RoleUtils;
 
 import java.util.stream.Collectors;
@@ -8,6 +9,10 @@ public class UserUtils {
 
     private UserUtils() {
         throw new RuntimeException("Cannot create instance of class " + getClass().getName());
+    }
+
+    public static boolean isAdmin(User user) {
+        return user != null && user.getRoles() != null && RoleUtils.hasRoleOfType(user.getRoles(), Role.ADMIN_TYPE);
     }
 
     public static UserDTO copyDisplay(User user) {

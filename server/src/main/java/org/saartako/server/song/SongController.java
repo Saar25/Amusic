@@ -35,7 +35,9 @@ public class SongController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteSong(@PathVariable("id") long id) {
-        this.songService.deleteSong(id);
+        final User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        this.songService.deleteSong(user, id);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

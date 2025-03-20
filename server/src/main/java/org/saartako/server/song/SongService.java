@@ -2,6 +2,7 @@ package org.saartako.server.song;
 
 import org.saartako.common.song.CreateSongDTO;
 import org.saartako.common.user.User;
+import org.saartako.common.user.UserUtils;
 import org.saartako.server.genre.GenreEntity;
 import org.saartako.server.genre.GenreRepository;
 import org.saartako.server.language.LanguageEntity;
@@ -47,7 +48,18 @@ public class SongService {
         return this.songRepository.findById(id);
     }
 
-    public void deleteSong(long id) {
+    public void deleteSong(User user, long id) {
+        final Optional<SongEntity> songEntityOpt = this.songRepository.findById(id);
+        if (songEntityOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such song");
+        }
+
+        final SongEntity song = songEntityOpt.get();
+
+        if (song.getUploaderId() != user.getId() && !UserUtils.isAdmin(user)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Song is not uploaded by user");
+        }
+
         this.playlistRepository.deleteSongFromPlaylists(id);
         this.songRepository.deleteById(id);
     }
