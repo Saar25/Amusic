@@ -90,12 +90,12 @@ public class SongController {
             return ResponseEntity.internalServerError().body("Failed to save song");
         }
 
-        try {
-            if (file != null && !file.isEmpty()) {
-                this.songService.uploadSong(user, song.getId(), file);
+        if (file != null && !file.isEmpty()) {
+            try {
+                this.songService.uploadSong(song, file);
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().body("Failed to upload file");
             }
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Failed to upload file");
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(song);

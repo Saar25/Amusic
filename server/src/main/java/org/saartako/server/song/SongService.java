@@ -72,11 +72,9 @@ public class SongService {
         final LanguageEntity language = Optional.ofNullable(createSongDTO.languageId())
             .flatMap(this.languageRepository::findById).orElse(null);
 
-        final String fileName = UUID.randomUUID().toString().replaceAll("-", "");
-
         final SongEntity song = new SongEntity();
         song.setName(createSongDTO.name());
-        song.setFileName(fileName);
+        song.setFileName(null);
         song.setUploaderId(uploader.getId());
         song.setGenre(genre);
         song.setLanguage(language);
@@ -99,11 +97,17 @@ public class SongService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Song is not uploaded by user");
         }
 
-        final String fileName = song.getFileName();
+        uploadSong(song, file);
+    }
+
+    public void uploadSong(SongEntity song, MultipartFile file) throws IOException {
+        final String fileName = UUID.randomUUID().toString().replaceAll("-", "");
 
         final File destination = new File("../data/audio/", fileName);
-
         file.transferTo(destination.toPath());
+
+        song.setFileName(fileName);
+        this.songRepository.save(song);
     }
 
     public void likeSong(User user, long songId) {
