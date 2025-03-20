@@ -75,14 +75,14 @@ public class PlaylistDTO implements Playlist {
         return this;
     }
 
-    public PlaylistDTO setSongIds(Set<Long> songIds) {
-        this.songIds = songIds;
-        return this;
-    }
-
     @Override
     public Set<Long> getSongIds() {
         return this.songIds;
+    }
+
+    public PlaylistDTO setSongIds(Set<Long> songIds) {
+        this.songIds = songIds;
+        return this;
     }
 
     @Override

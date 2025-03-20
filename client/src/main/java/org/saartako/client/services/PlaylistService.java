@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class PlaylistService {
 
@@ -40,6 +41,8 @@ public class PlaylistService {
     private final AuthService authService;
 
     private final ListProperty<Playlist> fetchedPlaylists = new SimpleListProperty<>(this, "playlists");
+
+    private final ListBinding<? extends Playlist> fetchedPlaylistsWithSongs;
 
     private final ObjectBinding<Playlist> likedSongsPlaylist;
 
@@ -54,24 +57,33 @@ public class PlaylistService {
         this.songService = songService;
         this.authService = authService;
 
+        this.fetchedPlaylistsWithSongs = BindingsUtils.createJavaListBinding(() -> {
+            final ObservableList<Playlist> playlists = this.fetchedPlaylists.get();
+            if (playlists == null) return null;
+            final ObservableList<Song> songs = this.songService.songsProperty().get();
+            if (songs == null) return null;
+            return playlists.stream().map(p -> PlaylistUtils.mergeSongs(p, songs)).toList();
+        }, this.fetchedPlaylists, this.songService.songsProperty());
+
         this.likedSongsPlaylist = Bindings.createObjectBinding(() -> {
             return new PlaylistDTO()
                 .setName("Liked Songs")
                 .setModifiable(false)
                 .setPrivate(true)
                 .setOwner(UserUtils.copyDisplay(this.authService.getLoggedUser()))
+                .setSongIds(this.songService.getLikedSongs().stream().map(Song::getId).collect(Collectors.toSet()))
                 .setSongs(SongUtils.copyDisplay(this.songService.getLikedSongs()));
         }, this.authService.loggedUserProperty(), this.songService.likedSongsProperty());
 
         this.allPlaylists = BindingsUtils.createListBinding(() -> {
-            final ObservableList<Playlist> fetchedPlaylists = PlaylistService.this.fetchedPlaylists.get();
+            final ObservableList<? extends Playlist> fetchedPlaylists = PlaylistService.this.fetchedPlaylistsWithSongs.get();
             final Playlist likedSongsPlaylist = PlaylistService.this.likedSongsPlaylist.get();
 
             final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
             if (likedSongsPlaylist != null) playlists.addAll(likedSongsPlaylist);
             if (fetchedPlaylists != null) playlists.addAll(fetchedPlaylists);
             return playlists;
-        }, this.fetchedPlaylists, this.likedSongsPlaylist);
+        }, this.fetchedPlaylistsWithSongs, this.likedSongsPlaylist);
 
         this.currentPlaylist = Bindings.createObjectBinding(() -> {
             final long playlistId = this.currentPlaylistId.get();

@@ -1,9 +1,13 @@
 package org.saartako.common.playlist;
 
+import org.saartako.common.song.Song;
+import org.saartako.common.song.SongDTO;
+import org.saartako.common.song.SongUtils;
 import org.saartako.common.user.UserUtils;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PlaylistUtils {
 
@@ -24,7 +28,27 @@ public class PlaylistUtils {
                 .setName(playlist.getName())
                 .setPrivate(playlist.isPrivate())
                 .setModifiable(playlist.isModifiable())
-                .setSongIds(Set.copyOf(playlist.getSongIds()));
+                .setSongIds(playlist.getSongIds() == null ? Set.of() : Set.copyOf(playlist.getSongIds()))
+                .setSongs(playlist.getSongs() == null ? Set.of() : SongUtils.copyDisplay(playlist.getSongs()));
+    }
+
+    public static PlaylistDTO mergeSongs(Playlist playlist, List<Song> songs) {
+        if (playlist == null) {
+            return null;
+        }
+
+        final Set<SongDTO> playlistSongs = playlist.getSongIds() == null
+            ? Set.of()
+            : playlist.getSongIds().stream()
+                .map(id ->
+                    songs.stream()
+                        .filter(s -> s.getId() == id)
+                        .findAny()
+                        .map(SongUtils::copyDisplay)
+                        .orElseThrow()
+                )
+                .collect(Collectors.toSet());
+        return copyDisplay(playlist).setSongs(playlistSongs);
     }
 
     public static String toString(Playlist playlist) {
