@@ -160,7 +160,7 @@ public class SongService {
                 } else {
                     LOGGER.info("Succeeded to delete song");
 
-                    this.songs.remove(song);
+                    this.songs.removeIf(s -> s.getId() == song.getId());
                 }
             });
     }

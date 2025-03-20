@@ -177,7 +177,7 @@ public class PlaylistService {
                 } else {
                     LOGGER.info("Succeeded to delete playlist");
 
-                    this.fetchedPlaylists.remove(playlist);
+                    this.fetchedPlaylists.removeIf(p -> p.getId() == playlist.getId());
                 }
             });
     }
