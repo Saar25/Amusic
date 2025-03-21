@@ -97,4 +97,11 @@ public class PlaylistView extends Control {
             });
         });
     }
+
+    public void startPlaying() {
+        Platform.runLater(() -> {
+            final Alert alert = new Alert(Alert.AlertType.WARNING, "Behaviour not implemented!");
+            alert.show();
+        });
+    }
 }

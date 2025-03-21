@@ -4,7 +4,6 @@ import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
@@ -50,7 +49,7 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         final VBox actionsVBox = new VBox(Config.GAP_LARGE, deletePlaylistButton);
 
         final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
-        startButton.setOnAction(event -> startPlaying());
+        startButton.setOnAction(event -> getSkinnable().startPlaying());
 
         GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
 
@@ -104,13 +103,6 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
                 getChildren().setAll(this.gridPane);
             });
         }
-    }
-
-    public void startPlaying() {
-        Platform.runLater(() -> {
-            final Alert alert = new Alert(Alert.AlertType.WARNING, "Behaviour not implemented!");
-            alert.show();
-        });
     }
 
     private Button createDeletePlaylistButton() {
