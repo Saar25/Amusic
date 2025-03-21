@@ -34,13 +34,21 @@ public class PlaylistView extends Control implements RouteNode {
         return playlist.isModifiable() && playlist.getOwner().getId() == user.getId();
     }, this.playlistService.currentPlaylistProperty(), this.authService.loggedUserProperty());
 
+    private boolean isInView = false;
+
     @Override
     protected PlaylistViewSkin createDefaultSkin() {
         return new PlaylistViewSkin(this);
     }
 
     @Override
+    public void onEnterView() {
+        this.isInView = true;
+    }
+
+    @Override
     public void onExistView() {
+        this.isInView = false;
         final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
         if (mediaPlayer != null) mediaPlayer.stop();
     }
@@ -114,16 +122,18 @@ public class PlaylistView extends Control implements RouteNode {
     }
 
     private void nextSong(Queue<? extends Song> songsQueue) {
-        final Song next = songsQueue.poll();
-        this.songService.setCurrentSong(next);
-        if (next != null) {
-            final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
-            if (mediaPlayer == null) {
-                nextSong(songsQueue);
-            } else {
-                mediaPlayer.setOnEndOfMedia(() -> nextSong(songsQueue));
-                mediaPlayer.setOnError(() -> nextSong(songsQueue));
-                mediaPlayer.play();
+        if (this.isInView) {
+            final Song next = songsQueue.poll();
+            this.songService.setCurrentSong(next);
+            if (next != null) {
+                final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
+                if (mediaPlayer == null) {
+                    nextSong(songsQueue);
+                } else {
+                    mediaPlayer.setOnEndOfMedia(() -> nextSong(songsQueue));
+                    mediaPlayer.setOnError(() -> nextSong(songsQueue));
+                    mediaPlayer.play();
+                }
             }
         }
     }
