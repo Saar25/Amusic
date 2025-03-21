@@ -6,21 +6,24 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Control;
+import javafx.scene.media.MediaPlayer;
 import org.saartako.client.enums.Route;
-import org.saartako.client.services.AuthService;
-import org.saartako.client.services.PlaylistService;
-import org.saartako.client.services.RouterService;
-import org.saartako.client.services.SongService;
+import org.saartako.client.models.RouteNode;
+import org.saartako.client.services.*;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
 import org.saartako.common.user.User;
 
-public class PlaylistView extends Control {
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class PlaylistView extends Control implements RouteNode {
 
     private final PlaylistService playlistService = PlaylistService.getInstance();
     private final SongService songService = SongService.getInstance();
     private final RouterService routerService = RouterService.getInstance();
     private final AuthService authService = AuthService.getInstance();
+    private final AudioService audioService = AudioService.getInstance();
 
     private final BooleanBinding isPlaylistPersonal = Bindings.createBooleanBinding(() -> {
         final Playlist playlist = this.playlistService.currentPlaylistProperty().get();
@@ -41,6 +44,12 @@ public class PlaylistView extends Control {
     @Override
     protected PlaylistViewSkin createDefaultSkin() {
         return new PlaylistViewSkin(this);
+    }
+
+    @Override
+    public void onExistView() {
+        final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
+        if (mediaPlayer != null) mediaPlayer.stop();
     }
 
     public ObjectBinding<Playlist> currentPlaylistProperty() {
@@ -99,9 +108,24 @@ public class PlaylistView extends Control {
     }
 
     public void startPlaying() {
-        Platform.runLater(() -> {
-            final Alert alert = new Alert(Alert.AlertType.WARNING, "Behaviour not implemented!");
-            alert.show();
-        });
+        final Playlist playlist = currentPlaylistProperty().get();
+        final Queue<? extends Song> songsQueue = new LinkedList<>(playlist.getSongs());
+        nextSong(songsQueue);
+    }
+
+    private void nextSong(Queue<? extends Song> songsQueue) {
+        final Song next = songsQueue.poll();
+        if (next != null) {
+            this.songService.setCurrentSong(next);
+
+            final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
+            if (mediaPlayer == null) {
+                nextSong(songsQueue);
+            } else {
+                mediaPlayer.setOnEndOfMedia(() -> nextSong(songsQueue));
+                mediaPlayer.setOnError(() -> nextSong(songsQueue));
+                mediaPlayer.play();
+            }
+        }
     }
 }
