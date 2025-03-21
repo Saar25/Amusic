@@ -7,6 +7,7 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Control;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 import org.saartako.client.enums.Route;
 import org.saartako.client.models.RouteNode;
 import org.saartako.client.services.*;
@@ -102,6 +103,13 @@ public class PlaylistView extends Control implements RouteNode {
     public void startPlaying() {
         final Playlist playlist = currentPlaylistProperty().get();
         final Queue<? extends Song> songsQueue = new LinkedList<>(playlist.getSongs());
+
+        final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.seek(Duration.ZERO);
+        }
+
         nextSong(songsQueue);
     }
 
