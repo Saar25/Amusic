@@ -56,6 +56,9 @@ public class AudioService {
                 this.mediaPlayerStatus.unbind();
                 this.mediaPlayerCurrentTime.unbind();
             }
+            if (oldValue != null) {
+                oldValue.dispose();
+            }
         });
     }
 
