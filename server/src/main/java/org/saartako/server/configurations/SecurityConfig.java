@@ -20,7 +20,7 @@ public class SecurityConfig {
         http
             .csrf(CsrfConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/register", "/song/*/audio").permitAll()
+                .requestMatchers("/error", "/auth/login", "/auth/register", "/song/*/audio").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
