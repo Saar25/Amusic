@@ -2,12 +2,17 @@ package org.saartako.client.controls;
 
 import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -50,13 +55,27 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
         final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
         startButton.setOnAction(event -> getSkinnable().startPlaying());
+        HBox.setHgrow(startButton, Priority.ALWAYS);
+
+        final Label listeningToLabel = new Label();
+        listeningToLabel.getStyleClass().addAll(Styles.ACCENT, Styles.TEXT_BOLD);
+        listeningToLabel.textProperty().bind(Bindings.createStringBinding(() -> {
+            final Song currentSong = getSkinnable().currentSongProperty().get();
+
+            return currentSong == null
+                ? "Not listening to any song at the moment"
+                : "Currently listening to: " + currentSong.getName();
+        }, getSkinnable().currentSongProperty()));
+
+        final HBox listenHBox = new HBox(Config.GAP_LARGE, startButton, listeningToLabel);
+        listenHBox.setAlignment(Pos.CENTER_LEFT);
 
         GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
 
         this.gridPane.add(this.playlistCard, 0, 2, 6, 6);
         this.gridPane.add(actionsVBox, 6, 2, 2, 6);
         this.gridPane.add(songScrollPane, 8, 0, 4, 12);
-        this.gridPane.add(startButton, 0, 10, 8, 2);
+        this.gridPane.add(listenHBox, 0, 10, 8, 2);
 
         getChildren().setAll(this.gridPane);
 

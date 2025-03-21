@@ -25,14 +25,6 @@ public class PlaylistView extends Control implements RouteNode {
     private final AuthService authService = AuthService.getInstance();
     private final AudioService audioService = AudioService.getInstance();
 
-    private final BooleanBinding isPlaylistPersonal = Bindings.createBooleanBinding(() -> {
-        final Playlist playlist = this.playlistService.currentPlaylistProperty().get();
-        if (playlist == null) return false;
-        final User user = this.authService.loggedUserProperty().get();
-        if (user == null) return false;
-        return playlist.getOwner().getId() == user.getId();
-    }, this.playlistService.currentPlaylistProperty(), this.authService.loggedUserProperty());
-
     private final BooleanBinding canModifyPlaylist = Bindings.createBooleanBinding(() -> {
         final Playlist playlist = this.playlistService.currentPlaylistProperty().get();
         if (playlist == null) return false;
@@ -56,8 +48,8 @@ public class PlaylistView extends Control implements RouteNode {
         return this.playlistService.currentPlaylistProperty();
     }
 
-    public BooleanBinding isPlaylistPersonalProperty() {
-        return this.isPlaylistPersonal;
+    public ObjectBinding<Song> currentSongProperty() {
+        return this.songService.currentSongProperty();
     }
 
     public BooleanBinding canModifyPlaylistProperty() {
@@ -115,9 +107,8 @@ public class PlaylistView extends Control implements RouteNode {
 
     private void nextSong(Queue<? extends Song> songsQueue) {
         final Song next = songsQueue.poll();
+        this.songService.setCurrentSong(next);
         if (next != null) {
-            this.songService.setCurrentSong(next);
-
             final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
             if (mediaPlayer == null) {
                 nextSong(songsQueue);

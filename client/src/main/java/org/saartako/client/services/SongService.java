@@ -123,7 +123,7 @@ public class SongService {
     }
 
     public void setCurrentSong(Song song) {
-        this.currentSongId.set(song.getId());
+        this.currentSongId.set(song == null ? -1 : song.getId());
     }
 
     public ListProperty<Long> likedSongIdsProperty() {
