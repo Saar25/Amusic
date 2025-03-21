@@ -14,6 +14,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.saartako.client.Config;
+import org.saartako.client.components.Loader;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.utils.CardItemUtils;
