@@ -26,9 +26,11 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private static final Duration MIN_DIFF_TO_SEEK = Duration.seconds(1);
 
-    private static final FontIcon NOT_FAVORITE_FONT_ICON = new FontIcon(Material2AL.FAVORITE_BORDER);
-    private static final FontIcon FAVORITE_FONT_ICON = new FontIcon(Material2AL.FAVORITE);
-    private static final FontIcon DELETE_FONT_ICON = new FontIcon(Material2AL.DELETE);
+    private static final FontIcon NOT_FAVORITE_GRAPHIC = new FontIcon(Material2AL.FAVORITE_BORDER);
+    private static final FontIcon FAVORITE_GRAPHIC = new FontIcon(Material2AL.FAVORITE);
+    private static final FontIcon DELETE_GRAPHIC = new FontIcon(Material2AL.DELETE);
+    private static final FontIcon PLAY_GRAPHIC = new FontIcon(Material2MZ.PLAY_ARROW);
+    private static final FontIcon ERROR_GRAPHIC = new FontIcon(Material2AL.ERROR);
 
     private final Loader loader = new Loader();
 
@@ -94,25 +96,33 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private void updatePlayerStatus() {
         final MediaPlayer mediaPlayer = getSkinnable().mediaPlayerProperty().get();
+
         if (mediaPlayer == null || mediaPlayer.getStatus() == null) {
-            this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
+            this.playButton.setGraphic(ERROR_GRAPHIC);
+            this.playButton.getStyleClass().removeAll(Styles.DANGER);
+            this.playButton.getStyleClass().addAll(Styles.DANGER);
             this.playButton.setDisable(true);
             this.slider.setDisable(true);
         } else {
             switch (mediaPlayer.getStatus()) {
                 case PLAYING -> {
                     this.playButton.setGraphic(new FontIcon(Material2MZ.PAUSE));
+                    this.playButton.getStyleClass().removeAll(Styles.DANGER);
                 }
                 case PAUSED, STOPPED -> {
-                    this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
+                    this.playButton.setGraphic(PLAY_GRAPHIC);
+                    this.playButton.getStyleClass().removeAll(Styles.DANGER);
                 }
                 case UNKNOWN, HALTED, DISPOSED -> {
-                    this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
+                    this.playButton.setGraphic(ERROR_GRAPHIC);
+                    this.playButton.getStyleClass().removeAll(Styles.DANGER);
+                    this.playButton.getStyleClass().addAll(Styles.DANGER);
                     this.playButton.setDisable(true);
                     this.slider.setDisable(true);
                 }
                 case READY -> {
-                    this.playButton.setGraphic(new FontIcon(Material2MZ.PLAY_ARROW));
+                    this.playButton.setGraphic(PLAY_GRAPHIC);
+                    this.playButton.getStyleClass().removeAll(Styles.DANGER);
                     this.playButton.setDisable(false);
                     this.slider.setDisable(false);
                 }
@@ -163,10 +173,10 @@ public class SongViewSkin extends SkinBase<SongView> {
         Platform.runLater(() -> {
             if (isSongLiked) {
                 this.likeSongButton.getStyleClass().addAll(Styles.DANGER);
-                this.likeSongButton.setGraphic(FAVORITE_FONT_ICON);
+                this.likeSongButton.setGraphic(FAVORITE_GRAPHIC);
             } else {
                 this.likeSongButton.getStyleClass().removeAll(Styles.DANGER);
-                this.likeSongButton.setGraphic(NOT_FAVORITE_FONT_ICON);
+                this.likeSongButton.setGraphic(NOT_FAVORITE_GRAPHIC);
             }
         });
     }
@@ -197,7 +207,7 @@ public class SongViewSkin extends SkinBase<SongView> {
     }
 
     private Button createLikeSongButton() {
-        final Button button = new Button(null, FAVORITE_FONT_ICON);
+        final Button button = new Button(null, FAVORITE_GRAPHIC);
         button.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.ROUNDED);
         button.setOnAction(event -> getSkinnable().onLikeSongButtonClick());
         return button;
@@ -211,7 +221,7 @@ public class SongViewSkin extends SkinBase<SongView> {
     }
 
     private Button createDeleteSongButton() {
-        final Button button = new Button("Delete Song", DELETE_FONT_ICON);
+        final Button button = new Button("Delete Song", DELETE_GRAPHIC);
         button.getStyleClass().add(Styles.DANGER);
         button.setOnAction(event -> getSkinnable().onDeleteSongButtonClick());
         return button;
