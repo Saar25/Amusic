@@ -1,6 +1,5 @@
 package org.saartako.client.controls;
 
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.SkinBase;
@@ -16,7 +15,7 @@ public class AmusicSkin extends SkinBase<Amusic> {
 
         try {
             final Map<Route, Node> routeObjectMap = Map.ofEntries(
-                Map.entry(Route.LOGIN, new FXMLLoader(getClass().getResource("/views/login.fxml")).load()),
+                Map.entry(Route.LOGIN, new LoginPage()),
                 Map.entry(Route.SONGS, new SongsPage()),
                 Map.entry(Route.SONG_VIEW, new SongView()),
                 Map.entry(Route.PLAYLIST_VIEW, new PlaylistView()),
