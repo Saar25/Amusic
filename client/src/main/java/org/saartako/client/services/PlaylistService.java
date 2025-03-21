@@ -17,7 +17,6 @@ import org.saartako.common.playlist.Playlist;
 import org.saartako.common.playlist.PlaylistDTO;
 import org.saartako.common.playlist.PlaylistUtils;
 import org.saartako.common.song.Song;
-import org.saartako.common.song.SongDTO;
 import org.saartako.common.song.SongUtils;
 import org.saartako.common.user.UserUtils;
 import org.slf4j.Logger;
@@ -29,6 +28,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PlaylistService {
 
@@ -192,14 +192,20 @@ public class PlaylistService {
                 } else {
                     LOGGER.info("Succeeded to add song to playlist");
 
-                    int index = this.fetchedPlaylists.indexOf(playlist);
-                    if (index == -1) {
+                    final Optional<Playlist> playlistOpt = this.fetchedPlaylists.get()
+                        .stream().filter(p -> p.getId() == playlist.getId()).findAny();
+                    if (playlistOpt.isEmpty()) {
                         LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
-                    }
+                    } else {
+                        final PlaylistDTO newPlaylist = PlaylistUtils.copyDisplay(playlist);
+                        newPlaylist.setSongIds(Stream.concat(
+                            newPlaylist.getSongIds().stream(),
+                            Stream.of(song.getId())
+                        ).collect(Collectors.toSet()));
 
-                    final PlaylistDTO newPlaylist = PlaylistUtils.copyDisplay(playlist);
-                    newPlaylist.getSongs().add((SongDTO) song);
-                    this.fetchedPlaylists.set(index, newPlaylist);
+                        final int index = this.fetchedPlaylists.get().indexOf(playlistOpt.get());
+                        this.fetchedPlaylists.set(index, newPlaylist);
+                    }
                 }
             });
     }
@@ -214,14 +220,19 @@ public class PlaylistService {
                 } else {
                     LOGGER.info("Succeeded to delete song from playlist");
 
-                    int index = this.fetchedPlaylists.indexOf(playlist);
-                    if (index == -1) {
+                    final Optional<Playlist> playlistOpt = this.fetchedPlaylists.get()
+                        .stream().filter(p -> p.getId() == playlist.getId()).findAny();
+                    if (playlistOpt.isEmpty()) {
                         LOGGER.warn("Playlist not found in local list, skipping update ({})", playlist.getId());
-                    }
+                    } else {
+                        final PlaylistDTO newPlaylist = PlaylistUtils.copyDisplay(playlist);
+                        newPlaylist.setSongIds(newPlaylist.getSongIds().stream()
+                            .filter(id -> id != song.getId())
+                            .collect(Collectors.toSet()));
 
-                    final PlaylistDTO newPlaylist = PlaylistUtils.copyDisplay(playlist);
-                    newPlaylist.getSongs().removeIf(s -> s.getId() == song.getId());
-                    this.fetchedPlaylists.set(index, newPlaylist);
+                        final int index = this.fetchedPlaylists.get().indexOf(playlistOpt.get());
+                        this.fetchedPlaylists.set(index, newPlaylist);
+                    }
                 }
             });
     }

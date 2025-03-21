@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,11 +51,15 @@ public class SongService {
         this, "likedSongIds", FXCollections.observableArrayList());
 
     private final ListBinding<Song> likedSongs = BindingsUtils.createListBinding(() -> {
-        final List<Song> list = SongService.this.likedSongIds.stream().map(likedSongId -> {
-            final Optional<Song> songOpt = SongService.this.songs.stream()
-                .filter(s -> s.getId() == likedSongId).findAny();
-            return songOpt.orElse(null);
-        }).toList();
+        final List<Song> list = SongService.this.likedSongIds.stream()
+            .map(likedSongId -> {
+                return SongService.this.songs.stream()
+                    .filter(s -> s.getId() == likedSongId)
+                    .findAny()
+                    .orElse(null);
+            })
+            .filter(Objects::nonNull)
+            .toList();
 
         return FXCollections.observableList(list);
     }, this.likedSongIds);

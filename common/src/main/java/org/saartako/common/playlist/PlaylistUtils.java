@@ -6,6 +6,7 @@ import org.saartako.common.song.SongUtils;
 import org.saartako.common.user.UserUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,8 +46,9 @@ public class PlaylistUtils {
                         .filter(s -> s.getId() == id)
                         .findAny()
                         .map(SongUtils::copyDisplay)
-                        .orElseThrow()
+                        .orElse(null)
                 )
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         return copyDisplay(playlist).setSongs(playlistSongs);
     }
