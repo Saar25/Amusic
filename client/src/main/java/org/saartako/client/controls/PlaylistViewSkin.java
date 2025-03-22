@@ -60,12 +60,12 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         final Label listeningToLabel = new Label();
         listeningToLabel.getStyleClass().addAll(Styles.ACCENT, Styles.TEXT_BOLD);
         listeningToLabel.textProperty().bind(Bindings.createStringBinding(() -> {
-            final Song currentSong = getSkinnable().currentSongProperty().get();
+            final Song playedSong = getSkinnable().playedSongProperty().get();
 
-            return currentSong == null
+            return playedSong == null
                 ? "Not listening to any song at the moment"
-                : "Currently listening to: " + currentSong.getName();
-        }, getSkinnable().currentSongProperty()));
+                : "Currently listening to: " + playedSong.getName();
+        }, getSkinnable().playedSongProperty()));
 
         final HBox listenHBox = new HBox(Config.GAP_LARGE, startButton, listeningToLabel);
         listenHBox.setAlignment(Pos.CENTER_LEFT);

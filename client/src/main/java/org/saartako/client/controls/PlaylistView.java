@@ -4,6 +4,9 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Control;
 import javafx.scene.media.MediaPlayer;
@@ -34,6 +37,9 @@ public class PlaylistView extends Control implements RouteNode {
         return playlist.isModifiable() && playlist.getOwner().getId() == user.getId();
     }, this.playlistService.currentPlaylistProperty(), this.authService.loggedUserProperty());
 
+    private final ObjectProperty<Song> playedSong =
+        new SimpleObjectProperty<>(this, "currentlyPlayingSong", null);
+
     private boolean isInView = false;
 
     @Override
@@ -51,14 +57,16 @@ public class PlaylistView extends Control implements RouteNode {
         this.isInView = false;
         final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
         if (mediaPlayer != null) mediaPlayer.stop();
+
+        this.playedSong.set(null);
     }
 
     public ObjectBinding<Playlist> currentPlaylistProperty() {
         return this.playlistService.currentPlaylistProperty();
     }
 
-    public ObjectBinding<Song> currentSongProperty() {
-        return this.songService.currentSongProperty();
+    public ObservableObjectValue<Song> playedSongProperty() {
+        return this.playedSong;
     }
 
     public BooleanBinding canModifyPlaylistProperty() {
@@ -124,12 +132,17 @@ public class PlaylistView extends Control implements RouteNode {
     private void nextSong(Queue<? extends Song> songsQueue) {
         if (this.isInView) {
             final Song next = songsQueue.poll();
-            this.songService.setCurrentSong(next);
-            if (next != null) {
+
+            if (next == null) {
+                this.songService.setCurrentSong(null);
+                this.playedSong.set(null);
+            } else {
+                this.songService.setCurrentSong(next);
                 final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
                 if (mediaPlayer == null) {
                     nextSong(songsQueue);
                 } else {
+                    mediaPlayer.setOnReady(() -> this.playedSong.set(next));
                     mediaPlayer.setOnEndOfMedia(() -> nextSong(songsQueue));
                     mediaPlayer.setOnError(() -> nextSong(songsQueue));
                     mediaPlayer.play();
