@@ -133,16 +133,8 @@ public class SongViewSkin extends SkinBase<SongView> {
 
     private void updatePlayerCurrentTime() {
         final Duration newTime = getSkinnable().mediaPlayerCurrentTimeProperty().get();
-        final MediaPlayer mediaPlayer = getSkinnable().mediaPlayerProperty().get();
-
-        if (mediaPlayer != null) {
-            final Duration currentTime = mediaPlayer.getCurrentTime();
-            final double diff = Math.abs(newTime.toMillis() - currentTime.toMillis());
-            if (diff > MIN_DIFF_TO_SEEK.toMillis()) {
-                mediaPlayer.seek(newTime);
-            }
-        }
-        if (!this.slider.isValueChanging()) {
+        final boolean isValueChanging = this.slider.isValueChanging() || this.slider.isPressed();
+        if (!isValueChanging) {
             this.slider.setValue(newTime.toMillis());
         }
     }
