@@ -54,7 +54,17 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         final VBox actionsVBox = new VBox(Config.GAP_LARGE, deletePlaylistButton);
 
         final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
-        startButton.setOnAction(event -> getSkinnable().startPlaying());
+        startButton.textProperty().bind(Bindings.createStringBinding(() -> {
+            final boolean isPlaying = getSkinnable().isPlayingProperty().get();
+            return isPlaying ? "Next Song" : "Start Playing";
+        }, getSkinnable().isPlayingProperty()));
+        startButton.setOnAction(event -> {
+            if (getSkinnable().isPlayingProperty().get()) {
+                getSkinnable().nextSong();
+            } else {
+                getSkinnable().startPlaying();
+            }
+        });
         HBox.setHgrow(startButton, Priority.ALWAYS);
 
         final Label listeningToLabel = new Label();

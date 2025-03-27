@@ -4,9 +4,13 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableObjectValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Control;
 import javafx.scene.media.MediaPlayer;
@@ -17,9 +21,6 @@ import org.saartako.client.services.*;
 import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
 import org.saartako.common.user.User;
-
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class PlaylistView extends Control implements RouteNode {
 
@@ -39,6 +40,10 @@ public class PlaylistView extends Control implements RouteNode {
 
     private final ObjectProperty<Song> playedSong =
         new SimpleObjectProperty<>(this, "currentlyPlayingSong", null);
+
+    private final BooleanBinding isPlaying = this.playedSong.isNotNull();
+
+    private final ListProperty<Song> songsQueue = new SimpleListProperty<>(this, "songQueue", null);
 
     private boolean isInView = false;
 
@@ -67,6 +72,10 @@ public class PlaylistView extends Control implements RouteNode {
 
     public ObservableObjectValue<Song> playedSongProperty() {
         return this.playedSong;
+    }
+
+    public BooleanBinding isPlayingProperty() {
+        return this.isPlaying;
     }
 
     public BooleanBinding canModifyPlaylistProperty() {
@@ -118,7 +127,7 @@ public class PlaylistView extends Control implements RouteNode {
 
     public void startPlaying() {
         final Playlist playlist = currentPlaylistProperty().get();
-        final Queue<? extends Song> songsQueue = new LinkedList<>(playlist.getSongs());
+        this.songsQueue.set(FXCollections.observableArrayList(playlist.getSongs()));
 
         final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
         if (mediaPlayer != null) {
@@ -126,25 +135,26 @@ public class PlaylistView extends Control implements RouteNode {
             mediaPlayer.seek(Duration.ZERO);
         }
 
-        nextSong(songsQueue);
+        nextSong();
     }
 
-    private void nextSong(Queue<? extends Song> songsQueue) {
+    public void nextSong() {
         if (this.isInView) {
-            final Song next = songsQueue.poll();
+            final ObservableList<Song> queue = this.songsQueue.get();
 
-            if (next == null) {
+            if (queue.isEmpty()) {
                 this.songService.setCurrentSong(null);
                 this.playedSong.set(null);
             } else {
+                final Song next = queue.remove(0);
                 this.songService.setCurrentSong(next);
                 final MediaPlayer mediaPlayer = this.audioService.mediaPlayerProperty().get();
                 if (mediaPlayer == null) {
-                    nextSong(songsQueue);
+                    nextSong();
                 } else {
                     mediaPlayer.setOnReady(() -> this.playedSong.set(next));
-                    mediaPlayer.setOnEndOfMedia(() -> nextSong(songsQueue));
-                    mediaPlayer.setOnError(() -> nextSong(songsQueue));
+                    mediaPlayer.setOnEndOfMedia(this::nextSong);
+                    mediaPlayer.setOnError(this::nextSong);
                     mediaPlayer.play();
                 }
             }
