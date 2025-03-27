@@ -53,31 +53,11 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         this.deletePlaylistButton = createDeletePlaylistButton();
         final VBox actionsVBox = new VBox(Config.GAP_LARGE, deletePlaylistButton);
 
-        final Button startButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
-        startButton.textProperty().bind(Bindings.createStringBinding(() -> {
-            final boolean isPlaying = getSkinnable().isPlayingProperty().get();
-            return isPlaying ? "Next Song" : "Start Playing";
-        }, getSkinnable().isPlayingProperty()));
-        startButton.setOnAction(event -> {
-            if (getSkinnable().isPlayingProperty().get()) {
-                getSkinnable().nextSong();
-            } else {
-                getSkinnable().startPlaying();
-            }
-        });
-        HBox.setHgrow(startButton, Priority.ALWAYS);
+        final Button playButton = createPlayButton();
 
-        final Label listeningToLabel = new Label();
-        listeningToLabel.getStyleClass().addAll(Styles.ACCENT, Styles.TEXT_BOLD);
-        listeningToLabel.textProperty().bind(Bindings.createStringBinding(() -> {
-            final Song playedSong = getSkinnable().playedSongProperty().get();
+        final Label listeningToLabel = createListeningToLabel();
 
-            return playedSong == null
-                ? "Not listening to any song at the moment"
-                : "Currently listening to: " + playedSong.getName();
-        }, getSkinnable().playedSongProperty()));
-
-        final HBox listenHBox = new HBox(Config.GAP_LARGE, startButton, listeningToLabel);
+        final HBox listenHBox = new HBox(Config.GAP_LARGE, playButton, listeningToLabel);
         listenHBox.setAlignment(Pos.CENTER_LEFT);
 
         GridUtils.initializeGrid(this.gridPane, 12, 12, Config.GAP_LARGE, Config.GAP_LARGE);
@@ -106,25 +86,10 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
             this.deletePlaylistButton.setVisible(isPlaylistModifiable);
             this.deletePlaylistButton.setManaged(isPlaylistModifiable);
 
-            final Collection<? extends Song> songs = playlist.getSongs();
-
             final CardItem playlistCard = CardItemUtils.playlistToCardItem(playlist);
 
-            final List<? extends Node> cards = songs.stream().map(song -> {
-                final CardItem songCardItem = CardItemUtils.songToCardItem(song);
-                final MusicCard songCard = new MusicCard(songCardItem);
-                songCard.setExpandable(true);
-                if (isPlaylistModifiable) {
-                    songCard.getMenuActions().setAll(
-                        new MenuAction("Delete from playlist", event ->
-                            getSkinnable().onDeleteSongFromPlaylistButtonClick(song))
-                    );
-                }
-                songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e ->
-                    getSkinnable().onSongExpand(song)
-                );
-                return songCard;
-            }).toList();
+            final Collection<? extends Song> songs = playlist.getSongs();
+            final List<? extends Node> cards = songs.stream().map(this::songToCardItem).toList();
 
             Platform.runLater(() -> {
                 this.playlistCard.setCardItem(playlistCard);
@@ -134,10 +99,63 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         }
     }
 
+    private MusicCard songToCardItem(Song song) {
+        final boolean isPlaylistModifiable = getSkinnable().canModifyPlaylistProperty().get();
+        final CardItem songCardItem = CardItemUtils.songToCardItem(song);
+        final MusicCard songCard = new MusicCard(songCardItem);
+        songCard.setExpandable(true);
+
+        if (isPlaylistModifiable) {
+            songCard.getMenuActions().setAll(
+                new MenuAction("Delete from playlist", event -> {
+                    getSkinnable().onDeleteSongFromPlaylistButtonClick(song);
+                })
+            );
+        }
+        songCard.addEventFilter(CardItemEvent.EXPAND_CARD_ITEM, e ->
+            getSkinnable().onSongExpand(song)
+        );
+        return songCard;
+    }
+
     private Button createDeletePlaylistButton() {
         final Button button = new Button("Delete Playlist", new FontIcon(Material2AL.DELETE));
         button.getStyleClass().add(Styles.DANGER);
         button.setOnAction(event -> getSkinnable().onDeletePlaylistButtonClick());
         return button;
+    }
+
+    private Button createPlayButton() {
+        final Button playButton = new Button("Start Playing", new FontIcon(Material2MZ.PLAY_ARROW));
+        HBox.setHgrow(playButton, Priority.ALWAYS);
+
+        playButton.textProperty().bind(Bindings.createStringBinding(() -> {
+            final boolean isPlaying = getSkinnable().isPlayingProperty().get();
+            return isPlaying ? "Next Song" : "Start Playing";
+        }, getSkinnable().isPlayingProperty()));
+
+        playButton.setOnAction(event -> {
+            final boolean isPlaying = getSkinnable().isPlayingProperty().get();
+            if (isPlaying) {
+                getSkinnable().nextSong();
+            } else {
+                getSkinnable().startPlaying();
+            }
+        });
+        return playButton;
+    }
+
+    private Label createListeningToLabel() {
+        final Label listeningToLabel = new Label();
+        listeningToLabel.getStyleClass().addAll(Styles.ACCENT, Styles.TEXT_BOLD);
+        listeningToLabel.textProperty().bind(Bindings.createStringBinding(() -> {
+            final Song playedSong = getSkinnable().playedSongProperty().get();
+
+            return playedSong == null
+                ? "Not listening to any song at the moment"
+                : "Currently listening to: " + playedSong.getName();
+        }, getSkinnable().playedSongProperty()));
+
+        return listeningToLabel;
     }
 }
