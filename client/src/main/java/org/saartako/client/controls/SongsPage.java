@@ -1,7 +1,9 @@
 package org.saartako.client.controls;
 
 import javafx.beans.binding.ListBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Control;
@@ -12,6 +14,8 @@ import org.saartako.client.services.SongService;
 import org.saartako.client.utils.BindingsUtils;
 import org.saartako.common.song.Song;
 
+import java.util.List;
+
 public class SongsPage extends Control implements RouteNode {
 
     private final SongService songService = SongService.getInstance();
@@ -19,13 +23,17 @@ public class SongsPage extends Control implements RouteNode {
 
     private final ObjectProperty<String> songsFilter = new SimpleObjectProperty<>(this, "songsFilter", "");
 
+    private final BooleanProperty onlyWithAudioFilter = new SimpleBooleanProperty(this, "onlyWithAudioFilter", false);
+
     private final ListBinding<Song> filteredSongs = BindingsUtils.createJavaListBinding(() -> {
         final ObservableList<Song> songs = this.songService.songsProperty();
         if (songs == null) return null;
         final String filter = this.songsFilter.get();
         if (filter == null) return songs;
-        return this.songService.filterSongs(songs, filter);
-    }, this.songService.songsProperty(), this.songsFilter);
+        final List<Song> filteredSongs = this.songService.filterSongs(songs, filter);
+        final boolean onlyWithAudioFilter = this.onlyWithAudioFilter.get();
+        return onlyWithAudioFilter ? this.songService.filterSongsWithAudio(filteredSongs) : filteredSongs;
+    }, this.songService.songsProperty(), this.songsFilter, this.onlyWithAudioFilter);
 
     @Override
     protected SongsPageSkin createDefaultSkin() {
@@ -43,6 +51,10 @@ public class SongsPage extends Control implements RouteNode {
 
     public ListBinding<Song> filteredSongsProperty() {
         return this.filteredSongs;
+    }
+
+    public BooleanProperty onlyWithAudioFilterProperty() {
+        return this.onlyWithAudioFilter;
     }
 
     public void onExpandSong(Song song) {

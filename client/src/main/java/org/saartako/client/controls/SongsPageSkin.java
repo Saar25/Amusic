@@ -7,7 +7,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SkinBase;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -33,6 +35,8 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
 
     private final VBox node = new VBox(Config.GAP_LARGE);
 
+    private final ToggleButton withAudioToggleButton;
+
     public SongsPageSkin(SongsPage control) {
         super(control);
 
@@ -48,7 +52,13 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
             final String filter = searchTextField.textProperty().get();
             getSkinnable().songsFilterProperty().set(filter);
         });
-        this.node.getChildren().add(searchTextField);
+
+        this.withAudioToggleButton = new ToggleButton("Only with audio", new FontIcon(Material2AL.CHECK));
+        this.withAudioToggleButton.selectedProperty().bindBidirectional(getSkinnable().onlyWithAudioFilterProperty());
+
+        final HBox filtersHBox = new HBox(Config.GAP_MEDIUM, searchTextField, withAudioToggleButton);
+        filtersHBox.setAlignment(Pos.CENTER);
+        this.node.getChildren().add(filtersHBox);
 
         this.node.getChildren().add(this.loader);
 
@@ -93,5 +103,10 @@ public class SongsPageSkin extends SkinBase<SongsPage> {
                 this.node.getChildren().set(1, this.contentPane);
             });
         }
+    }
+
+    @Override
+    public void dispose() {
+        this.withAudioToggleButton.selectedProperty().unbind();
     }
 }

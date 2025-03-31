@@ -138,6 +138,8 @@ public class SongService {
         return this.likedSongs.get();
     }
 
+
+
     public CompletableFuture<Song[]> fetchSongs() {
         LOGGER.info("Trying to fetch songs");
 
@@ -248,8 +250,8 @@ public class SongService {
         ).toList();
     }
 
-    public <T extends Song> CompletableFuture<List<T>> filterSongsAsync(List<T> songs, String filter) {
-        return CompletableFuture.supplyAsync(() -> filterSongs(songs, filter));
+    public <T extends Song> List<T> filterSongsWithAudio(List<T> songs) {
+        return songs.stream().filter(song -> song.getFileName() != null).toList();
     }
 
     public boolean isSongLiked(Song song) {
