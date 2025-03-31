@@ -72,6 +72,9 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
         registerChangeListener(getSkinnable().canModifyPlaylistProperty(), observable -> updatePlaylist());
         registerChangeListener(getSkinnable().currentPlaylistProperty(), observable -> updatePlaylist());
         updatePlaylist();
+
+        registerChangeListener(getSkinnable().canDeletePlaylistProperty(), observable -> updateCanDeletePlaylist());
+        updateCanDeletePlaylist();
     }
 
     private void updatePlaylist() {
@@ -97,6 +100,15 @@ public class PlaylistViewSkin extends SkinBase<PlaylistView> {
                 getChildren().setAll(this.gridPane);
             });
         }
+    }
+
+    private void updateCanDeletePlaylist() {
+        final boolean canDeletePlaylist = getSkinnable().canDeletePlaylistProperty().get();
+
+        Platform.runLater(() -> {
+            this.deletePlaylistButton.setVisible(canDeletePlaylist);
+            this.deletePlaylistButton.setManaged(canDeletePlaylist);
+        });
     }
 
     private MusicCard songToCardItem(Song song) {

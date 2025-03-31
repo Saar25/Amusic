@@ -2,6 +2,7 @@ package org.saartako.server.playlist;
 
 import org.saartako.common.playlist.CreatePlaylistDTO;
 import org.saartako.common.user.User;
+import org.saartako.common.user.UserUtils;
 import org.saartako.server.song.SongEntity;
 import org.saartako.server.song.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class PlaylistService {
 
         if (playlistReference.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No such playlist");
-        } else if (playlistReference.get().getOwnerId() != owner.getId()) {
+        } else if (playlistReference.get().getOwnerId() != owner.getId() && !UserUtils.isAdmin(owner)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Playlist is not owned by user");
         }
 

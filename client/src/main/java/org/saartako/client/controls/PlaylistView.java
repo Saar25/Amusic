@@ -45,6 +45,9 @@ public class PlaylistView extends Control implements RouteNode {
 
     private final ListProperty<Song> songsQueue = new SimpleListProperty<>(this, "songQueue", null);
 
+    private final BooleanBinding canDeletePlaylist = Bindings.or(
+        this.canModifyPlaylist, this.authService.isAdminProperty());
+
     private boolean isInView = false;
 
     @Override
@@ -80,6 +83,10 @@ public class PlaylistView extends Control implements RouteNode {
 
     public BooleanBinding canModifyPlaylistProperty() {
         return this.canModifyPlaylist;
+    }
+
+    public BooleanBinding canDeletePlaylistProperty() {
+        return this.canDeletePlaylist;
     }
 
     public void onSongExpand(Song song) {
