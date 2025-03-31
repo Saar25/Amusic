@@ -54,10 +54,13 @@ public class SongView extends Control implements RouteNode {
         if (playlists == null) return null;
         final User user = this.authService.loggedUserProperty().get();
         if (user == null) return null;
+        final Song currentSong = this.songService.currentSongProperty().get();
         return playlists.stream().filter(playlist ->
-            playlist.isModifiable() && playlist.getOwner().getId() == user.getId()
+            playlist.isModifiable() &&
+            playlist.getOwner().getId() == user.getId() &&
+            !playlist.getSongIds().contains(currentSong.getId())
         ).toList();
-    }, this.songService.currentSongProperty(), this.authService.loggedUserProperty());
+    }, this.songService.currentSongProperty(), this.authService.loggedUserProperty(), this.songService.currentSongProperty());
 
     private final BooleanBinding canDeleteSong = Bindings.or(
         this.isSongPersonal, this.authService.isAdminProperty());
