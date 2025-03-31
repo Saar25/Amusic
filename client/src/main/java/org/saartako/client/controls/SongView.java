@@ -130,7 +130,13 @@ public class SongView extends Control implements RouteNode {
     public void onLikeSongButtonClick() {
         final Song song = this.songService.getCurrentSong();
 
-        this.songService.toggleLikeSong(song);
+        this.songService.toggleLikeSong(song).whenComplete((unused, throwable) -> {
+            if (throwable == null) {
+                final long likeCount = this.songLikeCount.get();
+                final long newLikeCount = this.songService.isSongLiked(song) ? likeCount + 1 : likeCount - 1;
+                Platform.runLater(() -> this.songLikeCount.set(newLikeCount));
+            }
+        });
     }
 
     public void onAddToPlaylistButtonClick() {
