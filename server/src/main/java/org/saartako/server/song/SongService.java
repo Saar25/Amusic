@@ -110,6 +110,10 @@ public class SongService {
         this.songRepository.save(song);
     }
 
+    public long findSongLikeCount(Long songId) {
+        return this.likeRepository.findSongLikeCount(songId);
+    }
+
     public void likeSong(User user, long songId) {
         final LikeEntity likeEntity = new LikeEntity();
         likeEntity.setUserId(user.getId());

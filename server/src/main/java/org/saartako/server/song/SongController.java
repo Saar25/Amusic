@@ -101,6 +101,17 @@ public class SongController {
         return ResponseEntity.status(HttpStatus.CREATED).body(song);
     }
 
+    @GetMapping("/{songId}/like")
+    public ResponseEntity<?> findSongLikeCount(@PathVariable("songId") long songId) {
+        try {
+            final long likeCount = this.songService.findSongLikeCount(songId);
+
+            return ResponseEntity.ok().body(likeCount);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
     @PostMapping("/{songId}/like")
     public ResponseEntity<?> likeSong(@PathVariable("songId") long songId) {
         try {

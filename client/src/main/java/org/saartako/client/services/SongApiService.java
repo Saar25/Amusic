@@ -124,6 +124,22 @@ public class SongApiService {
         });
     }
 
+    public CompletableFuture<Long> fetchSongLikeCount(long songId) {
+        return this.authService.requireJwtToken().thenCompose(authorization -> {
+            final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(Config.serverUrl + "/song/" + songId + "/like"))
+                .GET()
+                .header("Authorization", "Bearer " + authorization)
+                .header("Content-Type", "application/json")
+                .build();
+
+            return this.httpService.getHttpClient()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(HttpUtils::validateResponse)
+                .thenApply(response -> GSON.fromJson(response.body(), Long.class));
+        });
+    }
+
     public CompletableFuture<Void> unlikeSong(long songId) {
         return this.authService.requireJwtToken().thenCompose(authorization -> {
             final HttpRequest request = HttpRequest.newBuilder()

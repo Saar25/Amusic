@@ -139,7 +139,6 @@ public class SongService {
     }
 
 
-
     public CompletableFuture<Song[]> fetchSongs() {
         LOGGER.info("Trying to fetch songs");
 
@@ -201,6 +200,21 @@ public class SongService {
                     final ObservableList<Long> list =
                         FXCollections.observableArrayList(likedSongIds);
                     this.likedSongIds.setValue(list);
+                }
+            });
+    }
+
+    public CompletableFuture<Long> fetchSongLikeCount(Song song) {
+        LOGGER.info("Trying to fetch song like count");
+
+        return this.songApiService.fetchSongLikeCount(song.getId())
+            .whenComplete((likedSongIds, throwable) -> {
+                if (throwable != null) {
+                    LOGGER.error("Failed to fetch song like count - {}", throwable.getMessage());
+                } else {
+                    LOGGER.info("Succeeded to fetch song like count");
+
+                    // this.likedSongIds.add(song.getId());
                 }
             });
     }
