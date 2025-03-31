@@ -3,8 +3,10 @@ package org.saartako.client.controls;
 import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.theme.Styles;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.SkinBase;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
@@ -24,8 +26,6 @@ import org.saartako.client.utils.GridUtils;
 import org.saartako.common.song.Song;
 
 public class SongViewSkin extends SkinBase<SongView> {
-
-    private static final Duration MIN_DIFF_TO_SEEK = Duration.seconds(1);
 
     private static final FontIcon NOT_FAVORITE_GRAPHIC = new FontIcon(Material2AL.FAVORITE_BORDER);
     private static final FontIcon FAVORITE_GRAPHIC = new FontIcon(Material2AL.FAVORITE);
@@ -53,8 +53,17 @@ public class SongViewSkin extends SkinBase<SongView> {
         this.likeSongButton = createLikeSongButton();
         this.deleteSongButton = createDeleteSongButton();
 
+        final Label likeCountLabel = new Label();
+        likeCountLabel.textProperty().bind(Bindings.createStringBinding(() -> {
+            final long songLikeCount = getSkinnable().songLikeCountProperty().get();
+            return songLikeCount == -1 ? "" : songLikeCount + " Likes";
+        }, getSkinnable().songLikeCountProperty()));
+
+        final HBox likesHBox = new HBox(Config.GAP_MEDIUM, this.likeSongButton, likeCountLabel);
+        likesHBox.setAlignment(Pos.CENTER_LEFT);
+
         final VBox vBox = new VBox(Config.GAP_LARGE,
-            this.likeSongButton,
+            likesHBox,
             createAddToPlaylistButton(),
             this.deleteSongButton);
 

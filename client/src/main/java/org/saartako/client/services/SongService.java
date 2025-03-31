@@ -21,10 +21,13 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class SongService {
 
@@ -35,6 +38,7 @@ public class SongService {
 
     private final AtomicBoolean isDataValid = new AtomicBoolean(false);
     private final AtomicBoolean isUserDataValid = new AtomicBoolean(false);
+    private final Map<Long, AtomicLong> songsLikeCount = new ConcurrentHashMap<>();
 
     private final ListProperty<Song> songs = new SimpleListProperty<>(this, "songs");
 
@@ -138,7 +142,6 @@ public class SongService {
         return this.likedSongs.get();
     }
 
-
     public CompletableFuture<Song[]> fetchSongs() {
         LOGGER.info("Trying to fetch songs");
 
@@ -204,17 +207,26 @@ public class SongService {
             });
     }
 
-    public CompletableFuture<Long> fetchSongLikeCount(Song song) {
+    public CompletableFuture<Long> getSongLikeCount(Song song) {
+        if (this.songsLikeCount.containsKey(song.getId())) {
+            final AtomicLong atomicLong = this.songsLikeCount.get(song.getId());
+            return CompletableFuture.completedFuture(atomicLong.get());
+        } else {
+            return fetchSongLikeCount(song);
+        }
+    }
+
+    private CompletableFuture<Long> fetchSongLikeCount(Song song) {
         LOGGER.info("Trying to fetch song like count");
 
         return this.songApiService.fetchSongLikeCount(song.getId())
-            .whenComplete((likedSongIds, throwable) -> {
+            .whenComplete((likeCount, throwable) -> {
                 if (throwable != null) {
                     LOGGER.error("Failed to fetch song like count - {}", throwable.getMessage());
                 } else {
                     LOGGER.info("Succeeded to fetch song like count");
 
-                    // this.likedSongIds.add(song.getId());
+                    this.songsLikeCount.computeIfAbsent(song.getId(), id -> new AtomicLong(0)).set(likeCount);
                 }
             });
     }
@@ -230,6 +242,9 @@ public class SongService {
                     LOGGER.info("Succeeded to like song");
 
                     this.likedSongIds.add(song.getId());
+
+                    final AtomicLong songLikeCount = this.songsLikeCount.getOrDefault(song.getId(), null);
+                    if (songLikeCount != null) songLikeCount.getAndIncrement();
                 }
             });
     }
@@ -245,6 +260,9 @@ public class SongService {
                     LOGGER.info("Succeeded to unlike song");
 
                     this.likedSongIds.remove(song.getId());
+
+                    final AtomicLong songLikeCount = this.songsLikeCount.getOrDefault(song.getId(), null);
+                    if (songLikeCount != null) songLikeCount.getAndDecrement();
                 }
             });
     }

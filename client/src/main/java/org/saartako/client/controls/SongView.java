@@ -6,7 +6,9 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ListBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -68,6 +70,8 @@ public class SongView extends Control implements RouteNode {
     private final BooleanBinding canDeleteSong = Bindings.or(
         this.isSongPersonal, this.authService.isAdminProperty());
 
+    private final LongProperty songLikeCount = new SimpleLongProperty(this, "songLikeCount", -1);
+
     @Override
     protected SongViewSkin createDefaultSkin() {
         return new SongViewSkin(this);
@@ -82,6 +86,12 @@ public class SongView extends Control implements RouteNode {
     @Override
     public void onEnterView() {
         this.playlistService.fetchData();
+
+        this.songLikeCount.set(-1);
+        final Song song = this.currentSongProperty().get();
+        this.songService.getSongLikeCount(song).whenComplete((likeCount, throwable) -> {
+            Platform.runLater(() -> this.songLikeCount.set(likeCount));
+        });
 
         final MediaPlayer mediaPlayer = mediaPlayerProperty().get();
         if (mediaPlayer != null) {
@@ -111,6 +121,10 @@ public class SongView extends Control implements RouteNode {
 
     public ObjectBinding<MediaPlayer> mediaPlayerProperty() {
         return this.audioService.mediaPlayerProperty();
+    }
+
+    public LongProperty songLikeCountProperty() {
+        return this.songLikeCount;
     }
 
     public void onLikeSongButtonClick() {
