@@ -28,13 +28,6 @@ Using maven:
 ```bash
 ./mvnw spring-boot:run -pl server
 ```
-
-Using docker:
-
-```bash
-docker compose up server
-```
-
 ### Client
 
 And at last you can run the client using the following command
