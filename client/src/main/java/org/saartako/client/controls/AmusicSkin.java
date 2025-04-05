@@ -12,29 +12,17 @@ public class AmusicSkin extends SkinBase<Amusic> {
 
     public AmusicSkin(Amusic control) {
         super(control);
+        final Node defaultRoute = new Label("Page not found");
+        defaultRoute.getStyleClass().addAll("title-big-1", "danger");
 
-        try {
-            final Map<Route, Node> routeObjectMap = Map.ofEntries(
-                Map.entry(Route.LOGIN, new LoginPage()),
-                Map.entry(Route.SONGS, new SongsPage()),
-                Map.entry(Route.SONG_VIEW, new SongView()),
-                Map.entry(Route.PLAYLIST_VIEW, new PlaylistView()),
-                Map.entry(Route.MY_PLAYLISTS, new PlaylistsPage()),
-                Map.entry(Route.UPLOAD, new UploadSongPage())
-            );
-            final Node defaultRoute = new Label("Page not found");
-            defaultRoute.getStyleClass().addAll("title-big-1", "danger");
+        final Map<Route, Node> routes = getSkinnable().getRoutes();
+        final Router center = new Router(routes, defaultRoute);
+        final Header top = new Header();
 
-            final Router center = new Router(routeObjectMap, defaultRoute);
-            final Header top = new Header();
+        final BorderPane node = new BorderPane();
+        node.setCenter(center);
+        node.setTop(top);
 
-            final BorderPane node = new BorderPane();
-            node.setCenter(center);
-            node.setTop(top);
-
-            getChildren().setAll(node);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        getChildren().setAll(node);
     }
 }
