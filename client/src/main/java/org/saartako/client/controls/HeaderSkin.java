@@ -24,7 +24,7 @@ public class HeaderSkin extends SkinBase<Header> {
         super(control);
 
         final Label titleLabel = new Label("Amusic");
-        titleLabel.getStyleClass().add("title-2");
+        titleLabel.getStyleClass().add(Styles.TITLE_2);
 
         final Separator separator = new Separator(Orientation.VERTICAL);
 
@@ -40,7 +40,7 @@ public class HeaderSkin extends SkinBase<Header> {
 
         final ToolBar toolBar = new ToolBar(titleLabel, separator, welcomeLabel,
             themeChangeButton, signOutButton, vSpace, tabsInputGroup);
-        toolBar.getStyleClass().add("elevated-2");
+        toolBar.getStyleClass().add(Styles.ELEVATED_2);
         toolBar.setPadding(new Insets(Config.GAP_LARGE));
 
         final Button previousButton = new Button("Previous",
@@ -73,7 +73,7 @@ public class HeaderSkin extends SkinBase<Header> {
         final FontIcon themeChangeButtonGraphic = new FontIcon(Material2MZ.WB_SUNNY);
         themeChangeButtonGraphic.setIconSize(14);
         final Button themeChangeButton = new Button(null, themeChangeButtonGraphic);
-        themeChangeButton.getStyleClass().addAll("button-icon", "flat");
+        themeChangeButton.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT);
         themeChangeButton.setOnAction(event -> {
             switch (getSkinnable().appThemeProperty().get()) {
                 case LIGHT -> getSkinnable().appThemeProperty().set(AppTheme.DARK);
