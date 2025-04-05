@@ -6,6 +6,9 @@ import org.saartako.client.enums.Route;
 
 import java.util.Map;
 
+/**
+ * Root node for amusic application, showing the header and the router as body
+ */
 public class Amusic extends Control {
 
     private final Map<Route, Node> routes = Map.ofEntries(

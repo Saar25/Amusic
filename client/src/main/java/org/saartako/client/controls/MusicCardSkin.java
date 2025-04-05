@@ -21,6 +21,9 @@ import org.saartako.client.utils.LayoutUtils;
 
 import java.util.List;
 
+/**
+ * Skin for {@link MusicCard}
+ */
 public class MusicCardSkin extends SkinBase<MusicCard> {
 
     private final Circle headerTileGraphic = new Circle(8);

@@ -8,6 +8,9 @@ import org.saartako.client.enums.Route;
 import org.saartako.client.services.AuthService;
 import org.saartako.client.services.RouterService;
 
+/**
+ * Login page, showing login and register forms, and navigating the user into the application
+ */
 public class LoginPage extends Control {
 
     private final RouterService routerService = RouterService.getInstance();

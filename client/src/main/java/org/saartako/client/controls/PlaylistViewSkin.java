@@ -30,6 +30,9 @@ import org.saartako.common.song.Song;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Skin for {@link PlaylistView}
+ */
 public class PlaylistViewSkin extends SkinBase<PlaylistView> {
 
     private final Loader loader = new Loader();

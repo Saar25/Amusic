@@ -11,6 +11,9 @@ import org.saartako.client.services.RouterService;
 
 import java.util.Map;
 
+/**
+ * Skin for {@link Router}
+ */
 public class RouterSkin extends SkinBase<Router> {
 
     private final RouterService routerService = RouterService.getInstance();

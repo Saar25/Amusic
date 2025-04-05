@@ -18,6 +18,9 @@ import org.saartako.client.enums.Route;
 import org.saartako.client.utils.LayoutUtils;
 import org.saartako.common.user.User;
 
+/**
+ * Skin for {@link Header}
+ */
 public class HeaderSkin extends SkinBase<Header> {
 
     public HeaderSkin(Header control) {

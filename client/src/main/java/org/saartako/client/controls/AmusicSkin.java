@@ -8,6 +8,9 @@ import org.saartako.client.enums.Route;
 
 import java.util.Map;
 
+/**
+ * Skin for {@link Amusic}
+ */
 public class AmusicSkin extends SkinBase<Amusic> {
 
     public AmusicSkin(Amusic control) {

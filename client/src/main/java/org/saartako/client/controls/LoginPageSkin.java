@@ -12,6 +12,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import org.saartako.client.Config;
 
+/**
+ * Skin for {@link LoginPage}
+ */
 public class LoginPageSkin extends SkinBase<LoginPage> {
 
     public LoginPageSkin(LoginPage control) {

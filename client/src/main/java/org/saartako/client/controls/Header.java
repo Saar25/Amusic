@@ -11,6 +11,9 @@ import org.saartako.client.services.RouterService;
 import org.saartako.client.services.ThemeService;
 import org.saartako.common.user.User;
 
+/**
+ * Header control, always showing in the header of the application
+ */
 public class Header extends Control {
 
     private final AuthService authService = AuthService.getInstance();

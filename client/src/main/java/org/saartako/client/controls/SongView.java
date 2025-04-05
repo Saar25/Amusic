@@ -27,6 +27,9 @@ import org.saartako.common.user.User;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Song view control, showing the current song, and allowing to listen to it
+ */
 public class SongView extends Control implements RouteNode {
 
     private final SongService songService = SongService.getInstance();

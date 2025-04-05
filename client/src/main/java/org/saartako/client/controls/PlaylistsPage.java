@@ -18,6 +18,9 @@ import org.saartako.common.playlist.Playlist;
 
 import java.util.Optional;
 
+/**
+ * Playlists page control, under route PLAYLISTS, showing all the playlists fetched by the service
+ */
 public class PlaylistsPage extends Control implements RouteNode {
 
     private final PlaylistService playlistService = PlaylistService.getInstance();

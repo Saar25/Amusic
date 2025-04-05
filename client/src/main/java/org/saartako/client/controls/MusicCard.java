@@ -7,6 +7,9 @@ import javafx.scene.control.Control;
 import org.saartako.client.models.CardItem;
 import org.saartako.client.models.MenuAction;
 
+/**
+ * Music card control, showing all the details given in the card item
+ */
 public class MusicCard extends Control {
 
     private final ObjectProperty<CardItem> cardItem = new SimpleObjectProperty<>(this, "cardItem");

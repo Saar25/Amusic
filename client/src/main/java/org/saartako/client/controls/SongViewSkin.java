@@ -25,6 +25,9 @@ import org.saartako.client.utils.CardItemUtils;
 import org.saartako.client.utils.GridUtils;
 import org.saartako.common.song.Song;
 
+/**
+ * Skin for {@link SongView}
+ */
 public class SongViewSkin extends SkinBase<SongView> {
 
     private static final FontIcon NOT_FAVORITE_GRAPHIC = new FontIcon(Material2AL.FAVORITE_BORDER);

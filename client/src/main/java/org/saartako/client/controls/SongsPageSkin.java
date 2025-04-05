@@ -25,6 +25,9 @@ import org.saartako.common.song.Song;
 
 import java.util.List;
 
+/**
+ * Skin for {@link SongsPage}
+ */
 public class SongsPageSkin extends SkinBase<SongsPage> {
 
     private final GridPane songGrid = new GridPane();

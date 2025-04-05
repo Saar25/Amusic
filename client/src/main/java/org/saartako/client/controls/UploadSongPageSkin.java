@@ -18,6 +18,9 @@ import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Skin for {@link UploadSongPage}
+ */
 public class UploadSongPageSkin extends SkinBase<UploadSongPage> {
 
     private final Button uploadButton;

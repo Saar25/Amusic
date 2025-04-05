@@ -7,6 +7,9 @@ import org.saartako.client.enums.Route;
 
 import java.util.Map;
 
+/**
+ * Router control, always showing the node of the current route
+ */
 public class Router extends Control {
 
     private final Map<Route, Node> routes;

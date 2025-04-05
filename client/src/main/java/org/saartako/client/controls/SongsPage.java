@@ -16,6 +16,9 @@ import org.saartako.common.song.Song;
 
 import java.util.List;
 
+/**
+ * Songs page control, under route SONGS, showing all the songs fetched by the service
+ */
 public class SongsPage extends Control implements RouteNode {
 
     private final SongService songService = SongService.getInstance();

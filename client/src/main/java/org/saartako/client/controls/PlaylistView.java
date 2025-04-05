@@ -22,6 +22,9 @@ import org.saartako.common.playlist.Playlist;
 import org.saartako.common.song.Song;
 import org.saartako.common.user.User;
 
+/**
+ * Song view control, showing the current playlist, all of its songs, and allowing to listen to it
+ */
 public class PlaylistView extends Control implements RouteNode {
 
     private final PlaylistService playlistService = PlaylistService.getInstance();

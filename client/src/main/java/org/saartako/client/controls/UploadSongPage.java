@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Upload song page control, showing the create song form, and allowing to upload it to server
+ */
 public class UploadSongPage extends Control implements RouteNode {
 
     private final SongService songService = SongService.getInstance();

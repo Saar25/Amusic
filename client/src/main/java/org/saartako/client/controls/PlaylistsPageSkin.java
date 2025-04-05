@@ -19,12 +19,15 @@ import org.saartako.client.Config;
 import org.saartako.client.components.Loader;
 import org.saartako.client.events.CardItemEvent;
 import org.saartako.client.models.CardItem;
-import org.saartako.client.utils.GridUtils;
 import org.saartako.client.utils.CardItemUtils;
+import org.saartako.client.utils.GridUtils;
 import org.saartako.common.playlist.Playlist;
 
 import java.util.List;
 
+/**
+ * Skin for {@link PlaylistsPage}
+ */
 public class PlaylistsPageSkin extends SkinBase<PlaylistsPage> {
 
     private final GridPane playlistGrid = new GridPane();
