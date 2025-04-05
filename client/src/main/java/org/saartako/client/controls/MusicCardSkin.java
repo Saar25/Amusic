@@ -31,12 +31,11 @@ public class MusicCardSkin extends SkinBase<MusicCard> {
 
     private final VBox detailsList = new VBox();
 
-    private final Card card = new Card();
-
     public MusicCardSkin(MusicCard control) {
         super(control);
 
-        this.card.getStyleClass().addAll(Styles.INTERACTIVE);
+        final Card card = new Card();
+        card.getStyleClass().addAll(Styles.INTERACTIVE);
 
         this.headerTile.setGraphic(this.headerTileGraphic);
         this.headerTile.getStyleClass().add(Styles.TITLE_4);
@@ -53,22 +52,22 @@ public class MusicCardSkin extends SkinBase<MusicCard> {
 
         final HBox header = new HBox(this.headerTile, LayoutUtils.createHorizontalSpace(), this.menuButton);
         header.setAlignment(Pos.TOP_CENTER);
-        this.card.setHeader(header);
+        card.setHeader(header);
 
         registerChangeListener(control.cardItemProperty(), observable ->
             onCardItemChange(control.getCardItem()));
 
         onCardItemChange(control.getCardItem());
 
-        this.card.setBody(LayoutUtils.createVerticalSpace());
+        card.setBody(LayoutUtils.createVerticalSpace());
 
         final Button exapndCardButton = createExpandCardButton();
 
         final HBox footer = new HBox(this.detailsList, LayoutUtils.createHorizontalSpace(), exapndCardButton);
         footer.setAlignment(Pos.BOTTOM_CENTER);
-        this.card.setFooter(footer);
+        card.setFooter(footer);
 
-        getChildren().setAll(this.card);
+        getChildren().setAll(card);
     }
 
     private void updateMenuItems() {
