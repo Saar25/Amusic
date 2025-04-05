@@ -1,9 +1,12 @@
 package org.saartako.client.controls;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import org.saartako.client.enums.Route;
+import org.saartako.client.services.RouterService;
 
 import java.util.Map;
 
@@ -12,20 +15,20 @@ import java.util.Map;
  */
 public class Router extends Control {
 
-    private final Map<Route, Node> routes;
-    private final Node defaultRoute;
+    private final RouterService routerService = RouterService.getInstance();
+
+    private final ObjectBinding<Node> currentRouteNode;
 
     public Router(Map<Route, Node> routes, Node defaultRoute) {
-        this.routes = routes;
-        this.defaultRoute = defaultRoute;
+        this.currentRouteNode = Bindings.createObjectBinding(() -> {
+            final Route currentRoute = this.routerService.currentRouteProperty().get();
+
+            return routes.getOrDefault(currentRoute, defaultRoute);
+        }, this.routerService.currentRouteProperty());
     }
 
-    public Map<Route, Node> getRoutes() {
-        return this.routes;
-    }
-
-    public Node getDefaultRoute() {
-        return this.defaultRoute;
+    public ObjectBinding<Node> currentRouteNodeProperty() {
+        return this.currentRouteNode;
     }
 
     @Override
