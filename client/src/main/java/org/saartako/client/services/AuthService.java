@@ -90,7 +90,7 @@ public class AuthService {
         return this.authApiService.login(username, password)
             .whenComplete((jwtToken, throwable) -> {
                 if (throwable != null) {
-                    LOGGER.info("Failed to sign in - {}", throwable.getMessage());
+                    LOGGER.error("Failed to sign in - {}", throwable.getMessage());
                 } else {
                     LOGGER.info("Succeeded to sign in - {}", jwtToken);
 
@@ -105,7 +105,7 @@ public class AuthService {
         return this.authApiService.register(username, password, displayName)
             .whenComplete((jwtToken, throwable) -> {
                 if (throwable != null) {
-                    LOGGER.info("Failed to register - {}", throwable.getMessage());
+                    LOGGER.error("Failed to register - {}", throwable.getMessage());
                 } else {
                     LOGGER.info("Succeeded to register - {}", jwtToken);
 

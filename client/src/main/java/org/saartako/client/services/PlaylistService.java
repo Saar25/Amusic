@@ -147,7 +147,7 @@ public class PlaylistService {
 
                     this.fetchedPlaylists.setValue(FXCollections.observableArrayList());
                 } else {
-                    LOGGER.info("Fetch playlists successfully");
+                    LOGGER.info("Succeeded to fetch playlists");
 
                     this.fetchedPlaylists.setValue(FXCollections.observableArrayList(playlists));
                 }

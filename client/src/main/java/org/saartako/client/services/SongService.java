@@ -153,7 +153,7 @@ public class SongService {
                 if (throwable != null) {
                     LOGGER.error("Failed to fetch songs - {}", throwable.getMessage());
                 } else {
-                    LOGGER.info("Fetch songs successfully");
+                    LOGGER.info("Succeeded to fetch songs");
 
                     final ObservableList<Song> list =
                         FXCollections.observableArrayList(songs);
@@ -201,7 +201,7 @@ public class SongService {
                 if (throwable != null) {
                     LOGGER.error("Failed to fetch liked song ids - {}", throwable.getMessage());
                 } else {
-                    LOGGER.info("Fetch liked song ids successfully");
+                    LOGGER.info("Succeeded to fetch liked song ids");
 
                     final ObservableList<Long> list =
                         FXCollections.observableArrayList(likedSongIds);

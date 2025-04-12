@@ -207,7 +207,7 @@ public class SongView extends Control implements RouteNode {
             Platform.runLater(() -> {
                 final Alert alert = error != null
                     ? new Alert(Alert.AlertType.ERROR, "Failed to add song\n" + error.getMessage())
-                    : new Alert(Alert.AlertType.INFORMATION, "Added song to playlist successfully");
+                    : new Alert(Alert.AlertType.INFORMATION, "Succeeded to add song to playlist");
                 alert.show();
             });
         });
