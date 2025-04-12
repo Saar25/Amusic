@@ -99,6 +99,7 @@ public class SongView extends Control implements RouteNode {
         final MediaPlayer mediaPlayer = mediaPlayerProperty().get();
         if (mediaPlayer != null) {
             mediaPlayer.seek(Duration.ZERO);
+            mediaPlayer.setOnEndOfMedia(mediaPlayer::stop);
         }
     }
 
