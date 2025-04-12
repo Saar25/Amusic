@@ -73,7 +73,7 @@ public class UploadSongPage extends Control implements RouteNode {
     }
 
     public void onSaveSongButtonClick() {
-        if (this.songName.get() == null) {
+        if (this.songName.get() == null || this.songName.get().isBlank()) {
             final Alert alert = new Alert(Alert.AlertType.ERROR,
                 "Please fill the file name");
             alert.show();
@@ -83,10 +83,18 @@ public class UploadSongPage extends Control implements RouteNode {
         final CompletableFuture<Media> mediaIsReadyFuture = new CompletableFuture<>();
 
         if (this.audioFile.get() != null) {
-            final String audioFilePath = this.audioFile.get().toPath().toUri().toString();
-            final Media media = new Media(audioFilePath);
-            final MediaPlayer mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnReady(() -> mediaIsReadyFuture.complete(media));
+            try {
+                final String audioFilePath = this.audioFile.get().toPath().toUri().toString();
+                final Media media = new Media(audioFilePath);
+                final MediaPlayer mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setOnReady(() -> mediaIsReadyFuture.complete(media));
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    final Alert alert = new Alert(Alert.AlertType.ERROR,
+                        "There is an error with the audio file\n" + e.getMessage());
+                    alert.show();
+                });
+            }
         } else {
             mediaIsReadyFuture.complete(null);
         }
