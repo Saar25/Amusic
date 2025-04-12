@@ -11,6 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Utility class for http requests of multipart form data
+ *
+ * @param bodyPublisher the body publisher
+ * @param contentType   the content type
+ */
 public record MultipartFormData(HttpRequest.BodyPublisher bodyPublisher, String contentType) {
 
     private static MultipartFormData create(String boundary, byte[] body) {

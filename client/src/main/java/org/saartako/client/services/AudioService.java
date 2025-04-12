@@ -11,6 +11,9 @@ import javafx.util.Duration;
 import org.saartako.client.Config;
 import org.saartako.common.song.Song;
 
+/**
+ * Service for the audio in the application
+ */
 public class AudioService {
 
     private final SongService songService;

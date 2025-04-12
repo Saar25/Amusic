@@ -1,5 +1,8 @@
 package org.saartako.client;
 
+/**
+ * Configuration class, holds constants for the application
+ */
 public class Config {
 
     public static final int APP_WIDTH = 1024;

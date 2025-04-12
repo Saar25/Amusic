@@ -11,6 +11,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Service for genre api calls
+ */
 public class GenreApiService {
 
     private static final Gson GSON = new Gson();

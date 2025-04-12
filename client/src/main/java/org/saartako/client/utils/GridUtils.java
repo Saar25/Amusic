@@ -9,6 +9,9 @@ import javafx.scene.layout.RowConstraints;
 import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * Utility class for javafx grid pane
+ */
 public class GridUtils {
 
     private GridUtils() {

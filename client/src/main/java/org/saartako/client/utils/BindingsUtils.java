@@ -8,6 +8,9 @@ import javafx.collections.ObservableList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+/**
+ * Utility class for javafx bindings
+ */
 public class BindingsUtils {
 
     private BindingsUtils() {

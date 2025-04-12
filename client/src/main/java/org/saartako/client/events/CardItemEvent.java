@@ -5,6 +5,9 @@ import javafx.event.EventTarget;
 import javafx.event.EventType;
 import org.saartako.client.models.CardItem;
 
+/**
+ * A card item event
+ */
 public class CardItemEvent extends Event {
 
     public static final EventType<CardItemEvent> EXPAND_CARD_ITEM = new EventType<>("EXPAND_CARD_ITEM");

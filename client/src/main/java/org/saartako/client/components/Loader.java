@@ -3,6 +3,9 @@ package org.saartako.client.components;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.StackPane;
 
+/**
+ * Loader node
+ */
 public class Loader extends StackPane {
 
     public Loader() {

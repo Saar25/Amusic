@@ -7,6 +7,9 @@ import org.saartako.common.song.Song;
 
 import java.util.Random;
 
+/**
+ * Utility class for colors
+ */
 public class ColorUtils {
 
     private ColorUtils() {

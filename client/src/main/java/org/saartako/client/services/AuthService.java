@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Service for authentication management
+ */
 public class AuthService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

@@ -1,5 +1,8 @@
 package org.saartako.client.enums;
 
+/**
+ * Represents all the routes in the application
+ */
 public enum Route {
     LOGIN("Login"),
     SONGS("Songs"),

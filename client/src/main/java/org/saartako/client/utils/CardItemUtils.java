@@ -9,6 +9,9 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Utility class for card items
+ */
 public class CardItemUtils {
 
     private CardItemUtils() {

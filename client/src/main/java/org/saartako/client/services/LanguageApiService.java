@@ -11,6 +11,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Service for language api calls
+ */
 public class LanguageApiService {
 
     private static final Gson GSON = new Gson();

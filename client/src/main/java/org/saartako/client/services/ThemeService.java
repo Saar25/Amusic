@@ -4,6 +4,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.saartako.client.enums.AppTheme;
 
+/**
+ * Service for the theme of the application
+ */
 public class ThemeService {
 
     private final ObjectProperty<AppTheme> appThemeProperty =

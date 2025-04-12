@@ -3,6 +3,9 @@ package org.saartako.client.utils;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Utility class for http requests
+ */
 public class HttpUtils {
 
     private HttpUtils() {

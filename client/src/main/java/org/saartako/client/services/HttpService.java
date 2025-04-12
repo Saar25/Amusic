@@ -2,6 +2,9 @@ package org.saartako.client.services;
 
 import java.net.http.HttpClient;
 
+/**
+ * Service for http operations
+ */
 public class HttpService {
 
     private final HttpClient httpClient = HttpClient.newBuilder().build();

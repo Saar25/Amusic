@@ -23,6 +23,9 @@ import org.saartako.client.services.ThemeService;
 import java.net.URL;
 import java.util.Objects;
 
+/**
+ * Main class for Amusic client
+ */
 public class App extends Application {
 
     public static void main(String[] args) {

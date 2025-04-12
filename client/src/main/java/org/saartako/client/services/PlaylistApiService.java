@@ -13,6 +13,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Service for playlist api calls
+ */
 public class PlaylistApiService {
 
     private static final Gson GSON = new Gson();

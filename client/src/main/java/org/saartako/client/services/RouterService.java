@@ -8,6 +8,9 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import org.saartako.client.enums.Route;
 
+/**
+ * Service for the routing in the application
+ */
 public class RouterService {
 
     private final ListProperty<Route> history = new SimpleListProperty<>(
