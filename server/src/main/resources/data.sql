@@ -56,10 +56,10 @@ VALUES
 -- Insert songs
 INSERT INTO songs (name, file_name, media_type, length_millis, uploader_id, genre_id, language_id)
 VALUES
-    ('Bohemian Rhapsody', 'bohemian_rhapsody.mp3', 'audio/mpeg', 360000, 1, 1, 1),  -- Rock, English
-    ('Hotel California', 'temp01', 'audio/wav', 6000, 1, 1, 1),  -- Rock, English
-    ('Stairway to Heaven', NULL, NULL, NULL, 1, 1, 1),  -- Rock, English
-    ('Imagine', NULL, NULL, NULL, 1, 2, 1),  -- Pop, English
+    ('Bohemian Rhapsody', 'bohemian_rhapsody.wav', 'audio/wav', 354812, 1, 1, 1),  -- Rock, English
+    ('Hotel California', 'hotel_california.wav', 'audio/wav', 390266, 1, 1, 1),  -- Rock, English
+    ('Stairway to Heaven', 'stairway_to_heaven.wav', 'audio/wav', 482394, 1, 1, 1),  -- Rock, English
+    ('Imagine', 'imagine.wav','audio/wav', 183533, 1, 2, 1),  -- Pop, English
     ('Smells Like Teen Spirit', NULL, NULL, NULL, 1, 14, 1),  -- Alternative, English
     ('Billie Jean', NULL, NULL, NULL, 1, 2, 1),  -- Pop, English
     ('Hey Jude', NULL, NULL, NULL, 1, 1, 1),  -- Rock, English
@@ -70,7 +70,9 @@ VALUES
     ('Wonderwall', NULL, NULL, NULL, 1, 14, 1),  -- Alternative, English
     ('Bohemian Like You', NULL, NULL, NULL, 1, 14, 1),  -- Alternative, English
     ('Purple Rain', NULL, NULL, NULL, 1, 15, 1),  -- Soul, English
-    ('Lose Yourself', NULL, NULL, NULL, 1, 4, 1);  -- Hip-Hop, English
+    ('Lose Yourself', NULL, NULL, NULL, 1, 4, 1),  -- Soul, English
+    ('Temporary', 'temporary_01.wav', 'audio/wav', 5943, 1, NULL, NULL),
+    ('montage', 'montage.wav', 'audio/wav', 94650, 1, 6, 15);
 INSERT INTO songs (name, file_name, media_type, length_millis, uploader_id, genre_id, language_id)
 VALUES
     ('הפרח בגני',
